@@ -86,7 +86,7 @@
           </div>
           <div>
             <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              AutoShare <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Veículo Compartilhado</span>
+              AutoShare <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Ribeirão Preto - SP</span>
             </h1>
             <p class="text-xs text-slate-400">Integrantes: Cinthia, Arnaldo, Henri, Hector e Heric</p>
           </div>
@@ -200,7 +200,7 @@
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-car-on text-emerald-400"></i> Registrar Nova Viagem
             </h2>
-            <p class="text-xs text-slate-400 mt-1">Escolha a origem, paradas intermediárias e destino com cálculo via Google Maps / OSRM.</p>
+            <p class="text-xs text-slate-400 mt-1">Escolha os locais padrão de Ribeirão Preto - SP ou digite um novo endereço.</p>
           </div>
           <span class="text-xs font-semibold px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">Módulo 1</span>
         </div>
@@ -301,9 +301,6 @@
               </label>
               <div class="relative">
                 <input type="number" id="trip-distance" step="0.1" min="0.1" required oninput="app.updateTripPreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
-                <span id="route-loading-spinner" class="hidden absolute right-3 top-3.5 text-xs text-emerald-400 flex items-center gap-1">
-                  <i class="fa-solid fa-spinner fa-spin"></i> Google Maps...
-                </span>
               </div>
             </div>
 
@@ -512,7 +509,7 @@
     <div class="glass-card max-w-2xl w-full rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-700 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-location-dot text-emerald-400"></i> Criar & Gerenciar Locais Padrão com Endereço
+          <i class="fa-solid fa-location-dot text-emerald-400"></i> Locais Padrão de Ribeirão Preto - SP
         </h3>
         <button onclick="app.closeLocationsModal()" class="text-slate-400 hover:text-white text-lg">
           <i class="fa-solid fa-xmark"></i>
@@ -520,7 +517,7 @@
       </div>
 
       <p class="text-xs text-slate-400">
-        Cadastre locais frequentes (ex: Casa, Trabalho da Cinthia, Faculdade do Hector). O Google Maps usará esses endereços para calcular a rota automaticamente.
+        Gerencie os endereços padrões da família. O Google Maps usará esses dados para traçar as rotas exatas.
       </p>
 
       <!-- Formulário para Adicionar Novo Local -->
@@ -531,17 +528,17 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-[11px] font-medium text-slate-300 mb-1">Nome do Local</label>
-            <input type="text" id="new-loc-name" required placeholder="Ex: Trabalho da Cinthia" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="new-loc-name" required placeholder="Ex: Mercado Barão" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
           <div class="sm:col-span-2">
             <label class="block text-[11px] font-medium text-slate-300 mb-1">Endereço Completo</label>
-            <input type="text" id="new-loc-address" required placeholder="Ex: Av. Paulista, 1000, São Paulo - SP" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="new-loc-address" required placeholder="Ex: Av. Presidente Vargas, Ribeirão Preto - SP" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
         </div>
         <div class="flex justify-between items-center pt-1">
           <div class="flex items-center gap-2">
             <label class="text-[11px] text-slate-400 font-medium">Distância Estimada da Casa (km):</label>
-            <input type="number" step="0.1" min="0" id="new-loc-distance" placeholder="12" class="w-20 bg-slate-950 border border-slate-800 rounded-xl px-2 py-1 text-xs text-white text-right">
+            <input type="number" step="0.1" min="0" id="new-loc-distance" placeholder="5" class="w-20 bg-slate-950 border border-slate-800 rounded-xl px-2 py-1 text-xs text-white text-right">
           </div>
           <button type="submit" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs rounded-xl shadow transition">
             + Cadastrar Local
@@ -551,7 +548,7 @@
 
       <!-- Lista de Locais Cadastrados -->
       <div class="space-y-2">
-        <div class="font-semibold text-xs text-slate-300 uppercase tracking-wider">Locais Salvos:</div>
+        <div class="font-semibold text-xs text-slate-300 uppercase tracking-wider">Locais Salvos (Ribeirão Preto - SP):</div>
         <div id="locations-list-container" class="space-y-2 max-h-52 overflow-y-auto pr-1">
           <!-- Rendered dynamically -->
         </div>
@@ -601,21 +598,56 @@
     /**
      * Shared Car Usage & Cost Tracker Application
      */
-    const STORAGE_KEY = 'autoshare_car_data_v2';
+    const STORAGE_KEY = 'autoshare_car_data_v3';
     const FIREBASE_KEY = 'autoshare_firebase_config_v1';
 
     // Exact 5 fixed members specified by user
     const DEFAULT_MEMBERS = ['Cinthia', 'Arnaldo', 'Henri', 'Hector', 'Heric'];
 
-    // Preset default locations with addresses
+    // Exact initial default preset locations specified by user in Ribeirão Preto - SP
     const DEFAULT_PRESET_LOCATIONS = [
-      { id: 'loc_casa', name: 'Casa', address: 'Casa (Ponto de Partida)', distance: 0 },
-      { id: 'loc_trab', name: 'Trabalho Geral', address: 'Centro, São Paulo - SP', distance: 12 },
-      { id: 'loc_cinthia', name: 'Trabalho da Cinthia', address: 'Paulista, São Paulo - SP', distance: 15 },
-      { id: 'loc_arnaldo', name: 'Trabalho do Arnaldo', address: 'Pinheiros, São Paulo - SP', distance: 8 },
-      { id: 'loc_henri', name: 'Trabalho do Henri', address: 'Itaim Bibi, São Paulo - SP', distance: 22 },
-      { id: 'loc_hector', name: 'Faculdade do Hector', address: 'Butantã, São Paulo - SP', distance: 18 },
-      { id: 'loc_heric', name: 'Trabalho do Heric', address: 'Moema, São Paulo - SP', distance: 14 }
+      {
+        id: 'loc_casa',
+        name: 'Casa',
+        address: 'R. Aldo Focosi, 380 - Pres. Medici, Ribeirão Preto - SP',
+        distance: 0
+      },
+      {
+        id: 'loc_trabalho_cinthia',
+        name: 'Trabalho Cinthia',
+        address: 'Av. Independência, 4315 - Jardim California, Ribeirão Preto - SP',
+        distance: 7.5
+      },
+      {
+        id: 'loc_trabalho_arnaldo',
+        name: 'Trabalho Arnaldo',
+        address: 'R. Onze de Agosto, 1367 - Campos Elísios, Ribeirão Preto - SP',
+        distance: 5.2
+      },
+      {
+        id: 'loc_trabalho_henri_hector_heric',
+        name: 'Trabalho Henri, Hector e Heric',
+        address: 'Avenida Antonio Gome da Silva Junior, 826, Ribeirão Preto - SP',
+        distance: 6.8
+      },
+      {
+        id: 'loc_casa_melissa',
+        name: 'Casa Melissa',
+        address: 'Rua Sebastião Agenor Saheb 1051 - Parque São Sebastião, Ribeirão Preto - SP',
+        distance: 8.4
+      },
+      {
+        id: 'loc_faculdade_henri_hector',
+        name: 'Faculdade Henri e Hector',
+        address: 'Av. Carlos Consoni, 10 - Jardim Canada, Ribeirão Preto - SP',
+        distance: 6.1
+      },
+      {
+        id: 'loc_faculdade_heric',
+        name: 'Faculdade Heric',
+        address: 'R. Dr. Benjamin Anderson Stauffer, 801 - Jardim Botânico, Ribeirão Preto - SP',
+        distance: 7.0
+      }
     ];
 
     const DEFAULT_FIREBASE_CONFIG = {
@@ -663,7 +695,7 @@
           statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-400 border border-emerald-800/40 rounded-xl transition flex items-center gap-1.5';
           statusTxt.textContent = 'Cloud Conectado';
 
-          this.db.collection('autoshare').doc('main_data_v2').onSnapshot((doc) => {
+          this.db.collection('autoshare').doc('main_data_v3').onSnapshot((doc) => {
             if (doc.exists) {
               const cloudData = doc.data();
               if (cloudData) {
@@ -680,7 +712,7 @@
                 this.renderHistory();
               }
             } else {
-              this.db.collection('autoshare').doc('main_data_v2').set(this.data);
+              this.db.collection('autoshare').doc('main_data_v3').set(this.data);
             }
           }, (err) => {
             console.warn('Fallback offline:', err);
@@ -718,7 +750,7 @@
       saveData() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
         if (this.firebaseEnabled && this.db) {
-          this.db.collection('autoshare').doc('main_data_v2').set(this.data)
+          this.db.collection('autoshare').doc('main_data_v3').set(this.data)
             .catch(err => console.error('Erro ao enviar dados pro Firebase:', err));
         }
         this.renderStatsHeader();
@@ -744,12 +776,12 @@
         this.data.presetLocations.forEach(loc => {
           const opt1 = document.createElement('option');
           opt1.value = loc.id;
-          opt1.textContent = `${loc.name} (${loc.address})`;
+          opt1.textContent = `${loc.name} - ${loc.address}`;
           originSelect.appendChild(opt1);
 
           const opt2 = document.createElement('option');
           opt2.value = loc.id;
-          opt2.textContent = `${loc.name} (${loc.address})`;
+          opt2.textContent = `${loc.name} - ${loc.address}`;
           destSelect.appendChild(opt2);
         });
 
@@ -764,12 +796,11 @@
         destSelect.appendChild(customOpt2);
 
         originSelect.value = this.data.presetLocations[0] ? this.data.presetLocations[0].id : 'loc_casa';
-        destSelect.value = this.data.presetLocations[1] ? this.data.presetLocations[1].id : 'loc_trab';
+        destSelect.value = this.data.presetLocations[1] ? this.data.presetLocations[1].id : 'loc_trabalho_cinthia';
       }
 
       onLocationSelectChange(selectId, customContainerId) {
         const sel = document.getElementById(selectId);
-        const container = document.getElementById(customContainerId.replace('-custom', ''));
         const input = document.getElementById(customContainerId);
 
         if (sel.value === 'custom') {
@@ -790,7 +821,7 @@
         div.id = `wrapper_${stopId}`;
         div.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 items-end bg-slate-950/60 p-3 rounded-xl border border-slate-800 relative';
 
-        let optionsHtml = this.data.presetLocations.map(loc => `<option value="${loc.id}">${loc.name} (${loc.address})</option>`).join('');
+        let optionsHtml = this.data.presetLocations.map(loc => `<option value="${loc.id}">${loc.name} - ${loc.address}</option>`).join('');
         optionsHtml += `<option value="custom">+ Digitar Endereço de Parada</option>`;
 
         div.innerHTML = `
@@ -830,7 +861,7 @@
         this.calculateTripRouteDistance();
       }
 
-      // Calculate Driving Route Distance (Google Maps / Distance Matrix / Presets)
+      // Calculate Driving Route Distance (Google Maps / Presets)
       calculateTripRouteDistance() {
         const origSel = document.getElementById('trip-origin').value;
         const destSel = document.getElementById('trip-destination').value;
@@ -838,7 +869,6 @@
         let originText = origSel === 'custom' ? document.getElementById('trip-origin-custom').value : (this.data.presetLocations.find(l => l.id === origSel)?.address || origSel);
         let destText = destSel === 'custom' ? document.getElementById('trip-dest-custom').value : (this.data.presetLocations.find(l => l.id === destSel)?.address || destSel);
 
-        // Collect stops
         const stopSelects = document.querySelectorAll('#trip-stops-container select');
         const stopsList = [];
         stopSelects.forEach(sel => {
@@ -865,14 +895,17 @@
 
         let totalDist = 0;
         if (origLoc && destLoc) {
-          totalDist = Math.abs((destLoc.distance || 0) - (origLoc.distance || 0));
-          if (totalDist === 0 && origLoc.id !== destLoc.id) totalDist = 10;
+          if (origLoc.id === 'loc_casa' || destLoc.id === 'loc_casa') {
+            totalDist = Math.max(origLoc.distance || 0, destLoc.distance || 0);
+          } else {
+            totalDist = Math.abs((destLoc.distance || 0) - (origLoc.distance || 0));
+            if (totalDist === 0 && origLoc.id !== destLoc.id) totalDist = 7;
+          }
         } else {
-          totalDist = 15; // default estimate for custom route
+          totalDist = 10;
         }
 
-        // Add 5 km per intermediate stop estimate if any
-        totalDist += (stopsList.length * 5);
+        totalDist += (stopsList.length * 4);
 
         document.getElementById('trip-distance').value = totalDist.toFixed(1);
         this.updateTripPreview();
@@ -1379,7 +1412,7 @@
       }
 
       loadDemoData() {
-        if (!confirm('Deseja carregar dados de demonstração com os 5 integrantes?')) return;
+        if (!confirm('Deseja carregar dados de demonstração com os 5 integrantes e locais de Ribeirão Preto?')) return;
 
         const now = Date.now();
         const dayMs = 86400000;
@@ -1394,11 +1427,11 @@
               dateStr: new Date(now - (dayMs * 4)).toISOString().slice(0, 16).replace('T', ' '),
               members: ['Cinthia', 'Arnaldo', 'Henri'],
               origin: 'Casa',
-              destination: 'Trabalho da Cinthia',
-              baseDistance: 15,
+              destination: 'Trabalho Cinthia',
+              baseDistance: 7.5,
               isRoundTrip: true,
-              totalDistance: 30,
-              kmPerMember: 10
+              totalDistance: 15,
+              kmPerMember: 5
             },
             {
               id: 'demo_t2',
@@ -1406,11 +1439,11 @@
               dateStr: new Date(now - (dayMs * 2)).toISOString().slice(0, 16).replace('T', ' '),
               members: ['Hector', 'Heric'],
               origin: 'Casa',
-              destination: 'Faculdade do Hector',
-              baseDistance: 18,
+              destination: 'Faculdade Heric',
+              baseDistance: 7.0,
               isRoundTrip: true,
-              totalDistance: 36,
-              kmPerMember: 18
+              totalDistance: 14,
+              kmPerMember: 7
             }
           ],
           refuels: [
@@ -1427,7 +1460,7 @@
 
         this.saveData();
         this.populateLocationSelects();
-        this.showToast('Dados de demonstração carregados!', 'success');
+        this.showToast('Dados de demonstração de Ribeirão Preto carregados!', 'success');
         this.switchTab('report');
       }
 
@@ -1452,7 +1485,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `autoshare_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.download = `autoshare_ribeirao_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
         this.showToast('Backup JSON baixado!', 'success');
