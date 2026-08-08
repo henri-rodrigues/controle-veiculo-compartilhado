@@ -164,7 +164,7 @@
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-car-on text-emerald-400"></i> Registrar Viagem
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Cálculo de rota rodoviária (Google Maps / OSRM).</p>
+            <p class="text-xs text-slate-400 mt-0.5">Cálculo de rota com seleção de passageiros por trecho/parada.</p>
           </div>
           <span class="text-[11px] font-semibold px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">Módulo 1</span>
         </div>
@@ -179,40 +179,6 @@
             <input type="date" id="trip-date" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
           </div>
 
-          <!-- Seleção dos 5 Integrantes -->
-          <div>
-            <div class="flex justify-between items-center mb-1.5">
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                <i class="fa-solid fa-users text-emerald-400 mr-1"></i> Quem Utilizou o Carro?
-              </label>
-              <button type="button" onclick="window.app && window.app.toggleSelectAllMembers()" class="text-xs text-emerald-400 font-semibold hover:underline">Todos</button>
-            </div>
-
-            <!-- Mobile Touch Checkboxes -->
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-              <label class="flex items-center gap-2 p-3 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition">
-                <input type="checkbox" name="trip-members" value="Cinthia" onchange="window.app && window.app.updateTripPreview()" class="w-5 h-5 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-                <span class="text-xs font-bold text-slate-200">Cinthia</span>
-              </label>
-              <label class="flex items-center gap-2 p-3 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition">
-                <input type="checkbox" name="trip-members" value="Arnaldo" onchange="window.app && window.app.updateTripPreview()" class="w-5 h-5 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-                <span class="text-xs font-bold text-slate-200">Arnaldo</span>
-              </label>
-              <label class="flex items-center gap-2 p-3 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition">
-                <input type="checkbox" name="trip-members" value="Henri" onchange="window.app && window.app.updateTripPreview()" class="w-5 h-5 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-                <span class="text-xs font-bold text-slate-200">Henri</span>
-              </label>
-              <label class="flex items-center gap-2 p-3 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition">
-                <input type="checkbox" name="trip-members" value="Hector" onchange="window.app && window.app.updateTripPreview()" class="w-5 h-5 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-                <span class="text-xs font-bold text-slate-200">Hector</span>
-              </label>
-              <label class="flex items-center gap-2 p-3 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition">
-                <input type="checkbox" name="trip-members" value="Heric" onchange="window.app && window.app.updateTripPreview()" class="w-5 h-5 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-                <span class="text-xs font-bold text-slate-200">Heric</span>
-              </label>
-            </div>
-          </div>
-
           <!-- ROTA: Origem, Paradas e Destino -->
           <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
             <div class="flex items-center justify-between">
@@ -220,14 +186,14 @@
                 <i class="fa-solid fa-map-pin text-emerald-400"></i> Trajeto (Origem & Destino)
               </h3>
               <button type="button" onclick="window.app && window.app.addTripStop()" class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded-lg text-xs font-bold border border-emerald-500/30 transition flex items-center gap-1">
-                <i class="fa-solid fa-plus"></i> Parada
+                <i class="fa-solid fa-plus"></i> Adicionar Parada
               </button>
             </div>
 
             <!-- Origem -->
             <div>
               <label class="block text-xs font-semibold text-slate-300 mb-1">Origem (Ponto Inicial)</label>
-              <select id="trip-origin" onchange="window.app && window.app.onLocationSelectChange('trip-origin', 'trip-origin-custom'); window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <select id="trip-origin" onchange="window.app && window.app.onLocationSelectChange('trip-origin', 'trip-origin-custom'); window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-emerald-500 font-semibold">
                 <!-- Populated dynamically -->
               </select>
               <div id="container-origin-custom" class="hidden mt-2">
@@ -243,7 +209,7 @@
             <!-- Destino -->
             <div>
               <label class="block text-xs font-semibold text-slate-300 mb-1">Destino Final</label>
-              <select id="trip-destination" onchange="window.app && window.app.onLocationSelectChange('trip-destination', 'trip-dest-custom'); window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+              <select id="trip-destination" onchange="window.app && window.app.onLocationSelectChange('trip-destination', 'trip-dest-custom'); window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-emerald-500 font-semibold">
                 <!-- Populated dynamically -->
               </select>
               <div id="container-dest-custom" class="hidden mt-2">
@@ -252,12 +218,27 @@
             </div>
           </div>
 
+          <!-- SELEÇÃO DE INTEGRANTES POR TRECHO/PARADA (NOVO RECURSO) -->
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-emerald-500/20 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-user-group"></i> Ocupantes do Carro em Cada Trecho
+              </h3>
+              <span class="text-[10px] text-slate-400">Adicione/Retire integrantes por parada</span>
+            </div>
+
+            <!-- Dynamic Legs Members Selectors Container -->
+            <div id="trip-legs-members-container" class="space-y-3">
+              <!-- Dynamically generated per leg -->
+            </div>
+          </div>
+
           <!-- Distância e Opções -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <div class="flex items-center justify-between mb-1">
                 <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                  Distância (km)
+                  Distância Total (km)
                 </label>
                 <span id="route-calc-spinner" class="hidden text-[11px] text-emerald-400 font-semibold animate-pulse">
                   <i class="fa-solid fa-spin fa-spinner"></i> Calculando...
@@ -284,12 +265,11 @@
           <!-- Live Preview Box -->
           <div id="trip-preview-box" class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between flex-wrap gap-2">
             <div>
-              <div class="text-[11px] text-slate-400">Participantes:</div>
-              <div id="preview-members-list" class="text-xs font-bold text-slate-200">Selecione os integrantes</div>
+              <div class="text-[11px] text-slate-400">Total KM Atribuído por Pessoa nesta Corrida:</div>
+              <div id="preview-members-list" class="text-xs font-bold text-slate-200 mt-0.5">Defina os integrantes dos trechos</div>
             </div>
             <div class="text-right">
-              <div class="text-slate-400 text-[11px]">Total: <strong id="preview-total-dist" class="text-emerald-400 font-bold">0.0 km</strong></div>
-              <div class="text-slate-400 text-[11px]">Por Pessoa: <strong id="preview-per-member" class="text-cyan-400 font-bold">0.0 km</strong></div>
+              <div class="text-slate-400 text-[11px]">Distância Total: <strong id="preview-total-dist" class="text-emerald-400 font-bold">0.0 km</strong></div>
             </div>
           </div>
 
@@ -612,7 +592,7 @@
     /**
      * Shared Car Usage & Cost Tracker Application
      */
-    const STORAGE_KEY = 'autoshare_car_data_v8';
+    const STORAGE_KEY = 'autoshare_car_data_v9';
     const FIREBASE_KEY = 'autoshare_firebase_config_v1';
 
     const DEFAULT_MEMBERS = ['Cinthia', 'Arnaldo', 'Henri', 'Hector', 'Heric'];
@@ -686,6 +666,7 @@
         this.data = this.loadData();
         this.stopCount = 0;
         this.calcDebounceTimer = null;
+        this.currentLegsData = []; // Store calculated legs distances
         this.init();
       }
 
@@ -716,7 +697,7 @@
             statusBtn.className = 'p-2 text-xs bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 rounded-xl';
           }
 
-          this.db.collection('autoshare').doc('main_data_v8').onSnapshot((doc) => {
+          this.db.collection('autoshare').doc('main_data_v9').onSnapshot((doc) => {
             if (doc.exists) {
               const cloudData = doc.data();
               if (cloudData) {
@@ -737,7 +718,7 @@
                 this.renderHistory();
               }
             } else {
-              this.db.collection('autoshare').doc('main_data_v8').set(this.data);
+              this.db.collection('autoshare').doc('main_data_v9').set(this.data);
             }
           }, (err) => {
             console.warn('Fallback offline:', err);
@@ -782,7 +763,7 @@
       saveData() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
         if (this.firebaseEnabled && this.db) {
-          this.db.collection('autoshare').doc('main_data_v8').set(this.data)
+          this.db.collection('autoshare').doc('main_data_v9').set(this.data)
             .catch(err => console.error('Erro ao enviar dados pro Firebase:', err));
         }
         this.renderCreditsBalanceGrid();
@@ -868,7 +849,7 @@
               <label class="text-[11px] font-semibold text-emerald-400">Parada Intermediária ${this.stopCount}</label>
               <button type="button" onclick="window.app && window.app.removeTripStop('${stopId}')" class="text-xs text-red-400 font-bold">Remover</button>
             </div>
-            <select id="${stopId}" onchange="window.app && window.app.onStopSelectChange('${stopId}')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <select id="${stopId}" onchange="window.app && window.app.onStopSelectChange('${stopId}')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 font-semibold">
               ${optionsHtml}
             </select>
           </div>
@@ -920,29 +901,29 @@
 
             if (origSel === 'custom') {
               const addr = document.getElementById('trip-origin-custom')?.value.trim();
-              if (addr) waypointsDef.push({ type: 'custom', address: addr });
+              if (addr) waypointsDef.push({ type: 'custom', name: 'Origem Personalizada', address: addr });
             } else {
               const loc = this.data.presetLocations.find(l => l.id === origSel);
-              if (loc) waypointsDef.push({ type: 'preset', loc });
+              if (loc) waypointsDef.push({ type: 'preset', name: loc.name, loc });
             }
 
             const stopSelects = document.querySelectorAll('#trip-stops-container select');
-            stopSelects.forEach(sel => {
+            stopSelects.forEach((sel, idx) => {
               if (sel.value === 'custom') {
                 const addr = document.getElementById(`${sel.id}_custom`)?.value.trim();
-                if (addr) waypointsDef.push({ type: 'custom', address: addr });
+                if (addr) waypointsDef.push({ type: 'custom', name: `Parada ${idx+1}`, address: addr });
               } else {
                 const loc = this.data.presetLocations.find(l => l.id === sel.value);
-                if (loc) waypointsDef.push({ type: 'preset', loc });
+                if (loc) waypointsDef.push({ type: 'preset', name: loc.name, loc });
               }
             });
 
             if (destSel === 'custom') {
               const addr = document.getElementById('trip-dest-custom')?.value.trim();
-              if (addr) waypointsDef.push({ type: 'custom', address: addr });
+              if (addr) waypointsDef.push({ type: 'custom', name: 'Destino Personalizado', address: addr });
             } else {
               const loc = this.data.presetLocations.find(l => l.id === destSel);
-              if (loc) waypointsDef.push({ type: 'preset', loc });
+              if (loc) waypointsDef.push({ type: 'preset', name: loc.name, loc });
             }
 
             const originText = waypointsDef[0] ? (waypointsDef[0].loc ? waypointsDef[0].loc.address : waypointsDef[0].address) : '';
@@ -983,9 +964,27 @@
               const osrmData = await osrmRes.json();
 
               if (osrmData && osrmData.routes && osrmData.routes[0]) {
-                const distanceKm = osrmData.routes[0].distance / 1000;
+                const totalDistanceKm = osrmData.routes[0].distance / 1000;
                 const distEl = document.getElementById('trip-distance');
-                if (distEl) distEl.value = distanceKm.toFixed(1);
+                if (distEl) distEl.value = totalDistanceKm.toFixed(1);
+
+                // Build Leg Breakdown
+                const osrmLegs = osrmData.routes[0].legs || [];
+                this.currentLegsData = [];
+
+                for (let i = 0; i < osrmLegs.length; i++) {
+                  const fromName = waypointsDef[i] ? waypointsDef[i].name : `Ponto ${i+1}`;
+                  const toName = waypointsDef[i+1] ? waypointsDef[i+1].name : `Ponto ${i+2}`;
+                  const legDist = osrmLegs[i].distance / 1000;
+                  this.currentLegsData.push({
+                    index: i,
+                    fromName,
+                    toName,
+                    distanceKm: legDist
+                  });
+                }
+
+                this.renderLegsMembersUI();
                 this.updateTripPreview();
               }
             }
@@ -997,38 +996,90 @@
         }, 300);
       }
 
+      // Render UI for selecting occupants per leg
+      renderLegsMembersUI() {
+        const container = document.getElementById('trip-legs-members-container');
+        if (!container) return;
+
+        if (this.currentLegsData.length === 0) {
+          container.innerHTML = `<div class="text-xs text-slate-400">Selecione a origem e o destino.</div>`;
+          return;
+        }
+
+        const isRoundTrip = document.getElementById('trip-roundtrip')?.checked || false;
+
+        container.innerHTML = '';
+
+        this.currentLegsData.forEach(leg => {
+          const legDist = leg.distanceKm * (isRoundTrip ? 2 : 1);
+          const div = document.createElement('div');
+          div.className = 'bg-slate-950/80 p-3 rounded-xl border border-slate-800 space-y-2';
+
+          let checkboxesHtml = DEFAULT_MEMBERS.map(m => `
+            <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition text-xs">
+              <input type="checkbox" name="leg-members-${leg.index}" value="${m}" checked onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+              <span class="text-xs font-bold text-slate-200">${m}</span>
+            </label>
+          `).join('');
+
+          div.innerHTML = `
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-slate-200">Trecho ${leg.index + 1}: ${leg.fromName} ➔ ${leg.toName}</span>
+              <span class="text-emerald-400 font-extrabold">${legDist.toFixed(1)} km</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
+              ${checkboxesHtml}
+            </div>
+          `;
+
+          container.appendChild(div);
+        });
+      }
+
+      // Calculate total attributed KM for each member based on leg occupants
       updateTripPreview() {
         const baseDistEl = document.getElementById('trip-distance');
         const roundTripEl = document.getElementById('trip-roundtrip');
         const baseDist = parseFloat(baseDistEl ? baseDistEl.value : 0) || 0;
         const isRoundTrip = roundTripEl ? roundTripEl.checked : false;
-        const selectedMembers = Array.from(document.querySelectorAll('input[name="trip-members"]:checked')).map(cb => cb.value);
 
         const totalDist = baseDist * (isRoundTrip ? 2 : 1);
-        const perMember = selectedMembers.length > 0 ? (totalDist / selectedMembers.length) : 0;
+        const memberKmMap = { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+
+        if (this.currentLegsData.length > 0) {
+          this.currentLegsData.forEach(leg => {
+            const legDist = leg.distanceKm * (isRoundTrip ? 2 : 1);
+            const checkboxes = document.querySelectorAll(`input[name="leg-members-${leg.index}"]:checked`);
+            const members = Array.from(checkboxes).map(cb => cb.value);
+
+            if (members.length > 0) {
+              const perPersonLegDist = legDist / members.length;
+              members.forEach(m => {
+                memberKmMap[m] = (memberKmMap[m] || 0) + perPersonLegDist;
+              });
+            }
+          });
+        }
 
         const totalEl = document.getElementById('preview-total-dist');
-        const perMemberEl = document.getElementById('preview-per-member');
         const membersListEl = document.getElementById('preview-members-list');
 
         if (totalEl) totalEl.textContent = `${totalDist.toFixed(1)} km`;
-        if (perMemberEl) perMemberEl.textContent = `${perMember.toFixed(1)} km`;
-        if (membersListEl) membersListEl.textContent = selectedMembers.length > 0 ? selectedMembers.join(', ') : 'Nenhum integrante selecionado';
-      }
 
-      toggleSelectAllMembers() {
-        const checkboxes = document.querySelectorAll('input[name="trip-members"]');
-        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-        checkboxes.forEach(cb => cb.checked = !allChecked);
-        this.updateTripPreview();
+        const summaryText = Object.entries(memberKmMap)
+          .filter(([m, km]) => km > 0)
+          .map(([m, km]) => `${m}: ${km.toFixed(1)} km`)
+          .join(' | ');
+
+        if (membersListEl) {
+          membersListEl.textContent = summaryText || 'Selecione os integrantes dos trechos';
+        }
       }
 
       saveTrip(e) {
         e.preventDefault();
 
         const rawDate = document.getElementById('trip-date').value;
-        const selectedMembers = Array.from(document.querySelectorAll('input[name="trip-members"]:checked')).map(cb => cb.value);
-        
         const origSel = document.getElementById('trip-origin').value;
         const destSel = document.getElementById('trip-destination').value;
         const originName = origSel === 'custom' ? document.getElementById('trip-origin-custom').value : (this.data.presetLocations.find(l => l.id === origSel)?.name || origSel);
@@ -1037,33 +1088,62 @@
         const baseDist = parseFloat(document.getElementById('trip-distance').value);
         const isRoundTrip = document.getElementById('trip-roundtrip').checked;
 
-        if (selectedMembers.length === 0) {
-          this.showToast('Selecione pelo menos um participante para a corrida!', 'warning');
-          return;
-        }
-
         if (isNaN(baseDist) || baseDist <= 0) {
           this.showToast('Informe uma distância válida!', 'warning');
           return;
         }
 
+        // Calculate member KM breakdown per leg
+        const memberKmMap = { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+        const legsSummary = [];
+        let allTripMembers = new Set();
+
+        if (this.currentLegsData.length > 0) {
+          this.currentLegsData.forEach(leg => {
+            const legDist = leg.distanceKm * (isRoundTrip ? 2 : 1);
+            const checkboxes = document.querySelectorAll(`input[name="leg-members-${leg.index}"]:checked`);
+            const members = Array.from(checkboxes).map(cb => cb.value);
+
+            members.forEach(m => allTripMembers.add(m));
+
+            if (members.length > 0) {
+              const perPersonLegDist = legDist / members.length;
+              members.forEach(m => {
+                memberKmMap[m] = (memberKmMap[m] || 0) + perPersonLegDist;
+              });
+            }
+
+            legsSummary.push({
+              legIndex: leg.index,
+              fromName: leg.fromName,
+              toName: leg.toName,
+              distanceKm: legDist,
+              members
+            });
+          });
+        }
+
+        if (allTripMembers.size === 0) {
+          this.showToast('Selecione pelo menos um ocupante para os trechos da viagem!', 'warning');
+          return;
+        }
+
         const formattedDateParts = rawDate.split('-');
         const formattedDate = formattedDateParts.length === 3 ? `${formattedDateParts[2]}/${formattedDateParts[1]}/${formattedDateParts[0]}` : rawDate;
-
         const totalDistance = baseDist * (isRoundTrip ? 2 : 1);
-        const kmPerMember = totalDistance / selectedMembers.length;
 
         const newTrip = {
           id: 'trip_' + Date.now(),
           timestamp: new Date(rawDate).getTime(),
           dateStr: formattedDate,
-          members: selectedMembers,
+          members: Array.from(allTripMembers),
           origin: originName,
           destination: destName,
           baseDistance: baseDist,
           isRoundTrip,
           totalDistance,
-          kmPerMember
+          memberKmMap,
+          legsSummary
         };
 
         this.data.trips.push(newTrip);
@@ -1072,7 +1152,6 @@
         this.saveData();
         this.showToast('Viagem registrada com sucesso!', 'success');
 
-        document.querySelectorAll('input[name="trip-members"]').forEach(cb => cb.checked = false);
         document.getElementById('trip-roundtrip').checked = false;
         this.calculateTripRouteDistance();
       }
@@ -1160,9 +1239,10 @@
         DEFAULT_MEMBERS.forEach(member => {
           let tripCount = 0;
           const memberKm = periodTrips.reduce((acc, t) => {
-            if (t.members.includes(member)) {
+            const memberKmInTrip = t.memberKmMap ? (t.memberKmMap[member] || 0) : (t.members.includes(member) ? t.kmPerMember : 0);
+            if (memberKmInTrip > 0) {
               tripCount++;
-              return acc + t.kmPerMember;
+              return acc + memberKmInTrip;
             }
             return acc;
           }, 0);
@@ -1247,9 +1327,10 @@
         DEFAULT_MEMBERS.forEach(member => {
           let tripCount = 0;
           const km = periodTrips.reduce((acc, t) => {
-            if (t.members.includes(member)) {
+            const memberKmInTrip = t.memberKmMap ? (t.memberKmMap[member] || 0) : (t.members.includes(member) ? t.kmPerMember : 0);
+            if (memberKmInTrip > 0) {
               tripCount++;
-              return acc + t.kmPerMember;
+              return acc + memberKmInTrip;
             }
             return acc;
           }, 0);
@@ -1257,7 +1338,6 @@
           const usagePct = periodTotalKm > 0 ? (km / periodTotalKm) * 100 : 0;
           const rawShareCost = manualCost * (usagePct / 100);
 
-          // Deduct credit balance
           const availableCredit = this.data.memberCredits[member] || 0;
           const creditDeduction = Math.min(availableCredit, rawShareCost);
           this.data.memberCredits[member] -= creditDeduction;
@@ -1404,11 +1484,13 @@
           this.data.trips.forEach(t => {
             const tr = document.createElement('tr');
             tr.className = 'hover:bg-slate-900/40 transition';
+            const membersList = t.members ? t.members.join(', ') : 'Vários';
+
             tr.innerHTML = `
               <td class="p-3 font-medium text-slate-200 whitespace-nowrap">${t.dateStr}</td>
               <td class="p-3 whitespace-nowrap">
                 <div class="flex flex-wrap gap-1">
-                  ${t.members.map(m => `<span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded-md text-[10px] border border-slate-700">${m}</span>`).join('')}
+                  ${(t.members || []).map(m => `<span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded-md text-[10px] border border-slate-700">${m}</span>`).join('')}
                 </div>
               </td>
               <td class="p-3 whitespace-nowrap text-slate-300">${t.origin} ➔ ${t.destination}</td>
@@ -1416,7 +1498,7 @@
                 ${t.isRoundTrip ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px] font-semibold">Ida e Volta</span>' : '<span class="px-2 py-0.5 bg-slate-800 text-slate-400 rounded text-[10px]">Só Ida</span>'}
               </td>
               <td class="p-3 text-right font-bold text-emerald-400 whitespace-nowrap">${t.totalDistance.toFixed(1)} km</td>
-              <td class="p-3 text-right text-cyan-400 font-semibold whitespace-nowrap">${t.kmPerMember.toFixed(1)} km</td>
+              <td class="p-3 text-right text-cyan-400 font-semibold whitespace-nowrap">Variado por trecho</td>
               <td class="p-3 text-center whitespace-nowrap">
                 <button type="button" onclick="window.app && window.app.deleteTrip('${t.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Viagem">
                   <i class="fa-solid fa-trash-can"></i>
@@ -1439,7 +1521,6 @@
         }
       }
 
-      // Tab switcher for Desktop & Mobile Bottom Nav
       switchTab(tab) {
         const tabsList = ['trips', 'extra-refuel', 'report', 'reports-log', 'history'];
         tabsList.forEach(t => {
