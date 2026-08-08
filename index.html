@@ -65,10 +65,15 @@
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
+    .tab-btn {
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease-in-out;
+    }
     .tab-btn.active {
-      background-color: #10b981;
-      color: #ffffff;
-      box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39);
+      background-color: #10b981 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39) !important;
     }
 
     /* Print styling rules */
@@ -100,7 +105,7 @@
   <!-- Main Content Container -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-grow w-full">
     
-    <!-- Top Action & Navigation Bar (No Top Header) -->
+    <!-- Top Action Bar (Header Removed) -->
     <div class="flex items-center justify-between mb-6 flex-wrap gap-3 no-print">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
@@ -114,16 +119,16 @@
 
       <!-- Compact Utility Controls -->
       <div class="flex items-center gap-2">
-        <button onclick="app.openFirebaseModal()" id="btn-firebase-status" class="px-3 py-1.5 text-xs font-medium bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-400 border border-emerald-800/40 rounded-xl transition flex items-center gap-1.5">
+        <button type="button" onclick="window.app && window.app.openFirebaseModal()" id="btn-firebase-status" class="px-3 py-1.5 text-xs font-medium bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-400 border border-emerald-800/40 rounded-xl transition flex items-center gap-1.5">
           <i class="fa-solid fa-fire"></i> <span id="txt-firebase-status">Firebase Cloud</span>
         </button>
-        <button onclick="app.openLocationsModal()" class="px-3 py-1.5 text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 flex items-center gap-1.5">
+        <button type="button" onclick="window.app && window.app.openLocationsModal()" class="px-3 py-1.5 text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 flex items-center gap-1.5">
           <i class="fa-solid fa-location-dot text-emerald-400"></i> Locais Padrão
         </button>
-        <button onclick="app.loadDemoData()" class="px-3 py-1.5 text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 flex items-center gap-1.5" title="Dados de Teste">
-          <i class="fa-solid fa-flask text-emerald-400"></i> Demo
+        <button type="button" onclick="window.app && window.app.exportBackup()" class="px-3 py-1.5 text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 flex items-center gap-1.5" title="Exportar Backup JSON">
+          <i class="fa-solid fa-download text-cyan-400"></i> Backup
         </button>
-        <button onclick="app.confirmReset()" class="px-3 py-1.5 text-xs font-medium bg-red-950/40 hover:bg-red-900/60 text-red-400 rounded-xl border border-red-800/40" title="Resetar Dados">
+        <button type="button" onclick="window.app && window.app.confirmReset()" class="px-3 py-1.5 text-xs font-medium bg-red-950/40 hover:bg-red-900/60 text-red-400 rounded-xl border border-red-800/40" title="Resetar Dados">
           <i class="fa-solid fa-trash-can"></i>
         </button>
       </div>
@@ -132,19 +137,19 @@
     <!-- Tab Navigation Bar -->
     <div class="flex items-center justify-between mb-6 flex-wrap gap-3 no-print">
       <nav class="flex space-x-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 overflow-x-auto w-full md:w-auto">
-        <button onclick="app.switchTab('trips')" id="tab-btn-trips" class="tab-btn active px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+        <button type="button" onclick="window.app && window.app.switchTab('trips')" id="tab-btn-trips" class="tab-btn active px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-car-on"></i> <span>Registrar Viagem</span>
         </button>
-        <button onclick="app.switchTab('refuel')" id="tab-btn-refuel" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+        <button type="button" onclick="window.app && window.app.switchTab('refuel')" id="tab-btn-refuel" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-gas-pump"></i> <span>Registrar Abastecimento</span>
         </button>
-        <button onclick="app.switchTab('report')" id="tab-btn-report" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+        <button type="button" onclick="window.app && window.app.switchTab('report')" id="tab-btn-report" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-chart-pie"></i> <span>Relatório & Fechamento</span>
         </button>
-        <button onclick="app.switchTab('reports-log')" id="tab-btn-reports-log" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+        <button type="button" onclick="window.app && window.app.switchTab('reports-log')" id="tab-btn-reports-log" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-file-lines"></i> <span>Log de Relatórios Emitidos</span>
         </button>
-        <button onclick="app.switchTab('history')" id="tab-btn-history" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+        <button type="button" onclick="window.app && window.app.switchTab('history')" id="tab-btn-history" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-list-check"></i> <span>Histórico</span>
         </button>
       </nav>
@@ -163,7 +168,7 @@
           <span class="text-xs font-semibold px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">Módulo 1</span>
         </div>
 
-        <form id="form-trip" onsubmit="app.saveTrip(event)" class="space-y-6">
+        <form id="form-trip" onsubmit="window.app && window.app.saveTrip(event)" class="space-y-6">
           
           <!-- Data/Hora e Participantes -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -180,27 +185,27 @@
                 <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
                   <i class="fa-solid fa-users text-emerald-400 mr-1"></i> Quem Utilizou o Carro?
                 </label>
-                <button type="button" onclick="app.toggleSelectAllMembers()" class="text-xs text-emerald-400 hover:underline">Selecionar Todos</button>
+                <button type="button" onclick="window.app && window.app.toggleSelectAllMembers()" class="text-xs text-emerald-400 hover:underline">Selecionar Todos</button>
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
                 <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
-                  <input type="checkbox" name="trip-members" value="Cinthia" onchange="app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                  <input type="checkbox" name="trip-members" value="Cinthia" onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
                   <span class="text-xs font-medium text-slate-200">Cinthia</span>
                 </label>
                 <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
-                  <input type="checkbox" name="trip-members" value="Arnaldo" onchange="app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                  <input type="checkbox" name="trip-members" value="Arnaldo" onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
                   <span class="text-xs font-medium text-slate-200">Arnaldo</span>
                 </label>
                 <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
-                  <input type="checkbox" name="trip-members" value="Henri" onchange="app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                  <input type="checkbox" name="trip-members" value="Henri" onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
                   <span class="text-xs font-medium text-slate-200">Henri</span>
                 </label>
                 <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
-                  <input type="checkbox" name="trip-members" value="Hector" onchange="app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                  <input type="checkbox" name="trip-members" value="Hector" onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
                   <span class="text-xs font-medium text-slate-200">Hector</span>
                 </label>
                 <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
-                  <input type="checkbox" name="trip-members" value="Heric" onchange="app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                  <input type="checkbox" name="trip-members" value="Heric" onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
                   <span class="text-xs font-medium text-slate-200">Heric</span>
                 </label>
               </div>
@@ -213,7 +218,7 @@
               <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                 <i class="fa-solid fa-map-pin text-emerald-400"></i> Trajeto da Viagem (Origem, Paradas & Destino)
               </h3>
-              <button type="button" onclick="app.addTripStop()" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded-lg text-xs font-semibold border border-emerald-500/30 transition flex items-center gap-1">
+              <button type="button" onclick="window.app && window.app.addTripStop()" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded-lg text-xs font-semibold border border-emerald-500/30 transition flex items-center gap-1">
                 <i class="fa-solid fa-plus"></i> Adicionar Parada
               </button>
             </div>
@@ -222,12 +227,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
               <div>
                 <label class="block text-xs font-semibold text-slate-300 mb-1">Origem (Ponto Inicial)</label>
-                <select id="trip-origin" onchange="app.onLocationSelectChange('trip-origin', 'trip-origin-custom'); app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                <select id="trip-origin" onchange="window.app && window.app.onLocationSelectChange('trip-origin', 'trip-origin-custom'); window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
                   <!-- Populated dynamically -->
                 </select>
               </div>
               <div id="container-origin-custom" class="hidden">
-                <input type="text" id="trip-origin-custom" placeholder="Digite o endereço completo da Origem..." onchange="app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                <input type="text" id="trip-origin-custom" placeholder="Digite o endereço completo da Origem..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
               </div>
             </div>
 
@@ -240,12 +245,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end pt-2">
               <div>
                 <label class="block text-xs font-semibold text-slate-300 mb-1">Destino Final</label>
-                <select id="trip-destination" onchange="app.onLocationSelectChange('trip-destination', 'trip-dest-custom'); app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                <select id="trip-destination" onchange="window.app && window.app.onLocationSelectChange('trip-destination', 'trip-dest-custom'); window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
                   <!-- Populated dynamically -->
                 </select>
               </div>
               <div id="container-dest-custom" class="hidden">
-                <input type="text" id="trip-dest-custom" placeholder="Digite o endereço completo do Destino..." onchange="app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                <input type="text" id="trip-dest-custom" placeholder="Digite o endereço completo do Destino..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
               </div>
             </div>
 
@@ -263,14 +268,14 @@
                 </span>
               </div>
               <div class="relative">
-                <input type="number" id="trip-distance" step="0.1" min="0.1" required oninput="app.updateTripPreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+                <input type="number" id="trip-distance" step="0.1" min="0.1" required oninput="window.app && window.app.updateTripPreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
               </div>
             </div>
 
             <!-- Toggle Ida e Volta -->
             <div class="flex items-center">
               <label class="flex items-center gap-3 cursor-pointer select-none bg-slate-900 p-3 rounded-xl border border-slate-800 w-full">
-                <input type="checkbox" id="trip-roundtrip" onchange="app.updateTripPreview()" class="sr-only peer">
+                <input type="checkbox" id="trip-roundtrip" onchange="window.app && window.app.updateTripPreview()" class="sr-only peer">
                 <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 relative"></div>
                 <span class="text-xs font-semibold text-slate-200">
                   Ida e Volta (Dobra KM)
@@ -320,7 +325,7 @@
           <span class="text-xs font-semibold px-3 py-1 bg-cyan-500/10 text-cyan-400 rounded-full border border-cyan-500/20">Módulo 2</span>
         </div>
 
-        <form id="form-refuel" onsubmit="app.saveRefuel(event)" class="space-y-6">
+        <form id="form-refuel" onsubmit="window.app && window.app.saveRefuel(event)" class="space-y-6">
           
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
@@ -341,7 +346,7 @@
               <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
                 <i class="fa-solid fa-sack-dollar text-cyan-400 mr-1"></i> Valor Total do Posto (R$)
               </label>
-              <input type="number" id="refuel-total-amount" step="0.01" min="0.01" required placeholder="Ex: 250.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
+              <input type="number" id="refuel-total-amount" step="0.01" min="0.01" required placeholder="Ex: 250.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
             </div>
           </div>
 
@@ -351,7 +356,7 @@
               <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
                 <i class="fa-solid fa-hand-holding-dollar text-cyan-400"></i> Contribuição Individual (Quanto cada um pagou)
               </h3>
-              <button type="button" onclick="app.splitRefuelEqually()" class="text-xs text-cyan-400 hover:underline flex items-center gap-1 font-semibold">
+              <button type="button" onclick="window.app && window.app.splitRefuelEqually()" class="text-xs text-cyan-400 hover:underline flex items-center gap-1 font-semibold">
                 <i class="fa-solid fa-calculator"></i> Dividir por 5 Igualmente
               </button>
             </div>
@@ -359,23 +364,23 @@
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
               <div>
                 <label class="block text-xs font-medium text-slate-400 mb-1">Cinthia (R$)</label>
-                <input type="number" step="0.01" min="0" id="contrib-cinthia" value="0.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                <input type="number" step="0.01" min="0" id="contrib-cinthia" value="0.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
               </div>
               <div>
                 <label class="block text-xs font-medium text-slate-400 mb-1">Arnaldo (R$)</label>
-                <input type="number" step="0.01" min="0" id="contrib-arnaldo" value="0.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                <input type="number" step="0.01" min="0" id="contrib-arnaldo" value="0.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
               </div>
               <div>
                 <label class="block text-xs font-medium text-slate-400 mb-1">Henri (R$)</label>
-                <input type="number" step="0.01" min="0" id="contrib-henri" value="0.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                <input type="number" step="0.01" min="0" id="contrib-henri" value="0.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
               </div>
               <div>
                 <label class="block text-xs font-medium text-slate-400 mb-1">Hector (R$)</label>
-                <input type="number" step="0.01" min="0" id="contrib-hector" value="0.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                <input type="number" step="0.01" min="0" id="contrib-hector" value="0.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
               </div>
               <div>
                 <label class="block text-xs font-medium text-slate-400 mb-1">Heric (R$)</label>
-                <input type="number" step="0.01" min="0" id="contrib-heric" value="0.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                <input type="number" step="0.01" min="0" id="contrib-heric" value="0.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
               </div>
             </div>
 
@@ -407,7 +412,7 @@
           <p class="text-xs text-slate-400 mt-1">Gere e emita o relatório com o % de uso, KM rodados e nº de viagens de cada participante entre o último abastecimento e o momento atual.</p>
         </div>
 
-        <button onclick="app.emitNewReport()" class="w-full md:w-auto px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-2xl shadow-lg shadow-emerald-500/25 transition transform active:scale-[0.98] flex items-center justify-center gap-2 whitespace-nowrap text-sm">
+        <button type="button" onclick="window.app && window.app.emitNewReport()" class="w-full md:w-auto px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-2xl shadow-lg shadow-emerald-500/25 transition transform active:scale-[0.98] flex items-center justify-center gap-2 whitespace-nowrap text-sm">
           <i class="fa-solid fa-file-invoice text-base"></i> Emitir & Salvar Relatório do Período
         </button>
       </div>
@@ -442,10 +447,10 @@
       <div class="glass-card rounded-3xl p-6 shadow-xl">
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div class="flex gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800">
-            <button onclick="app.switchHistorySubtab('trips')" id="subtab-btn-trips" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-white shadow">
+            <button type="button" onclick="window.app && window.app.switchHistorySubtab('trips')" id="subtab-btn-trips" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-white shadow">
               <i class="fa-solid fa-car"></i> Viagens Registradas
             </button>
-            <button onclick="app.switchHistorySubtab('refuels')" id="subtab-btn-refuels" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+            <button type="button" onclick="window.app && window.app.switchHistorySubtab('refuels')" id="subtab-btn-refuels" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
               <i class="fa-solid fa-gas-pump"></i> Abastecimentos
             </button>
           </div>
@@ -552,7 +557,7 @@
 
       <!-- Action Buttons -->
       <div class="pt-4 border-t border-slate-800 flex justify-between items-center no-print">
-        <button type="button" onclick="app.closeReportModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+        <button type="button" onclick="window.app && window.app.closeReportModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
           Fechar
         </button>
         <button type="button" onclick="window.print()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition flex items-center gap-2">
@@ -570,12 +575,12 @@
         <h3 class="text-base font-bold text-white flex items-center gap-2">
           <i class="fa-solid fa-location-dot text-emerald-400"></i> Locais Padrão de Ribeirão Preto - SP
         </h3>
-        <button onclick="app.closeLocationsModal()" class="text-slate-400 hover:text-white text-lg">
+        <button type="button" onclick="window.app && window.app.closeLocationsModal()" class="text-slate-400 hover:text-white text-lg">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <form id="form-add-location" onsubmit="app.addNewLocation(event)" class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+      <form id="form-add-location" onsubmit="window.app && window.app.addNewLocation(event)" class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
         <div class="font-semibold text-xs text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
           <i class="fa-solid fa-plus"></i> Adicionar Novo Local Padrão
         </div>
@@ -604,7 +609,7 @@
       </div>
 
       <div class="pt-3 border-t border-slate-800 flex justify-end">
-        <button type="button" onclick="app.closeLocationsModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">Fechar</button>
+        <button type="button" onclick="window.app && window.app.closeLocationsModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">Fechar</button>
       </div>
     </div>
   </div>
@@ -616,22 +621,22 @@
         <h3 class="text-base font-bold text-white flex items-center gap-2">
           <i class="fa-solid fa-fire text-amber-400"></i> Configuração do Firebase Cloud (Projeto: abastecimento-4d95f)
         </h3>
-        <button onclick="app.closeFirebaseModal()" class="text-slate-400 hover:text-white text-lg">
+        <button type="button" onclick="window.app && window.app.closeFirebaseModal()" class="text-slate-400 hover:text-white text-lg">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <p class="text-xs text-slate-400">
         O seu banco de dados <strong>Firebase Cloud (abastecimento-4d95f)</strong> já está conectado e sincronizando em tempo real!
       </p>
-      <form id="form-firebase" onsubmit="app.saveFirebaseConfig(event)" class="space-y-3">
+      <form id="form-firebase" onsubmit="window.app && window.app.saveFirebaseConfig(event)" class="space-y-3">
         <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Chaves do Firebase Ativas:</label>
           <textarea id="firebase-config-json" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-emerald-400 font-mono focus:outline-none focus:border-amber-500"></textarea>
         </div>
         <div class="pt-3 border-t border-slate-800 flex justify-between items-center">
-          <button type="button" onclick="app.restoreDefaultFirebaseConfig()" class="text-xs text-cyan-400 hover:underline">Restaurar Padrão</button>
+          <button type="button" onclick="window.app && window.app.restoreDefaultFirebaseConfig()" class="text-xs text-cyan-400 hover:underline">Restaurar Padrão</button>
           <div class="flex gap-2">
-            <button type="button" onclick="app.closeFirebaseModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">Fechar</button>
+            <button type="button" onclick="window.app && window.app.closeFirebaseModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">Fechar</button>
             <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-white font-bold shadow transition">Salvar Chaves</button>
           </div>
         </div>
@@ -729,7 +734,6 @@
         this.setDefaultDates();
         this.populateLocationSelects();
         this.calculateTripRouteDistance();
-        this.renderStatsHeader();
         this.renderReport();
         this.renderReportsLog();
         this.renderHistory();
@@ -748,8 +752,10 @@
           this.db = firebase.firestore();
           this.firebaseEnabled = true;
 
-          statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-400 border border-emerald-800/40 rounded-xl transition flex items-center gap-1.5';
-          statusTxt.textContent = 'Cloud Conectado';
+          if (statusBtn && statusTxt) {
+            statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-400 border border-emerald-800/40 rounded-xl transition flex items-center gap-1.5';
+            statusTxt.textContent = 'Cloud Conectado';
+          }
 
           this.db.collection('autoshare').doc('main_data_v5').onSnapshot((doc) => {
             if (doc.exists) {
@@ -764,7 +770,6 @@
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
                 this.populateLocationSelects();
-                this.renderStatsHeader();
                 this.renderReport();
                 this.renderReportsLog();
                 this.renderHistory();
@@ -777,8 +782,10 @@
           });
         } catch (e) {
           console.error('Erro Firebase:', e);
-          statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-amber-950/40 hover:bg-amber-900/60 text-amber-400 border border-amber-800/40 rounded-xl transition flex items-center gap-1.5';
-          statusTxt.textContent = 'Modo Local';
+          if (statusBtn && statusTxt) {
+            statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-amber-950/40 hover:bg-amber-900/60 text-amber-400 border border-amber-800/40 rounded-xl transition flex items-center gap-1.5';
+            statusTxt.textContent = 'Modo Local';
+          }
         }
       }
 
@@ -813,7 +820,6 @@
           this.db.collection('autoshare').doc('main_data_v5').set(this.data)
             .catch(err => console.error('Erro ao enviar dados pro Firebase:', err));
         }
-        this.renderStatsHeader();
         this.renderReport();
         this.renderReportsLog();
         this.renderHistory();
@@ -823,13 +829,17 @@
         const now = new Date();
         const tzOffset = now.getTimezoneOffset() * 60000;
         const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 16);
-        document.getElementById('trip-datetime').value = localISOTime;
-        document.getElementById('refuel-date').value = now.toISOString().slice(0, 10);
+        const tripDt = document.getElementById('trip-datetime');
+        const refuelDt = document.getElementById('refuel-date');
+        if (tripDt) tripDt.value = localISOTime;
+        if (refuelDt) refuelDt.value = now.toISOString().slice(0, 10);
       }
 
       populateLocationSelects() {
         const originSelect = document.getElementById('trip-origin');
         const destSelect = document.getElementById('trip-destination');
+
+        if (!originSelect || !destSelect) return;
 
         originSelect.innerHTML = '';
         destSelect.innerHTML = '';
@@ -864,19 +874,22 @@
         const sel = document.getElementById(selectId);
         const input = document.getElementById(customContainerId);
 
-        if (sel.value === 'custom') {
-          document.getElementById(`container-${selectId.replace('trip-', '')}-custom`).classList.remove('hidden');
-          input.focus();
-        } else {
-          document.getElementById(`container-${selectId.replace('trip-', '')}-custom`).classList.add('hidden');
+        if (sel && input) {
+          if (sel.value === 'custom') {
+            document.getElementById(`container-${selectId.replace('trip-', '')}-custom`).classList.remove('hidden');
+            input.focus();
+          } else {
+            document.getElementById(`container-${selectId.replace('trip-', '')}-custom`).classList.add('hidden');
+          }
         }
       }
 
-      // Dynamic Intermediate Stops (Paradas)
       addTripStop() {
         this.stopCount++;
         const stopId = `stop_${this.stopCount}`;
         const container = document.getElementById('trip-stops-container');
+
+        if (!container) return;
 
         const div = document.createElement('div');
         div.id = `wrapper_${stopId}`;
@@ -889,14 +902,14 @@
           <div>
             <div class="flex justify-between items-center mb-1">
               <label class="text-[11px] font-semibold text-emerald-400">Parada Intermediária ${this.stopCount}</label>
-              <button type="button" onclick="app.removeTripStop('${stopId}')" class="text-xs text-red-400 hover:underline">Remover</button>
+              <button type="button" onclick="window.app && window.app.removeTripStop('${stopId}')" class="text-xs text-red-400 hover:underline">Remover</button>
             </div>
-            <select id="${stopId}" onchange="app.onStopSelectChange('${stopId}')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <select id="${stopId}" onchange="window.app && window.app.onStopSelectChange('${stopId}')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
               ${optionsHtml}
             </select>
           </div>
           <div id="container_${stopId}_custom" class="hidden">
-            <input type="text" id="${stopId}_custom" placeholder="Digite o endereço da Parada..." onchange="app.calculateTripRouteDistance()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="${stopId}_custom" placeholder="Digite o endereço da Parada..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
         `;
 
@@ -907,11 +920,13 @@
       onStopSelectChange(stopId) {
         const sel = document.getElementById(stopId);
         const customContainer = document.getElementById(`container_${stopId}_custom`);
-        if (sel.value === 'custom') {
-          customContainer.classList.remove('hidden');
-          document.getElementById(`${stopId}_custom`).focus();
-        } else {
-          customContainer.classList.add('hidden');
+        if (sel && customContainer) {
+          if (sel.value === 'custom') {
+            customContainer.classList.remove('hidden');
+            document.getElementById(`${stopId}_custom`).focus();
+          } else {
+            customContainer.classList.add('hidden');
+          }
         }
         this.calculateTripRouteDistance();
       }
@@ -922,7 +937,6 @@
         this.calculateTripRouteDistance();
       }
 
-      // Real OSRM Driving Route Calculation Algorithm
       async calculateTripRouteDistance() {
         clearTimeout(this.calcDebounceTimer);
         this.calcDebounceTimer = setTimeout(async () => {
@@ -930,13 +944,18 @@
           if (spinner) spinner.classList.remove('hidden');
 
           try {
-            const origSel = document.getElementById('trip-origin').value;
-            const destSel = document.getElementById('trip-destination').value;
+            const origEl = document.getElementById('trip-origin');
+            const destEl = document.getElementById('trip-destination');
+
+            if (!origEl || !destEl) return;
+
+            const origSel = origEl.value;
+            const destSel = destEl.value;
 
             const waypointsDef = [];
 
             if (origSel === 'custom') {
-              const addr = document.getElementById('trip-origin-custom').value.trim();
+              const addr = document.getElementById('trip-origin-custom')?.value.trim();
               if (addr) waypointsDef.push({ type: 'custom', address: addr });
             } else {
               const loc = this.data.presetLocations.find(l => l.id === origSel);
@@ -955,7 +974,7 @@
             });
 
             if (destSel === 'custom') {
-              const addr = document.getElementById('trip-dest-custom').value.trim();
+              const addr = document.getElementById('trip-dest-custom')?.value.trim();
               if (addr) waypointsDef.push({ type: 'custom', address: addr });
             } else {
               const loc = this.data.presetLocations.find(l => l.id === destSel);
@@ -970,7 +989,8 @@
             if (stopsTexts.length > 0) {
               gmapsUrl += `&waypoints=${encodeURIComponent(stopsTexts.join('|'))}`;
             }
-            document.getElementById('btn-gmaps-link').href = gmapsUrl;
+            const btnGmaps = document.getElementById('btn-gmaps-link');
+            if (btnGmaps) btnGmaps.href = gmapsUrl;
 
             const coords = [];
             for (const item of waypointsDef) {
@@ -1000,7 +1020,8 @@
 
               if (osrmData && osrmData.routes && osrmData.routes[0]) {
                 const distanceKm = osrmData.routes[0].distance / 1000;
-                document.getElementById('trip-distance').value = distanceKm.toFixed(1);
+                const distEl = document.getElementById('trip-distance');
+                if (distEl) distEl.value = distanceKm.toFixed(1);
                 this.updateTripPreview();
               }
             }
@@ -1013,16 +1034,22 @@
       }
 
       updateTripPreview() {
-        const baseDist = parseFloat(document.getElementById('trip-distance').value) || 0;
-        const isRoundTrip = document.getElementById('trip-roundtrip').checked;
+        const baseDistEl = document.getElementById('trip-distance');
+        const roundTripEl = document.getElementById('trip-roundtrip');
+        const baseDist = parseFloat(baseDistEl ? baseDistEl.value : 0) || 0;
+        const isRoundTrip = roundTripEl ? roundTripEl.checked : false;
         const selectedMembers = Array.from(document.querySelectorAll('input[name="trip-members"]:checked')).map(cb => cb.value);
 
         const totalDist = baseDist * (isRoundTrip ? 2 : 1);
         const perMember = selectedMembers.length > 0 ? (totalDist / selectedMembers.length) : 0;
 
-        document.getElementById('preview-total-dist').textContent = `${totalDist.toFixed(1)} km`;
-        document.getElementById('preview-per-member').textContent = `${perMember.toFixed(1)} km`;
-        document.getElementById('preview-members-list').textContent = selectedMembers.length > 0 ? selectedMembers.join(', ') : 'Nenhum integrante selecionado';
+        const totalEl = document.getElementById('preview-total-dist');
+        const perMemberEl = document.getElementById('preview-per-member');
+        const membersListEl = document.getElementById('preview-members-list');
+
+        if (totalEl) totalEl.textContent = `${totalDist.toFixed(1)} km`;
+        if (perMemberEl) perMemberEl.textContent = `${perMember.toFixed(1)} km`;
+        if (membersListEl) membersListEl.textContent = selectedMembers.length > 0 ? selectedMembers.join(', ') : 'Nenhum integrante selecionado';
       }
 
       toggleSelectAllMembers() {
@@ -1097,22 +1124,24 @@
         const sumEl = document.getElementById('refuel-contrib-sum');
         const badgeEl = document.getElementById('refuel-sum-badge');
 
-        sumEl.textContent = `R$ ${sum.toFixed(2)}`;
+        if (sumEl) sumEl.textContent = `R$ ${sum.toFixed(2)}`;
 
-        if (total <= 0) {
-          badgeEl.textContent = 'Informe o valor total do posto';
-          badgeEl.className = 'px-2.5 py-0.5 rounded-full text-slate-400 bg-slate-800';
-        } else if (diff < 0.01) {
-          badgeEl.textContent = '✓ Valores conferem!';
-          badgeEl.className = 'px-2.5 py-0.5 rounded-full text-emerald-400 bg-emerald-500/20 border border-emerald-500/30';
-        } else {
-          const delta = total - sum;
-          if (delta > 0) {
-            badgeEl.textContent = `Faltam R$ ${delta.toFixed(2)}`;
-            badgeEl.className = 'px-2.5 py-0.5 rounded-full text-amber-400 bg-amber-500/20 border border-amber-500/30';
+        if (badgeEl) {
+          if (total <= 0) {
+            badgeEl.textContent = 'Informe o valor total do posto';
+            badgeEl.className = 'px-2.5 py-0.5 rounded-full text-slate-400 bg-slate-800';
+          } else if (diff < 0.01) {
+            badgeEl.textContent = '✓ Valores conferem!';
+            badgeEl.className = 'px-2.5 py-0.5 rounded-full text-emerald-400 bg-emerald-500/20 border border-emerald-500/30';
           } else {
-            badgeEl.textContent = `Excesso de R$ ${Math.abs(delta).toFixed(2)}`;
-            badgeEl.className = 'px-2.5 py-0.5 rounded-full text-red-400 bg-red-500/20 border border-red-500/30';
+            const delta = total - sum;
+            if (delta > 0) {
+              badgeEl.textContent = `Faltam R$ ${delta.toFixed(2)}`;
+              badgeEl.className = 'px-2.5 py-0.5 rounded-full text-amber-400 bg-amber-500/20 border border-amber-500/30';
+            } else {
+              badgeEl.textContent = `Excesso de R$ ${Math.abs(delta).toFixed(2)}`;
+              badgeEl.className = 'px-2.5 py-0.5 rounded-full text-red-400 bg-red-500/20 border border-red-500/30';
+            }
           }
         }
       }
@@ -1203,28 +1232,13 @@
         };
       }
 
-      renderStatsHeader() {
-        const period = this.getActivePeriodData();
-        const periodTotalKm = period.trips.reduce((acc, t) => acc + t.totalDistance, 0);
-        const periodTotalCost = period.refuels.reduce((acc, r) => acc + r.totalAmount, 0);
-
-        document.getElementById('stat-period-km').textContent = `${periodTotalKm.toFixed(1)} km`;
-        document.getElementById('stat-period-cost').textContent = `R$ ${periodTotalCost.toFixed(2)}`;
-        document.getElementById('stat-period-trips').textContent = `${period.trips.length}`;
-        
-        if (period.lastRefuel) {
-          document.getElementById('stat-last-refuel').textContent = `${period.lastRefuel.dateStr} (${period.lastRefuel.odometer} km)`;
-        } else {
-          document.getElementById('stat-last-refuel').textContent = 'Sem registros';
-        }
-      }
-
       renderReport() {
         const periodData = this.getActivePeriodData();
         const periodTotalKm = periodData.trips.reduce((acc, t) => acc + t.totalDistance, 0);
         const periodTotalRefuelCost = periodData.refuels.reduce((acc, r) => acc + r.totalAmount, 0);
 
         const gridContainer = document.getElementById('report-members-grid');
+        if (!gridContainer) return;
         gridContainer.innerHTML = '';
 
         DEFAULT_MEMBERS.forEach(member => {
@@ -1300,7 +1314,6 @@
         });
       }
 
-      // Emit and Save New Period Closure Report
       emitNewReport() {
         const periodData = this.getActivePeriodData();
         const periodTotalKm = periodData.trips.reduce((acc, t) => acc + t.totalDistance, 0);
@@ -1315,7 +1328,6 @@
         const reportNum = (this.data.issuedReports.length + 1).toString().padStart(3, '0');
         const reportDateStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
 
-        // Calculate member metrics
         const memberStats = {};
         DEFAULT_MEMBERS.forEach(member => {
           let tripCount = 0;
@@ -1363,10 +1375,11 @@
         this.openReportModal(reportObject);
       }
 
-      // Render Issued Reports Log Tab
       renderReportsLog() {
         const container = document.getElementById('reports-log-list');
         const countBadge = document.getElementById('reports-log-count');
+
+        if (!container || !countBadge) return;
 
         countBadge.textContent = `${this.data.issuedReports.length} relatório${this.data.issuedReports.length !== 1 ? 's' : ''} salvos`;
         container.innerHTML = '';
@@ -1392,10 +1405,10 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <button onclick="app.viewReportById('${rep.id}')" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5">
+              <button type="button" onclick="window.app && window.app.viewReportById('${rep.id}')" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-eye text-emerald-400"></i> Visualizar / Imprimir
               </button>
-              <button onclick="app.deleteReportById('${rep.id}')" class="p-1.5 text-red-400 hover:text-red-300 text-xs transition" title="Excluir do Log">
+              <button type="button" onclick="window.app && window.app.deleteReportById('${rep.id}')" class="p-1.5 text-red-400 hover:text-red-300 text-xs transition" title="Excluir do Log">
                 <i class="fa-solid fa-trash-can"></i>
               </button>
             </div>
@@ -1427,33 +1440,35 @@
         document.getElementById('print-report-cost').textContent = `R$ ${rep.totalCost.toFixed(2)}`;
 
         const tableBody = document.getElementById('print-report-table-body');
-        tableBody.innerHTML = '';
+        if (tableBody) {
+          tableBody.innerHTML = '';
 
-        DEFAULT_MEMBERS.forEach(member => {
-          const stats = rep.memberStats[member] || { tripCount: 0, km: 0, usagePct: 0, paid: 0, fairCost: 0, balance: 0 };
+          DEFAULT_MEMBERS.forEach(member => {
+            const stats = rep.memberStats[member] || { tripCount: 0, km: 0, usagePct: 0, paid: 0, fairCost: 0, balance: 0 };
 
-          let balanceText = 'Quitado';
-          let balanceClass = 'text-slate-300';
-          if (stats.balance > 0.01) {
-            balanceText = `A RECEBER R$ ${stats.balance.toFixed(2)}`;
-            balanceClass = 'text-emerald-400 font-bold';
-          } else if (stats.balance < -0.01) {
-            balanceText = `A PAGAR R$ ${Math.abs(stats.balance).toFixed(2)}`;
-            balanceClass = 'text-amber-400 font-bold';
-          }
+            let balanceText = 'Quitado';
+            let balanceClass = 'text-slate-300';
+            if (stats.balance > 0.01) {
+              balanceText = `A RECEBER R$ ${stats.balance.toFixed(2)}`;
+              balanceClass = 'text-emerald-400 font-bold';
+            } else if (stats.balance < -0.01) {
+              balanceText = `A PAGAR R$ ${Math.abs(stats.balance).toFixed(2)}`;
+              balanceClass = 'text-amber-400 font-bold';
+            }
 
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td class="p-3 font-bold text-white">${member}</td>
-            <td class="p-3 text-center text-slate-300">${stats.tripCount}</td>
-            <td class="p-3 text-right font-semibold text-emerald-400">${stats.km.toFixed(1)} km</td>
-            <td class="p-3 text-right font-bold text-slate-200">${stats.usagePct.toFixed(1)}%</td>
-            <td class="p-3 text-right text-slate-300">R$ ${stats.paid.toFixed(2)}</td>
-            <td class="p-3 text-right text-slate-300">R$ ${stats.fairCost.toFixed(2)}</td>
-            <td class="p-3 text-center ${balanceClass}">${balanceText}</td>
-          `;
-          tableBody.appendChild(tr);
-        });
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td class="p-3 font-bold text-white">${member}</td>
+              <td class="p-3 text-center text-slate-300">${stats.tripCount}</td>
+              <td class="p-3 text-right font-semibold text-emerald-400">${stats.km.toFixed(1)} km</td>
+              <td class="p-3 text-right font-bold text-slate-200">${stats.usagePct.toFixed(1)}%</td>
+              <td class="p-3 text-right text-slate-300">R$ ${stats.paid.toFixed(2)}</td>
+              <td class="p-3 text-right text-slate-300">R$ ${stats.fairCost.toFixed(2)}</td>
+              <td class="p-3 text-center ${balanceClass}">${balanceText}</td>
+            `;
+            tableBody.appendChild(tr);
+          });
+        }
 
         document.getElementById('modal-view-report').classList.remove('hidden');
       }
@@ -1465,6 +1480,8 @@
       renderHistory() {
         const tripsBody = document.getElementById('history-trips-body');
         const refuelsBody = document.getElementById('history-refuels-body');
+
+        if (!tripsBody || !refuelsBody) return;
 
         tripsBody.innerHTML = '';
         if (this.data.trips.length === 0) {
@@ -1487,7 +1504,7 @@
               <td class="p-3.5 text-right font-bold text-emerald-400 whitespace-nowrap">${t.totalDistance.toFixed(1)} km</td>
               <td class="p-3.5 text-right text-cyan-400 font-semibold whitespace-nowrap">${t.kmPerMember.toFixed(1)} km</td>
               <td class="p-3.5 text-center whitespace-nowrap">
-                <button onclick="app.deleteTrip('${t.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Viagem">
+                <button type="button" onclick="window.app && window.app.deleteTrip('${t.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Viagem">
                   <i class="fa-solid fa-trash-can"></i>
                 </button>
               </td>
@@ -1513,7 +1530,7 @@
               <td class="p-3.5 text-right font-bold text-cyan-400 whitespace-nowrap">R$ ${r.totalAmount.toFixed(2)}</td>
               <td class="p-3.5 text-xs text-slate-400 truncate max-w-xs" title="${contribSummary}">${contribSummary}</td>
               <td class="p-3.5 text-center whitespace-nowrap">
-                <button onclick="app.deleteRefuel('${r.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Abastecimento">
+                <button type="button" onclick="window.app && window.app.deleteRefuel('${r.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Abastecimento">
                   <i class="fa-solid fa-trash-can"></i>
                 </button>
               </td>
@@ -1522,7 +1539,8 @@
           });
         }
 
-        document.getElementById('history-count-badge').textContent = `${this.data.trips.length} viagens e ${this.data.refuels.length} abastecimentos`;
+        const countBadge = document.getElementById('history-count-badge');
+        if (countBadge) countBadge.textContent = `${this.data.trips.length} viagens e ${this.data.refuels.length} abastecimentos`;
       }
 
       deleteTrip(id) {
@@ -1541,16 +1559,20 @@
         }
       }
 
+      // Safe Tab Switcher
       switchTab(tab) {
-        ['trips', 'refuel', 'report', 'reports-log', 'history'].forEach(t => {
+        const tabsList = ['trips', 'refuel', 'report', 'reports-log', 'history'];
+        tabsList.forEach(t => {
           const btn = document.getElementById(`tab-btn-${t}`);
           const content = document.getElementById(`tab-content-${t}`);
-          if (t === tab) {
-            btn.classList.add('active');
-            content.classList.remove('hidden');
-          } else {
-            btn.classList.remove('active');
-            content.classList.add('hidden');
+          if (btn && content) {
+            if (t === tab) {
+              btn.classList.add('active');
+              content.classList.remove('hidden');
+            } else {
+              btn.classList.remove('active');
+              content.classList.add('hidden');
+            }
           }
         });
       }
@@ -1562,29 +1584,32 @@
         const tableRefuels = document.getElementById('history-table-refuels-container');
 
         if (sub === 'trips') {
-          btnTrips.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-white shadow';
-          btnRefuels.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white';
-          tableTrips.classList.remove('hidden');
-          tableRefuels.classList.add('hidden');
+          if (btnTrips) btnTrips.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-white shadow';
+          if (btnRefuels) btnRefuels.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white';
+          if (tableTrips) tableTrips.classList.remove('hidden');
+          if (tableRefuels) tableRefuels.classList.add('hidden');
         } else {
-          btnRefuels.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-white shadow';
-          btnTrips.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white';
-          tableRefuels.classList.remove('hidden');
-          tableTrips.classList.add('hidden');
+          if (btnRefuels) btnRefuels.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-white shadow';
+          if (btnTrips) btnTrips.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white';
+          if (tableRefuels) tableRefuels.classList.remove('hidden');
+          if (tableTrips) tableTrips.classList.add('hidden');
         }
       }
 
       openLocationsModal() {
         this.renderPresetLocationsList();
-        document.getElementById('modal-locations').classList.remove('hidden');
+        const modal = document.getElementById('modal-locations');
+        if (modal) modal.classList.remove('hidden');
       }
 
       closeLocationsModal() {
-        document.getElementById('modal-locations').classList.add('hidden');
+        const modal = document.getElementById('modal-locations');
+        if (modal) modal.classList.add('hidden');
       }
 
       renderPresetLocationsList() {
         const container = document.getElementById('locations-list-container');
+        if (!container) return;
         container.innerHTML = '';
 
         this.data.presetLocations.forEach((loc, index) => {
@@ -1595,7 +1620,7 @@
               <strong class="text-white font-bold">${loc.name}</strong>
               <div class="text-slate-400 text-[11px]">${loc.address}</div>
             </div>
-            ${loc.name !== 'Casa' ? `<button onclick="app.removePresetLocation(${index})" class="text-red-400 hover:text-red-300 text-xs font-semibold p-1">Excluir</button>` : '<span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Padrão</span>'}
+            ${loc.name !== 'Casa' ? `<button type="button" onclick="window.app && window.app.removePresetLocation(${index})" class="text-red-400 hover:text-red-300 text-xs font-semibold p-1">Excluir</button>` : '<span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Padrão</span>'}
           `;
           container.appendChild(div);
         });
@@ -1658,12 +1683,15 @@
       openFirebaseModal() {
         const raw = localStorage.getItem(FIREBASE_KEY);
         const config = raw ? JSON.parse(raw) : DEFAULT_FIREBASE_CONFIG;
-        document.getElementById('firebase-config-json').value = JSON.stringify(config, null, 2);
-        document.getElementById('modal-firebase').classList.remove('hidden');
+        const jsonEl = document.getElementById('firebase-config-json');
+        if (jsonEl) jsonEl.value = JSON.stringify(config, null, 2);
+        const modal = document.getElementById('modal-firebase');
+        if (modal) modal.classList.remove('hidden');
       }
 
       closeFirebaseModal() {
-        document.getElementById('modal-firebase').classList.add('hidden');
+        const modal = document.getElementById('modal-firebase');
+        if (modal) modal.classList.add('hidden');
       }
 
       saveFirebaseConfig(e) {
@@ -1689,48 +1717,6 @@
         }
       }
 
-      loadDemoData() {
-        if (!confirm('Deseja carregar dados de demonstração com os 5 integrantes e rota de Ribeirão Preto?')) return;
-
-        const now = Date.now();
-        const dayMs = 86400000;
-
-        this.data = {
-          members: DEFAULT_MEMBERS,
-          presetLocations: [...DEFAULT_PRESET_LOCATIONS],
-          trips: [
-            {
-              id: 'demo_t1',
-              timestamp: now - (dayMs * 4),
-              dateStr: new Date(now - (dayMs * 4)).toISOString().slice(0, 16).replace('T', ' '),
-              members: ['Cinthia', 'Arnaldo', 'Henri'],
-              origin: 'Casa',
-              destination: 'Trabalho Cinthia',
-              baseDistance: 26.4,
-              isRoundTrip: false,
-              totalDistance: 26.4,
-              kmPerMember: 8.8
-            }
-          ],
-          refuels: [
-            {
-              id: 'demo_r1',
-              timestamp: now - (dayMs * 5),
-              dateStr: new Date(now - (dayMs * 5)).toISOString().slice(0, 10),
-              odometer: 45000,
-              totalAmount: 250.00,
-              contributions: { 'Cinthia': 50.00, 'Arnaldo': 50.00, 'Henri': 50.00, 'Hector': 50.00, 'Heric': 50.00 }
-            }
-          ],
-          issuedReports: []
-        };
-
-        this.saveData();
-        this.populateLocationSelects();
-        this.showToast('Dados de demonstração de Ribeirão Preto carregados!', 'success');
-        this.switchTab('report');
-      }
-
       confirmReset() {
         if (confirm('Tem certeza que deseja apagar TODOS os registros?')) {
           localStorage.removeItem(STORAGE_KEY);
@@ -1743,7 +1729,7 @@
           };
           this.saveData();
           this.populateLocationSelects();
-          this.showToast('Dados limpados.', 'info');
+          this.showToast('Todos os dados foram resetados.', 'info');
         }
       }
 
@@ -1761,8 +1747,9 @@
 
       showToast(msg, type = 'info') {
         const container = document.getElementById('toast-container');
+        if (!container) return;
+
         const toast = document.createElement('div');
-        
         let bgClass = 'bg-slate-900 border-slate-700 text-slate-200';
         if (type === 'success') bgClass = 'bg-emerald-950 border-emerald-700 text-emerald-200';
         if (type === 'warning') bgClass = 'bg-amber-950 border-amber-700 text-amber-200';
@@ -1783,10 +1770,8 @@
       }
     }
 
-    let app;
-    window.addEventListener('DOMContentLoaded', () => {
-      app = new AutoShareApp();
-    });
+    // Instanciar App imediatamente e no DOMContentLoaded
+    window.app = new AutoShareApp();
   </script>
 </body>
 </html>
