@@ -88,7 +88,7 @@
             <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
               AutoShare <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Ribeirão Preto - SP</span>
             </h1>
-            <p class="text-xs text-slate-400">Integrantes: Cinthia, Arnaldo, Henri, Hector e Heric</p>
+            <p class="text-xs text-slate-400">Cálculo Preciso de Rotas & Divisão Financeira</p>
           </div>
         </div>
 
@@ -200,7 +200,7 @@
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-car-on text-emerald-400"></i> Registrar Nova Viagem
             </h2>
-            <p class="text-xs text-slate-400 mt-1">Escolha os locais padrão de Ribeirão Preto - SP ou digite um novo endereço.</p>
+            <p class="text-xs text-slate-400 mt-1">Cálculo automático de rota rodoviária (Google Maps / OSRM) entre todas as paradas.</p>
           </div>
           <span class="text-xs font-semibold px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">Módulo 1</span>
         </div>
@@ -296,9 +296,14 @@
           <!-- Distância, Ida/Volta & Google Maps -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                <i class="fa-solid fa-ruler-combined text-emerald-400 mr-1"></i> Distância Percorrida (km)
-              </label>
+              <div class="flex items-center justify-between mb-2">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <i class="fa-solid fa-ruler-combined text-emerald-400 mr-1"></i> Distância Percorrida (km)
+                </label>
+                <span id="route-calc-spinner" class="hidden text-[11px] text-emerald-400 font-semibold animate-pulse flex items-center gap-1">
+                  <i class="fa-solid fa-spin fa-spinner"></i> Calculando rota...
+                </span>
+              </div>
               <div class="relative">
                 <input type="number" id="trip-distance" step="0.1" min="0.1" required oninput="app.updateTripPreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
               </div>
@@ -517,7 +522,7 @@
       </div>
 
       <p class="text-xs text-slate-400">
-        Gerencie os endereços padrões da família. O Google Maps usará esses dados para traçar as rotas exatas.
+        Gerencie os endereços padrões da família. O roteador OSRM e Google Maps usarão esses endereços para traçar a rota exata em km.
       </p>
 
       <!-- Formulário para Adicionar Novo Local -->
@@ -535,11 +540,7 @@
             <input type="text" id="new-loc-address" required placeholder="Ex: Av. Presidente Vargas, Ribeirão Preto - SP" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
           </div>
         </div>
-        <div class="flex justify-between items-center pt-1">
-          <div class="flex items-center gap-2">
-            <label class="text-[11px] text-slate-400 font-medium">Distância Estimada da Casa (km):</label>
-            <input type="number" step="0.1" min="0" id="new-loc-distance" placeholder="5" class="w-20 bg-slate-950 border border-slate-800 rounded-xl px-2 py-1 text-xs text-white text-right">
-          </div>
+        <div class="flex justify-end items-center pt-1">
           <button type="submit" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs rounded-xl shadow transition">
             + Cadastrar Local
           </button>
@@ -598,55 +599,61 @@
     /**
      * Shared Car Usage & Cost Tracker Application
      */
-    const STORAGE_KEY = 'autoshare_car_data_v3';
+    const STORAGE_KEY = 'autoshare_car_data_v4';
     const FIREBASE_KEY = 'autoshare_firebase_config_v1';
 
-    // Exact 5 fixed members specified by user
     const DEFAULT_MEMBERS = ['Cinthia', 'Arnaldo', 'Henri', 'Hector', 'Heric'];
 
-    // Exact initial default preset locations specified by user in Ribeirão Preto - SP
+    // Exact preset locations with accurate lat/lon coordinates in Ribeirão Preto - SP
     const DEFAULT_PRESET_LOCATIONS = [
       {
         id: 'loc_casa',
         name: 'Casa',
         address: 'R. Aldo Focosi, 380 - Pres. Medici, Ribeirão Preto - SP',
-        distance: 0
+        lat: -21.1912957,
+        lon: -47.7843553
       },
       {
         id: 'loc_trabalho_cinthia',
         name: 'Trabalho Cinthia',
         address: 'Av. Independência, 4315 - Jardim California, Ribeirão Preto - SP',
-        distance: 7.5
+        lat: -21.2090024,
+        lon: -47.8243711
       },
       {
         id: 'loc_trabalho_arnaldo',
         name: 'Trabalho Arnaldo',
         address: 'R. Onze de Agosto, 1367 - Campos Elísios, Ribeirão Preto - SP',
-        distance: 5.2
+        lat: -21.1655508,
+        lon: -47.8014307
       },
       {
         id: 'loc_trabalho_henri_hector_heric',
         name: 'Trabalho Henri, Hector e Heric',
         address: 'Avenida Antonio Gome da Silva Junior, 826, Ribeirão Preto - SP',
-        distance: 6.8
+        lat: -21.1979937,
+        lon: -47.7615281
       },
       {
         id: 'loc_casa_melissa',
         name: 'Casa Melissa',
         address: 'Rua Sebastião Agenor Saheb 1051 - Parque São Sebastião, Ribeirão Preto - SP',
-        distance: 8.4
+        lat: -21.1838123,
+        lon: -47.7447612
       },
       {
         id: 'loc_faculdade_henri_hector',
         name: 'Faculdade Henri e Hector',
         address: 'Av. Carlos Consoni, 10 - Jardim Canada, Ribeirão Preto - SP',
-        distance: 6.1
+        lat: -21.2192893,
+        lon: -47.8121635
       },
       {
         id: 'loc_faculdade_heric',
         name: 'Faculdade Heric',
         address: 'R. Dr. Benjamin Anderson Stauffer, 801 - Jardim Botânico, Ribeirão Preto - SP',
-        distance: 7.0
+        lat: -21.2157061,
+        lon: -47.7953542
       }
     ];
 
@@ -666,6 +673,7 @@
         this.firebaseEnabled = false;
         this.data = this.loadData();
         this.stopCount = 0;
+        this.calcDebounceTimer = null;
         this.init();
       }
 
@@ -695,7 +703,7 @@
           statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-400 border border-emerald-800/40 rounded-xl transition flex items-center gap-1.5';
           statusTxt.textContent = 'Cloud Conectado';
 
-          this.db.collection('autoshare').doc('main_data_v3').onSnapshot((doc) => {
+          this.db.collection('autoshare').doc('main_data_v4').onSnapshot((doc) => {
             if (doc.exists) {
               const cloudData = doc.data();
               if (cloudData) {
@@ -712,7 +720,7 @@
                 this.renderHistory();
               }
             } else {
-              this.db.collection('autoshare').doc('main_data_v3').set(this.data);
+              this.db.collection('autoshare').doc('main_data_v4').set(this.data);
             }
           }, (err) => {
             console.warn('Fallback offline:', err);
@@ -750,7 +758,7 @@
       saveData() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
         if (this.firebaseEnabled && this.db) {
-          this.db.collection('autoshare').doc('main_data_v3').set(this.data)
+          this.db.collection('autoshare').doc('main_data_v4').set(this.data)
             .catch(err => console.error('Erro ao enviar dados pro Firebase:', err));
         }
         this.renderStatsHeader();
@@ -776,12 +784,12 @@
         this.data.presetLocations.forEach(loc => {
           const opt1 = document.createElement('option');
           opt1.value = loc.id;
-          opt1.textContent = `${loc.name} - ${loc.address}`;
+          opt1.textContent = `${loc.name} (${loc.address.split('-')[0]})`;
           originSelect.appendChild(opt1);
 
           const opt2 = document.createElement('option');
           opt2.value = loc.id;
-          opt2.textContent = `${loc.name} - ${loc.address}`;
+          opt2.textContent = `${loc.name} (${loc.address.split('-')[0]})`;
           destSelect.appendChild(opt2);
         });
 
@@ -821,7 +829,7 @@
         div.id = `wrapper_${stopId}`;
         div.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 items-end bg-slate-950/60 p-3 rounded-xl border border-slate-800 relative';
 
-        let optionsHtml = this.data.presetLocations.map(loc => `<option value="${loc.id}">${loc.name} - ${loc.address}</option>`).join('');
+        let optionsHtml = this.data.presetLocations.map(loc => `<option value="${loc.id}">${loc.name} (${loc.address.split('-')[0]})</option>`).join('');
         optionsHtml += `<option value="custom">+ Digitar Endereço de Parada</option>`;
 
         div.innerHTML = `
@@ -861,54 +869,104 @@
         this.calculateTripRouteDistance();
       }
 
-      // Calculate Driving Route Distance (Google Maps / Presets)
-      calculateTripRouteDistance() {
-        const origSel = document.getElementById('trip-origin').value;
-        const destSel = document.getElementById('trip-destination').value;
+      // Real OSRM Driving Route Calculation Algorithm
+      async calculateTripRouteDistance() {
+        clearTimeout(this.calcDebounceTimer);
+        this.calcDebounceTimer = setTimeout(async () => {
+          const spinner = document.getElementById('route-calc-spinner');
+          spinner.classList.remove('hidden');
 
-        let originText = origSel === 'custom' ? document.getElementById('trip-origin-custom').value : (this.data.presetLocations.find(l => l.id === origSel)?.address || origSel);
-        let destText = destSel === 'custom' ? document.getElementById('trip-dest-custom').value : (this.data.presetLocations.find(l => l.id === destSel)?.address || destSel);
+          try {
+            const origSel = document.getElementById('trip-origin').value;
+            const destSel = document.getElementById('trip-destination').value;
 
-        const stopSelects = document.querySelectorAll('#trip-stops-container select');
-        const stopsList = [];
-        stopSelects.forEach(sel => {
-          if (sel.value === 'custom') {
-            const customVal = document.getElementById(`${sel.id}_custom`)?.value;
-            if (customVal) stopsList.push(customVal);
-          } else {
-            const loc = this.data.presetLocations.find(l => l.id === sel.value);
-            if (loc) stopsList.push(loc.address);
+            // Collect waypoints definitions
+            const waypointsDef = [];
+
+            // 1. Origin
+            if (origSel === 'custom') {
+              const addr = document.getElementById('trip-origin-custom').value.trim();
+              if (addr) waypointsDef.push({ type: 'custom', address: addr });
+            } else {
+              const loc = this.data.presetLocations.find(l => l.id === origSel);
+              if (loc) waypointsDef.push({ type: 'preset', loc });
+            }
+
+            // 2. Intermediate Stops
+            const stopSelects = document.querySelectorAll('#trip-stops-container select');
+            stopSelects.forEach(sel => {
+              if (sel.value === 'custom') {
+                const addr = document.getElementById(`${sel.id}_custom`)?.value.trim();
+                if (addr) waypointsDef.push({ type: 'custom', address: addr });
+              } else {
+                const loc = this.data.presetLocations.find(l => l.id === sel.value);
+                if (loc) waypointsDef.push({ type: 'preset', loc });
+              }
+            });
+
+            // 3. Destination
+            if (destSel === 'custom') {
+              const addr = document.getElementById('trip-dest-custom').value.trim();
+              if (addr) waypointsDef.push({ type: 'custom', address: addr });
+            } else {
+              const loc = this.data.presetLocations.find(l => l.id === destSel);
+              if (loc) waypointsDef.push({ type: 'preset', loc });
+            }
+
+            // Update Google Maps Link
+            const originText = waypointsDef[0] ? (waypointsDef[0].loc ? waypointsDef[0].loc.address : waypointsDef[0].address) : '';
+            const destText = waypointsDef[waypointsDef.length - 1] ? (waypointsDef[waypointsDef.length - 1].loc ? waypointsDef[waypointsDef.length - 1].loc.address : waypointsDef[waypointsDef.length - 1].address) : '';
+            const stopsTexts = waypointsDef.slice(1, waypointsDef.length - 1).map(w => w.loc ? w.loc.address : w.address);
+
+            let gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originText)}&destination=${encodeURIComponent(destText)}`;
+            if (stopsTexts.length > 0) {
+              gmapsUrl += `&waypoints=${encodeURIComponent(stopsTexts.join('|'))}`;
+            }
+            document.getElementById('btn-gmaps-link').href = gmapsUrl;
+
+            // Resolve Coordinates (lat, lon) for each waypoint
+            const coords = [];
+            for (const item of waypointsDef) {
+              if (item.type === 'preset' && item.loc.lat && item.loc.lon) {
+                coords.push([item.loc.lon, item.loc.lat]);
+              } else if (item.address) {
+                // Geocode custom address via Nominatim API
+                try {
+                  const query = item.address.includes('Ribeirão Preto') ? item.address : `${item.address}, Ribeirão Preto - SP`;
+                  const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, {
+                    headers: { 'User-Agent': 'AutoShareApp/2.0' }
+                  });
+                  const geoData = await geoRes.json();
+                  if (geoData && geoData[0]) {
+                    coords.push([parseFloat(geoData[0].lon), parseFloat(geoData[0].lat)]);
+                  }
+                } catch (e) {
+                  console.warn('Geocoding error:', e);
+                }
+              }
+            }
+
+            if (coords.length >= 2) {
+              // Fetch OSRM Driving Route Distance
+              const waypointsStr = coords.map(c => `${c[0]},${c[1]}`).join(';');
+              const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${waypointsStr}?overview=false`;
+              
+              const osrmRes = await fetch(osrmUrl);
+              const osrmData = await osrmRes.json();
+
+              if (osrmData && osrmData.routes && osrmData.routes[0]) {
+                const distanceKm = osrmData.routes[0].distance / 1000;
+                document.getElementById('trip-distance').value = distanceKm.toFixed(1);
+                this.updateTripPreview();
+              }
+            }
+
+          } catch (err) {
+            console.warn('Erro no cálculo de rota OSRM:', err);
+          } finally {
+            spinner.classList.add('hidden');
           }
-        });
-
-        // Update Google Maps external link
-        const gmapsBtn = document.getElementById('btn-gmaps-link');
-        let gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originText)}&destination=${encodeURIComponent(destText)}`;
-        if (stopsList.length > 0) {
-          gmapsUrl += `&waypoints=${encodeURIComponent(stopsList.join('|'))}`;
-        }
-        gmapsBtn.href = gmapsUrl;
-
-        // Calculate distance from preset distances or estimate
-        const origLoc = this.data.presetLocations.find(l => l.id === origSel);
-        const destLoc = this.data.presetLocations.find(l => l.id === destSel);
-
-        let totalDist = 0;
-        if (origLoc && destLoc) {
-          if (origLoc.id === 'loc_casa' || destLoc.id === 'loc_casa') {
-            totalDist = Math.max(origLoc.distance || 0, destLoc.distance || 0);
-          } else {
-            totalDist = Math.abs((destLoc.distance || 0) - (origLoc.distance || 0));
-            if (totalDist === 0 && origLoc.id !== destLoc.id) totalDist = 7;
-          }
-        } else {
-          totalDist = 10;
-        }
-
-        totalDist += (stopsList.length * 4);
-
-        document.getElementById('trip-distance').value = totalDist.toFixed(1);
-        this.updateTripPreview();
+        }, 300);
       }
 
       updateTripPreview() {
@@ -1329,7 +1387,7 @@
           div.innerHTML = `
             <div>
               <strong class="text-white font-bold">${loc.name}</strong>
-              <div class="text-slate-400 text-[11px]">${loc.address} (${loc.distance || 0} km da Casa)</div>
+              <div class="text-slate-400 text-[11px]">${loc.address}</div>
             </div>
             ${loc.name !== 'Casa' ? `<button onclick="app.removePresetLocation(${index})" class="text-red-400 hover:text-red-300 text-xs font-semibold p-1">Excluir</button>` : '<span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Padrão</span>'}
           `;
@@ -1337,22 +1395,38 @@
         });
       }
 
-      addNewLocation(e) {
+      async addNewLocation(e) {
         e.preventDefault();
         const name = document.getElementById('new-loc-name').value.trim();
         const address = document.getElementById('new-loc-address').value.trim();
-        const dist = parseFloat(document.getElementById('new-loc-distance').value) || 0;
 
         if (!name || !address) {
           this.showToast('Preencha o nome e o endereço do local!', 'warning');
           return;
         }
 
+        // Geocode lat/lon for the new location
+        let lat = null, lon = null;
+        try {
+          const query = address.includes('Ribeirão Preto') ? address : `${address}, Ribeirão Preto - SP`;
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, {
+            headers: { 'User-Agent': 'AutoShareApp/2.0' }
+          });
+          const data = await res.json();
+          if (data && data[0]) {
+            lat = parseFloat(data[0].lat);
+            lon = parseFloat(data[0].lon);
+          }
+        } catch (err) {
+          console.warn('Geocode add location:', err);
+        }
+
         const newLoc = {
           id: 'loc_' + Date.now(),
           name,
           address,
-          distance: dist
+          lat,
+          lon
         };
 
         this.data.presetLocations.push(newLoc);
@@ -1362,7 +1436,6 @@
 
         document.getElementById('new-loc-name').value = '';
         document.getElementById('new-loc-address').value = '';
-        document.getElementById('new-loc-distance').value = '';
 
         this.showToast(`Local "${name}" cadastrado!`, 'success');
       }
@@ -1412,7 +1485,7 @@
       }
 
       loadDemoData() {
-        if (!confirm('Deseja carregar dados de demonstração com os 5 integrantes e locais de Ribeirão Preto?')) return;
+        if (!confirm('Deseja carregar dados de demonstração com os 5 integrantes e rota de Ribeirão Preto?')) return;
 
         const now = Date.now();
         const dayMs = 86400000;
@@ -1428,22 +1501,10 @@
               members: ['Cinthia', 'Arnaldo', 'Henri'],
               origin: 'Casa',
               destination: 'Trabalho Cinthia',
-              baseDistance: 7.5,
-              isRoundTrip: true,
-              totalDistance: 15,
-              kmPerMember: 5
-            },
-            {
-              id: 'demo_t2',
-              timestamp: now - (dayMs * 2),
-              dateStr: new Date(now - (dayMs * 2)).toISOString().slice(0, 16).replace('T', ' '),
-              members: ['Hector', 'Heric'],
-              origin: 'Casa',
-              destination: 'Faculdade Heric',
-              baseDistance: 7.0,
-              isRoundTrip: true,
-              totalDistance: 14,
-              kmPerMember: 7
+              baseDistance: 26.4,
+              isRoundTrip: false,
+              totalDistance: 26.4,
+              kmPerMember: 8.8
             }
           ],
           refuels: [
@@ -1483,8 +1544,7 @@
         const json = JSON.stringify(this.data, null, 2);
         const blob = new Blob([json], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
+        const a = document.href = url;
         a.download = `autoshare_ribeirao_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
