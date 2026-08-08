@@ -105,7 +105,7 @@
   <!-- Main Content Container -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-grow w-full">
     
-    <!-- Top Action Bar (Header Removed) -->
+    <!-- Top Action Bar (No Top Header) -->
     <div class="flex items-center justify-between mb-6 flex-wrap gap-3 no-print">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
@@ -170,13 +170,13 @@
 
         <form id="form-trip" onsubmit="window.app && window.app.saveTrip(event)" class="space-y-6">
           
-          <!-- Data/Hora e Participantes -->
+          <!-- Data da Viagem e Participantes -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                <i class="fa-regular fa-clock text-emerald-400 mr-1"></i> Data e Hora da Viagem
+                <i class="fa-regular fa-calendar text-emerald-400 mr-1"></i> Data da Viagem
               </label>
-              <input type="datetime-local" id="trip-datetime" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+              <input type="date" id="trip-date" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
             </div>
 
             <!-- Seleção dos 5 Integrantes Fixos -->
@@ -320,26 +320,19 @@
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-gas-pump text-cyan-400"></i> Registrar Abastecimento
             </h2>
-            <p class="text-xs text-slate-400 mt-1">Insira a quilometragem atual do odômetro, o valor total pago no posto e quanto cada integrante contribuiu.</p>
+            <p class="text-xs text-slate-400 mt-1">Insira a data, o valor total pago no posto e quanto cada integrante contribuiu.</p>
           </div>
           <span class="text-xs font-semibold px-3 py-1 bg-cyan-500/10 text-cyan-400 rounded-full border border-cyan-500/20">Módulo 2</span>
         </div>
 
         <form id="form-refuel" onsubmit="window.app && window.app.saveRefuel(event)" class="space-y-6">
           
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
                 <i class="fa-regular fa-calendar text-cyan-400 mr-1"></i> Data do Abastecimento
               </label>
               <input type="date" id="refuel-date" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                <i class="fa-solid fa-gauge text-cyan-400 mr-1"></i> Odômetro Atual (km)
-              </label>
-              <input type="number" id="refuel-odometer" step="1" min="0" required placeholder="Ex: 45200" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
             </div>
 
             <div>
@@ -461,7 +454,7 @@
           <table class="w-full text-left text-xs text-slate-300">
             <thead class="bg-slate-900/80 uppercase text-[10px] tracking-wider text-slate-400 font-bold border-b border-slate-800">
               <tr>
-                <th class="p-3.5">Data / Hora</th>
+                <th class="p-3.5">Data</th>
                 <th class="p-3.5">Quem Utilizou</th>
                 <th class="p-3.5">Trajeto</th>
                 <th class="p-3.5 text-center">Tipo</th>
@@ -481,7 +474,6 @@
             <thead class="bg-slate-900/80 uppercase text-[10px] tracking-wider text-slate-400 font-bold border-b border-slate-800">
               <tr>
                 <th class="p-3.5">Data</th>
-                <th class="p-3.5 text-right">Odômetro (km)</th>
                 <th class="p-3.5 text-right">Valor Total (R$)</th>
                 <th class="p-3.5">Contribuições Individuais</th>
                 <th class="p-3.5 text-center">Ações</th>
@@ -512,7 +504,7 @@
             <div class="text-xs text-slate-400 mt-1">Ribeirão Preto - SP • AutoShare System</div>
           </div>
           <div class="text-right text-xs text-slate-300 bg-slate-900/90 p-3 rounded-2xl border border-slate-800">
-            <div>Data de Emissão: <strong id="print-report-date" class="text-white">--/--/---- --:--</strong></div>
+            <div>Data de Emissão: <strong id="print-report-date" class="text-white">--/--/----</strong></div>
             <div class="mt-0.5 text-slate-400">Período: <span id="print-report-period" class="text-slate-200">--</span></div>
           </div>
         </div>
@@ -652,7 +644,7 @@
     /**
      * Shared Car Usage & Cost Tracker Application
      */
-    const STORAGE_KEY = 'autoshare_car_data_v5';
+    const STORAGE_KEY = 'autoshare_car_data_v6';
     const FIREBASE_KEY = 'autoshare_firebase_config_v1';
 
     const DEFAULT_MEMBERS = ['Cinthia', 'Arnaldo', 'Henri', 'Hector', 'Heric'];
@@ -757,7 +749,7 @@
             statusTxt.textContent = 'Cloud Conectado';
           }
 
-          this.db.collection('autoshare').doc('main_data_v5').onSnapshot((doc) => {
+          this.db.collection('autoshare').doc('main_data_v6').onSnapshot((doc) => {
             if (doc.exists) {
               const cloudData = doc.data();
               if (cloudData) {
@@ -775,7 +767,7 @@
                 this.renderHistory();
               }
             } else {
-              this.db.collection('autoshare').doc('main_data_v5').set(this.data);
+              this.db.collection('autoshare').doc('main_data_v6').set(this.data);
             }
           }, (err) => {
             console.warn('Fallback offline:', err);
@@ -817,7 +809,7 @@
       saveData() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
         if (this.firebaseEnabled && this.db) {
-          this.db.collection('autoshare').doc('main_data_v5').set(this.data)
+          this.db.collection('autoshare').doc('main_data_v6').set(this.data)
             .catch(err => console.error('Erro ao enviar dados pro Firebase:', err));
         }
         this.renderReport();
@@ -826,13 +818,11 @@
       }
 
       setDefaultDates() {
-        const now = new Date();
-        const tzOffset = now.getTimezoneOffset() * 60000;
-        const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 16);
-        const tripDt = document.getElementById('trip-datetime');
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const tripDt = document.getElementById('trip-date');
         const refuelDt = document.getElementById('refuel-date');
-        if (tripDt) tripDt.value = localISOTime;
-        if (refuelDt) refuelDt.value = now.toISOString().slice(0, 10);
+        if (tripDt) tripDt.value = todayStr;
+        if (refuelDt) refuelDt.value = todayStr;
       }
 
       populateLocationSelects() {
@@ -1062,7 +1052,7 @@
       saveTrip(e) {
         e.preventDefault();
 
-        const datetime = document.getElementById('trip-datetime').value;
+        const rawDate = document.getElementById('trip-date').value;
         const selectedMembers = Array.from(document.querySelectorAll('input[name="trip-members"]:checked')).map(cb => cb.value);
         
         const origSel = document.getElementById('trip-origin').value;
@@ -1083,13 +1073,16 @@
           return;
         }
 
+        const formattedDateParts = rawDate.split('-');
+        const formattedDate = formattedDateParts.length === 3 ? `${formattedDateParts[2]}/${formattedDateParts[1]}/${formattedDateParts[0]}` : rawDate;
+
         const totalDistance = baseDist * (isRoundTrip ? 2 : 1);
         const kmPerMember = totalDistance / selectedMembers.length;
 
         const newTrip = {
           id: 'trip_' + Date.now(),
-          timestamp: new Date(datetime).getTime(),
-          dateStr: datetime.replace('T', ' '),
+          timestamp: new Date(rawDate).getTime(),
+          dateStr: formattedDate,
           members: selectedMembers,
           origin: originName,
           destination: destName,
@@ -1164,8 +1157,7 @@
       saveRefuel(e) {
         e.preventDefault();
 
-        const date = document.getElementById('refuel-date').value;
-        const odometer = parseFloat(document.getElementById('refuel-odometer').value);
+        const rawDate = document.getElementById('refuel-date').value;
         const totalAmount = parseFloat(document.getElementById('refuel-total-amount').value);
 
         const contributions = {
@@ -1178,11 +1170,6 @@
 
         const contribSum = Object.values(contributions).reduce((acc, v) => acc + v, 0);
 
-        if (isNaN(odometer) || odometer < 0) {
-          this.showToast('Informe uma quilometragem de odômetro válida!', 'warning');
-          return;
-        }
-
         if (isNaN(totalAmount) || totalAmount <= 0) {
           this.showToast('Informe o valor total do abastecimento!', 'warning');
           return;
@@ -1193,11 +1180,13 @@
           return;
         }
 
+        const formattedDateParts = rawDate.split('-');
+        const formattedDate = formattedDateParts.length === 3 ? `${formattedDateParts[2]}/${formattedDateParts[1]}/${formattedDateParts[0]}` : rawDate;
+
         const newRefuel = {
           id: 'refuel_' + Date.now(),
-          timestamp: new Date(date).getTime(),
-          dateStr: date,
-          odometer,
+          timestamp: new Date(rawDate).getTime(),
+          dateStr: formattedDate,
           totalAmount,
           contributions
         };
@@ -1208,7 +1197,6 @@
         this.saveData();
         this.showToast('Abastecimento registrado com sucesso! Período fechado.', 'success');
 
-        document.getElementById('refuel-odometer').value = '';
         document.getElementById('refuel-total-amount').value = '';
         document.getElementById('contrib-cinthia').value = '0.00';
         document.getElementById('contrib-arnaldo').value = '0.00';
@@ -1326,7 +1314,7 @@
 
         const now = new Date();
         const reportNum = (this.data.issuedReports.length + 1).toString().padStart(3, '0');
-        const reportDateStr = `${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+        const reportDateStr = now.toLocaleDateString('pt-BR');
 
         const memberStats = {};
         DEFAULT_MEMBERS.forEach(member => {
@@ -1515,7 +1503,7 @@
 
         refuelsBody.innerHTML = '';
         if (this.data.refuels.length === 0) {
-          refuelsBody.innerHTML = `<tr><td colspan="5" class="text-center p-6 text-slate-500">Nenhum abastecimento registrado até o momento.</td></tr>`;
+          refuelsBody.innerHTML = `<tr><td colspan="4" class="text-center p-6 text-slate-500">Nenhum abastecimento registrado até o momento.</td></tr>`;
         } else {
           this.data.refuels.forEach(r => {
             const tr = document.createElement('tr');
@@ -1526,7 +1514,6 @@
 
             tr.innerHTML = `
               <td class="p-3.5 font-medium text-slate-200 whitespace-nowrap">${r.dateStr}</td>
-              <td class="p-3.5 text-right font-semibold text-slate-300 whitespace-nowrap">${r.odometer} km</td>
               <td class="p-3.5 text-right font-bold text-cyan-400 whitespace-nowrap">R$ ${r.totalAmount.toFixed(2)}</td>
               <td class="p-3.5 text-xs text-slate-400 truncate max-w-xs" title="${contribSummary}">${contribSummary}</td>
               <td class="p-3.5 text-center whitespace-nowrap">
@@ -1559,7 +1546,6 @@
         }
       }
 
-      // Safe Tab Switcher
       switchTab(tab) {
         const tabsList = ['trips', 'refuel', 'report', 'reports-log', 'history'];
         tabsList.forEach(t => {
@@ -1770,7 +1756,6 @@
       }
     }
 
-    // Instanciar App imediatamente e no DOMContentLoaded
     window.app = new AutoShareApp();
   </script>
 </body>
