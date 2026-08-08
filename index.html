@@ -140,17 +140,14 @@
         <button type="button" onclick="window.app && window.app.switchTab('trips')" id="tab-btn-trips" class="tab-btn active px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-car-on"></i> <span>Registrar Viagem</span>
         </button>
-        <button type="button" onclick="window.app && window.app.switchTab('refuel')" id="tab-btn-refuel" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-gas-pump"></i> <span>Registrar Abastecimento</span>
-        </button>
         <button type="button" onclick="window.app && window.app.switchTab('report')" id="tab-btn-report" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-chart-pie"></i> <span>Relatório & Fechamento</span>
+          <i class="fa-solid fa-chart-pie"></i> <span>Relatório & Fechamento do Período</span>
         </button>
         <button type="button" onclick="window.app && window.app.switchTab('reports-log')" id="tab-btn-reports-log" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
           <i class="fa-solid fa-file-lines"></i> <span>Log de Relatórios Emitidos</span>
         </button>
         <button type="button" onclick="window.app && window.app.switchTab('history')" id="tab-btn-history" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-list-check"></i> <span>Histórico</span>
+          <i class="fa-solid fa-list-check"></i> <span>Histórico de Viagens</span>
         </button>
       </nav>
     </div>
@@ -312,111 +309,51 @@
       </div>
     </section>
 
-    <!-- TAB 2: REGISTRAR ABASTECIMENTO -->
-    <section id="tab-content-refuel" class="space-y-6 hidden">
-      <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-5 mb-6">
-          <div>
-            <h2 class="text-xl font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-gas-pump text-cyan-400"></i> Registrar Abastecimento
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">Insira a data, o valor total pago no posto e quanto cada integrante contribuiu.</p>
-          </div>
-          <span class="text-xs font-semibold px-3 py-1 bg-cyan-500/10 text-cyan-400 rounded-full border border-cyan-500/20">Módulo 2</span>
-        </div>
-
-        <form id="form-refuel" onsubmit="window.app && window.app.saveRefuel(event)" class="space-y-6">
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                <i class="fa-regular fa-calendar text-cyan-400 mr-1"></i> Data do Abastecimento
-              </label>
-              <input type="date" id="refuel-date" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                <i class="fa-solid fa-sack-dollar text-cyan-400 mr-1"></i> Valor Total do Posto (R$)
-              </label>
-              <input type="number" id="refuel-total-amount" step="0.01" min="0.01" required placeholder="Ex: 250.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
-            </div>
-          </div>
-
-          <!-- Contribuições Individuais para os 5 integrantes -->
-          <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
-            <div class="flex items-center justify-between flex-wrap gap-2">
-              <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                <i class="fa-solid fa-hand-holding-dollar text-cyan-400"></i> Contribuição Individual (Quanto cada um pagou)
-              </h3>
-              <button type="button" onclick="window.app && window.app.splitRefuelEqually()" class="text-xs text-cyan-400 hover:underline flex items-center gap-1 font-semibold">
-                <i class="fa-solid fa-calculator"></i> Dividir por 5 Igualmente
-              </button>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              <div>
-                <label class="block text-xs font-medium text-slate-400 mb-1">Cinthia (R$)</label>
-                <input type="number" step="0.01" min="0" id="contrib-cinthia" value="0.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-400 mb-1">Arnaldo (R$)</label>
-                <input type="number" step="0.01" min="0" id="contrib-arnaldo" value="0.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-400 mb-1">Henri (R$)</label>
-                <input type="number" step="0.01" min="0" id="contrib-henri" value="0.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-400 mb-1">Hector (R$)</label>
-                <input type="number" step="0.01" min="0" id="contrib-hector" value="0.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-400 mb-1">Heric (R$)</label>
-                <input type="number" step="0.01" min="0" id="contrib-heric" value="0.00" oninput="window.app && window.app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-              </div>
-            </div>
-
-            <!-- Dynamic Sum Check Indicator -->
-            <div id="refuel-sum-status" class="p-3 rounded-xl text-xs font-medium flex items-center justify-between bg-slate-950 border border-slate-800">
-              <span class="text-slate-400">Soma das Contribuições: <strong id="refuel-contrib-sum" class="text-white">R$ 0,00</strong></span>
-              <span id="refuel-sum-badge" class="px-2.5 py-0.5 rounded-full text-slate-400 bg-slate-800">Insira os valores</span>
-            </div>
-          </div>
-
-          <!-- Submit Button -->
-          <button type="submit" class="w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-2xl shadow-lg shadow-cyan-600/25 transition transform active:scale-[0.99] flex items-center justify-center gap-2">
-            <i class="fa-solid fa-check text-lg"></i> Registrar Abastecimento e Fechar Período
-          </button>
-
-        </form>
-      </div>
-    </section>
-
-    <!-- TAB 3: RELATÓRIOS E FECHAMENTO -->
+    <!-- TAB 2: RELATÓRIOS E FECHAMENTO -->
     <section id="tab-content-report" class="space-y-6 hidden">
       
-      <!-- Emit Report Action Banner -->
-      <div class="glass-card rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 border border-emerald-500/20">
-        <div>
-          <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-chart-pie text-emerald-400"></i> Fechamento de Período & Emissão de Relatório
-          </h2>
-          <p class="text-xs text-slate-400 mt-1">Gere e emita o relatório com o % de uso, KM rodados e nº de viagens de cada participante entre o último abastecimento e o momento atual.</p>
+      <!-- Emit Report Action Banner with Manual Fuel Cost Input -->
+      <div class="glass-card rounded-3xl p-6 shadow-xl space-y-6 border border-emerald-500/20">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-chart-pie text-emerald-400"></i> Fechamento do Período Atual
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Digitar a nota do posto para dividir o custo estritamente conforme a porcentagem de uso. Ao emitir, os valores zeram e inicia-se um novo período!
+            </p>
+          </div>
+
+          <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800 text-right text-xs">
+            <span class="text-slate-400">Total KM Acumulado no Período:</span>
+            <div id="live-period-total-km" class="text-lg font-extrabold text-emerald-400">0,0 km</div>
+          </div>
         </div>
 
-        <button type="button" onclick="window.app && window.app.emitNewReport()" class="w-full md:w-auto px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-2xl shadow-lg shadow-emerald-500/25 transition transform active:scale-[0.98] flex items-center justify-center gap-2 whitespace-nowrap text-sm">
-          <i class="fa-solid fa-file-invoice text-base"></i> Emitir & Salvar Relatório do Período
-        </button>
+        <!-- Manual Fuel Cost Input & Emission Button -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+              <i class="fa-solid fa-gas-pump text-cyan-400 mr-1"></i> Valor Total da Abastecida no Posto (R$)
+            </label>
+            <input type="number" id="manual-refuel-cost" step="0.01" min="0" placeholder="Ex: 250.00" oninput="window.app && window.app.renderReport()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 font-bold">
+          </div>
+
+          <div>
+            <button type="button" onclick="window.app && window.app.emitNewReport()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-emerald-500/25 transition transform active:scale-[0.98] flex items-center justify-center gap-2 text-xs">
+              <i class="fa-solid fa-file-invoice text-sm"></i> Emitir, Salvar & Zerar Período
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- Live Period Summary Cards per Member -->
+      <!-- Live Period Summary Cards per Member (Pure % and Value) -->
       <div id="report-members-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         <!-- Rendered dynamically -->
       </div>
     </section>
 
-    <!-- TAB 4: LOG DE RELATÓRIOS EMITIDOS -->
+    <!-- TAB 3: LOG DE RELATÓRIOS EMITIDOS -->
     <section id="tab-content-reports-log" class="space-y-6 hidden">
       <div class="glass-card rounded-3xl p-6 shadow-xl">
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3 border-b border-slate-800 pb-4">
@@ -424,7 +361,7 @@
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-file-lines text-cyan-400"></i> Histórico de Relatórios Emitidos
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Todos os relatórios gerados ficam salvos neste log permanente com número, data e opção de impressão.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Todos os relatórios fechados ficam salvos neste log permanente com número, data e opção de impressão.</p>
           </div>
           <span class="text-xs text-slate-400" id="reports-log-count">0 relatórios salvos</span>
         </div>
@@ -435,19 +372,14 @@
       </div>
     </section>
 
-    <!-- TAB 5: HISTÓRICO GERAL -->
+    <!-- TAB 4: HISTÓRICO DE VIAGENS -->
     <section id="tab-content-history" class="space-y-6 hidden">
       <div class="glass-card rounded-3xl p-6 shadow-xl">
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
-          <div class="flex gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800">
-            <button type="button" onclick="window.app && window.app.switchHistorySubtab('trips')" id="subtab-btn-trips" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-white shadow">
-              <i class="fa-solid fa-car"></i> Viagens Registradas
-            </button>
-            <button type="button" onclick="window.app && window.app.switchHistorySubtab('refuels')" id="subtab-btn-refuels" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
-              <i class="fa-solid fa-gas-pump"></i> Abastecimentos
-            </button>
-          </div>
-          <span class="text-xs text-slate-400" id="history-count-badge">0 registros encontrados</span>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-emerald-400"></i> Histórico Completo de Viagens Registradas
+          </h2>
+          <span class="text-xs text-slate-400" id="history-count-badge">0 viagens registradas</span>
         </div>
 
         <div id="history-table-trips-container" class="overflow-x-auto">
@@ -464,22 +396,6 @@
               </tr>
             </thead>
             <tbody id="history-trips-body" class="divide-y divide-slate-800/60">
-              <!-- Rendered dynamically -->
-            </tbody>
-          </table>
-        </div>
-
-        <div id="history-table-refuels-container" class="overflow-x-auto hidden">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-slate-900/80 uppercase text-[10px] tracking-wider text-slate-400 font-bold border-b border-slate-800">
-              <tr>
-                <th class="p-3.5">Data</th>
-                <th class="p-3.5 text-right">Valor Total (R$)</th>
-                <th class="p-3.5">Contribuições Individuais</th>
-                <th class="p-3.5 text-center">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="history-refuels-body" class="divide-y divide-slate-800/60">
               <!-- Rendered dynamically -->
             </tbody>
           </table>
@@ -520,12 +436,12 @@
             <div id="print-report-trips" class="text-base font-bold text-purple-400 mt-0.5">0</div>
           </div>
           <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800">
-            <div class="text-[10px] text-slate-400 uppercase font-semibold">Custo do Posto</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Custo da Abastecida</div>
             <div id="print-report-cost" class="text-base font-bold text-cyan-400 mt-0.5">R$ 0,00</div>
           </div>
         </div>
 
-        <!-- Tabela Detalhada por Participante -->
+        <!-- Tabela Detalhada por Participante (Strictly % and Fair Share Value) -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
             <thead>
@@ -534,9 +450,7 @@
                 <th class="p-3 text-center">Nº Viagens</th>
                 <th class="p-3 text-right">KM Atribuído</th>
                 <th class="p-3 text-right">% Uso Veículo</th>
-                <th class="p-3 text-right">Pago no Posto</th>
-                <th class="p-3 text-right">Custo Justo</th>
-                <th class="p-3 text-center">Balanço Final</th>
+                <th class="p-3 text-right">Valor a Pagar (R$)</th>
               </tr>
             </thead>
             <tbody id="print-report-table-body" class="divide-y divide-slate-800">
@@ -644,7 +558,7 @@
     /**
      * Shared Car Usage & Cost Tracker Application
      */
-    const STORAGE_KEY = 'autoshare_car_data_v6';
+    const STORAGE_KEY = 'autoshare_car_data_v7';
     const FIREBASE_KEY = 'autoshare_firebase_config_v1';
 
     const DEFAULT_MEMBERS = ['Cinthia', 'Arnaldo', 'Henri', 'Hector', 'Heric'];
@@ -749,7 +663,7 @@
             statusTxt.textContent = 'Cloud Conectado';
           }
 
-          this.db.collection('autoshare').doc('main_data_v6').onSnapshot((doc) => {
+          this.db.collection('autoshare').doc('main_data_v7').onSnapshot((doc) => {
             if (doc.exists) {
               const cloudData = doc.data();
               if (cloudData) {
@@ -757,7 +671,7 @@
                   members: DEFAULT_MEMBERS,
                   presetLocations: cloudData.presetLocations || [...DEFAULT_PRESET_LOCATIONS],
                   trips: cloudData.trips || [],
-                  refuels: cloudData.refuels || [],
+                  lastClosedTimestamp: cloudData.lastClosedTimestamp || 0,
                   issuedReports: cloudData.issuedReports || []
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
@@ -767,7 +681,7 @@
                 this.renderHistory();
               }
             } else {
-              this.db.collection('autoshare').doc('main_data_v6').set(this.data);
+              this.db.collection('autoshare').doc('main_data_v7').set(this.data);
             }
           }, (err) => {
             console.warn('Fallback offline:', err);
@@ -790,7 +704,7 @@
               members: DEFAULT_MEMBERS,
               presetLocations: parsed.presetLocations || [...DEFAULT_PRESET_LOCATIONS],
               trips: parsed.trips || [],
-              refuels: parsed.refuels || [],
+              lastClosedTimestamp: parsed.lastClosedTimestamp || 0,
               issuedReports: parsed.issuedReports || []
             };
           } catch (e) {
@@ -801,7 +715,7 @@
           members: DEFAULT_MEMBERS,
           presetLocations: [...DEFAULT_PRESET_LOCATIONS],
           trips: [],
-          refuels: [],
+          lastClosedTimestamp: 0,
           issuedReports: []
         };
       }
@@ -809,7 +723,7 @@
       saveData() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
         if (this.firebaseEnabled && this.db) {
-          this.db.collection('autoshare').doc('main_data_v6').set(this.data)
+          this.db.collection('autoshare').doc('main_data_v7').set(this.data)
             .catch(err => console.error('Erro ao enviar dados pro Firebase:', err));
         }
         this.renderReport();
@@ -820,9 +734,7 @@
       setDefaultDates() {
         const todayStr = new Date().toISOString().slice(0, 10);
         const tripDt = document.getElementById('trip-date');
-        const refuelDt = document.getElementById('refuel-date');
         if (tripDt) tripDt.value = todayStr;
-        if (refuelDt) refuelDt.value = todayStr;
       }
 
       populateLocationSelects() {
@@ -1103,127 +1015,21 @@
         this.calculateTripRouteDistance();
       }
 
-      validateRefuelSum() {
-        const total = parseFloat(document.getElementById('refuel-total-amount').value) || 0;
-        const c1 = parseFloat(document.getElementById('contrib-cinthia').value) || 0;
-        const c2 = parseFloat(document.getElementById('contrib-arnaldo').value) || 0;
-        const c3 = parseFloat(document.getElementById('contrib-henri').value) || 0;
-        const c4 = parseFloat(document.getElementById('contrib-hector').value) || 0;
-        const c5 = parseFloat(document.getElementById('contrib-heric').value) || 0;
-
-        const sum = c1 + c2 + c3 + c4 + c5;
-        const diff = Math.abs(total - sum);
-
-        const sumEl = document.getElementById('refuel-contrib-sum');
-        const badgeEl = document.getElementById('refuel-sum-badge');
-
-        if (sumEl) sumEl.textContent = `R$ ${sum.toFixed(2)}`;
-
-        if (badgeEl) {
-          if (total <= 0) {
-            badgeEl.textContent = 'Informe o valor total do posto';
-            badgeEl.className = 'px-2.5 py-0.5 rounded-full text-slate-400 bg-slate-800';
-          } else if (diff < 0.01) {
-            badgeEl.textContent = '✓ Valores conferem!';
-            badgeEl.className = 'px-2.5 py-0.5 rounded-full text-emerald-400 bg-emerald-500/20 border border-emerald-500/30';
-          } else {
-            const delta = total - sum;
-            if (delta > 0) {
-              badgeEl.textContent = `Faltam R$ ${delta.toFixed(2)}`;
-              badgeEl.className = 'px-2.5 py-0.5 rounded-full text-amber-400 bg-amber-500/20 border border-amber-500/30';
-            } else {
-              badgeEl.textContent = `Excesso de R$ ${Math.abs(delta).toFixed(2)}`;
-              badgeEl.className = 'px-2.5 py-0.5 rounded-full text-red-400 bg-red-500/20 border border-red-500/30';
-            }
-          }
-        }
-      }
-
-      splitRefuelEqually() {
-        const total = parseFloat(document.getElementById('refuel-total-amount').value) || 0;
-        if (total <= 0) {
-          this.showToast('Informe o valor total antes de dividir!', 'warning');
-          return;
-        }
-        const each = (total / 5).toFixed(2);
-        document.getElementById('contrib-cinthia').value = each;
-        document.getElementById('contrib-arnaldo').value = each;
-        document.getElementById('contrib-henri').value = each;
-        document.getElementById('contrib-hector').value = each;
-        document.getElementById('contrib-heric').value = each;
-        this.validateRefuelSum();
-      }
-
-      saveRefuel(e) {
-        e.preventDefault();
-
-        const rawDate = document.getElementById('refuel-date').value;
-        const totalAmount = parseFloat(document.getElementById('refuel-total-amount').value);
-
-        const contributions = {
-          'Cinthia': parseFloat(document.getElementById('contrib-cinthia').value) || 0,
-          'Arnaldo': parseFloat(document.getElementById('contrib-arnaldo').value) || 0,
-          'Henri': parseFloat(document.getElementById('contrib-henri').value) || 0,
-          'Hector': parseFloat(document.getElementById('contrib-hector').value) || 0,
-          'Heric': parseFloat(document.getElementById('contrib-heric').value) || 0
-        };
-
-        const contribSum = Object.values(contributions).reduce((acc, v) => acc + v, 0);
-
-        if (isNaN(totalAmount) || totalAmount <= 0) {
-          this.showToast('Informe o valor total do abastecimento!', 'warning');
-          return;
-        }
-
-        if (Math.abs(totalAmount - contribSum) > 0.05) {
-          this.showToast(`A soma das contribuições (R$ ${contribSum.toFixed(2)}) deve ser igual ao total do abastecimento (R$ ${totalAmount.toFixed(2)})!`, 'warning');
-          return;
-        }
-
-        const formattedDateParts = rawDate.split('-');
-        const formattedDate = formattedDateParts.length === 3 ? `${formattedDateParts[2]}/${formattedDateParts[1]}/${formattedDateParts[0]}` : rawDate;
-
-        const newRefuel = {
-          id: 'refuel_' + Date.now(),
-          timestamp: new Date(rawDate).getTime(),
-          dateStr: formattedDate,
-          totalAmount,
-          contributions
-        };
-
-        this.data.refuels.push(newRefuel);
-        this.data.refuels.sort((a, b) => b.timestamp - a.timestamp);
-
-        this.saveData();
-        this.showToast('Abastecimento registrado com sucesso! Período fechado.', 'success');
-
-        document.getElementById('refuel-total-amount').value = '';
-        document.getElementById('contrib-cinthia').value = '0.00';
-        document.getElementById('contrib-arnaldo').value = '0.00';
-        document.getElementById('contrib-henri').value = '0.00';
-        document.getElementById('contrib-hector').value = '0.00';
-        document.getElementById('contrib-heric').value = '0.00';
-        this.validateRefuelSum();
-        this.switchTab('report');
-      }
-
-      getActivePeriodData() {
-        const lastRefuel = this.data.refuels.length > 0 ? this.data.refuels[0] : null;
-        const lastRefuelTime = lastRefuel ? lastRefuel.timestamp : 0;
-        const periodTrips = this.data.trips.filter(t => t.timestamp >= lastRefuelTime);
-        const periodRefuels = lastRefuel ? [lastRefuel] : [];
-
-        return {
-          lastRefuel,
-          trips: periodTrips,
-          refuels: periodRefuels
-        };
+      // Active Period: Trips since last closed timestamp
+      getActivePeriodTrips() {
+        const lastClosed = this.data.lastClosedTimestamp || 0;
+        return this.data.trips.filter(t => t.timestamp >= lastClosed);
       }
 
       renderReport() {
-        const periodData = this.getActivePeriodData();
-        const periodTotalKm = periodData.trips.reduce((acc, t) => acc + t.totalDistance, 0);
-        const periodTotalRefuelCost = periodData.refuels.reduce((acc, r) => acc + r.totalAmount, 0);
+        const periodTrips = this.getActivePeriodTrips();
+        const periodTotalKm = periodTrips.reduce((acc, t) => acc + t.totalDistance, 0);
+        
+        const manualCostInput = document.getElementById('manual-refuel-cost');
+        const manualCost = parseFloat(manualCostInput ? manualCostInput.value : 0) || 0;
+
+        const periodKmEl = document.getElementById('live-period-total-km');
+        if (periodKmEl) periodKmEl.textContent = `${periodTotalKm.toFixed(1)} km`;
 
         const gridContainer = document.getElementById('report-members-grid');
         if (!gridContainer) return;
@@ -1231,7 +1037,7 @@
 
         DEFAULT_MEMBERS.forEach(member => {
           let tripCount = 0;
-          const memberKm = periodData.trips.reduce((acc, t) => {
+          const memberKm = periodTrips.reduce((acc, t) => {
             if (t.members.includes(member)) {
               tripCount++;
               return acc + t.kmPerMember;
@@ -1240,21 +1046,10 @@
           }, 0);
 
           const usagePct = periodTotalKm > 0 ? (memberKm / periodTotalKm) * 100 : 0;
-          const memberPaid = periodData.refuels.reduce((acc, r) => acc + (r.contributions[member] || 0), 0);
-          const fairShareCost = periodTotalRefuelCost * (usagePct / 100);
-          const balance = memberPaid - fairShareCost;
+          const memberPayShare = manualCost * (usagePct / 100);
 
           const card = document.createElement('div');
           card.className = 'glass-card rounded-3xl p-6 shadow-xl relative overflow-hidden border border-slate-800';
-
-          let statusBadge = '';
-          if (Math.abs(balance) < 0.01) {
-            statusBadge = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">Quitado (R$ 0,00)</span>`;
-          } else if (balance > 0) {
-            statusBadge = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1"><i class="fa-solid fa-arrow-down-left"></i> A RECEBER R$ ${balance.toFixed(2)}</span>`;
-          } else {
-            statusBadge = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1"><i class="fa-solid fa-arrow-up-right"></i> A PAGAR R$ ${Math.abs(balance).toFixed(2)}</span>`;
-          }
 
           card.innerHTML = `
             <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
@@ -1264,37 +1059,29 @@
                 </div>
                 <div>
                   <h4 class="text-base font-bold text-white">${member}</h4>
-                  <div class="text-xs text-slate-400">${memberKm.toFixed(1)} km rodados (${usagePct.toFixed(1)}%)</div>
+                  <div class="text-xs text-slate-400">${tripCount} corrida${tripCount !== 1 ? 's' : ''} • ${memberKm.toFixed(1)} km</div>
                 </div>
               </div>
-              ${statusBadge}
+              <span class="px-3 py-1 rounded-full text-xs font-extrabold ${usagePct > 0 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500'}">
+                ${usagePct.toFixed(1)}% de Uso
+              </span>
             </div>
 
             <div class="space-y-1.5 mb-4">
               <div class="flex justify-between text-xs text-slate-400">
-                <span>Participação no uso do veículo</span>
+                <span>Participação no veículo</span>
                 <span class="font-bold text-slate-200">${usagePct.toFixed(1)}%</span>
               </div>
               <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
-                <div class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-full transition-all duration-500" style="width: ${Math.min(usagePct, 100)}%"></div>
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-500" style="width: ${Math.min(usagePct, 100)}%"></div>
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-2 bg-slate-900/90 p-3 rounded-2xl border border-slate-800 text-center text-xs">
-              <div>
-                <div class="text-[10px] text-slate-400 uppercase font-semibold">Viagens</div>
-                <div class="font-bold text-white mt-0.5">${tripCount} corrida${tripCount !== 1 ? 's' : ''}</div>
-              </div>
-              <div>
-                <div class="text-[10px] text-slate-400 uppercase font-semibold">Custo Justo</div>
-                <div class="font-bold text-slate-300 mt-0.5">R$ ${fairShareCost.toFixed(2)}</div>
-              </div>
-              <div>
-                <div class="text-[10px] text-slate-400 uppercase font-semibold">Balanço</div>
-                <div class="font-bold ${balance >= 0 ? 'text-emerald-400' : 'text-amber-400'} mt-0.5">
-                  ${balance >= 0 ? '+' : ''}R$ ${balance.toFixed(2)}
-                </div>
-              </div>
+            <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center text-xs">
+              <span class="text-slate-400 font-semibold">Valor a Pagar:</span>
+              <strong class="text-base font-bold ${memberPayShare > 0 ? 'text-emerald-400' : 'text-slate-500'}">
+                R$ ${memberPayShare.toFixed(2)}
+              </strong>
             </div>
           `;
 
@@ -1302,15 +1089,18 @@
         });
       }
 
+      // Emit, Save Report & Reset Active Period
       emitNewReport() {
-        const periodData = this.getActivePeriodData();
-        const periodTotalKm = periodData.trips.reduce((acc, t) => acc + t.totalDistance, 0);
-        const periodTotalRefuelCost = periodData.refuels.reduce((acc, r) => acc + r.totalAmount, 0);
+        const periodTrips = this.getActivePeriodTrips();
+        const periodTotalKm = periodTrips.reduce((acc, t) => acc + t.totalDistance, 0);
 
-        if (periodData.trips.length === 0) {
+        if (periodTrips.length === 0) {
           this.showToast('Nenhuma viagem registrada no período atual para emitir relatório.', 'warning');
           return;
         }
+
+        const manualCostInput = document.getElementById('manual-refuel-cost');
+        const manualCost = parseFloat(manualCostInput ? manualCostInput.value : 0) || 0;
 
         const now = new Date();
         const reportNum = (this.data.issuedReports.length + 1).toString().padStart(3, '0');
@@ -1319,29 +1109,26 @@
         const memberStats = {};
         DEFAULT_MEMBERS.forEach(member => {
           let tripCount = 0;
-          const km = periodData.trips.reduce((acc, t) => {
+          const km = periodTrips.reduce((acc, t) => {
             if (t.members.includes(member)) {
               tripCount++;
               return acc + t.kmPerMember;
             }
             return acc;
           }, 0);
+
           const usagePct = periodTotalKm > 0 ? (km / periodTotalKm) * 100 : 0;
-          const paid = periodData.refuels.reduce((acc, r) => acc + (r.contributions[member] || 0), 0);
-          const fairCost = periodTotalRefuelCost * (usagePct / 100);
-          const balance = paid - fairCost;
+          const valorAPagar = manualCost * (usagePct / 100);
 
           memberStats[member] = {
             tripCount,
             km,
             usagePct,
-            paid,
-            fairCost,
-            balance
+            valorAPagar
           };
         });
 
-        const firstTripDate = periodData.trips[periodData.trips.length - 1]?.dateStr || reportDateStr;
+        const firstTripDate = periodTrips[periodTrips.length - 1]?.dateStr || reportDateStr;
         const periodRange = `${firstTripDate} até ${reportDateStr}`;
 
         const reportObject = {
@@ -1351,15 +1138,19 @@
           timestamp: now.getTime(),
           periodRange,
           totalKm: periodTotalKm,
-          totalTrips: periodData.trips.length,
-          totalCost: periodTotalRefuelCost,
+          totalTrips: periodTrips.length,
+          totalCost: manualCost,
           memberStats
         };
 
         this.data.issuedReports.unshift(reportObject);
+        // Reset/close current active period to 0!
+        this.data.lastClosedTimestamp = now.getTime();
         this.saveData();
 
-        this.showToast(`Relatório Nº #${reportNum} emitido com sucesso!`, 'success');
+        if (manualCostInput) manualCostInput.value = '';
+
+        this.showToast(`Relatório Nº #${reportNum} emitido! O período foi zerado.`, 'success');
         this.openReportModal(reportObject);
       }
 
@@ -1373,7 +1164,7 @@
         container.innerHTML = '';
 
         if (this.data.issuedReports.length === 0) {
-          container.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">Nenhum relatório foi emitido ainda. Clique em "Emitir & Salvar Relatório" na aba Relatórios para gerar um.</div>`;
+          container.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">Nenhum relatório foi emitido ainda. Clique em "Emitir & Salvar Relatório" na aba Relatórios para fechar o período.</div>`;
           return;
         }
 
@@ -1388,7 +1179,7 @@
               </div>
               <div>
                 <h4 class="text-sm font-bold text-white">Relatório de Fechamento Nº #${rep.number}</h4>
-                <div class="text-xs text-slate-400">Emitido em ${rep.dateStr} • ${rep.totalKm.toFixed(1)} km • ${rep.totalTrips} viagens</div>
+                <div class="text-xs text-slate-400">Emitido em ${rep.dateStr} • ${rep.totalKm.toFixed(1)} km • ${rep.totalTrips} viagens • Custo: R$ ${rep.totalCost.toFixed(2)}</div>
               </div>
             </div>
 
@@ -1432,17 +1223,7 @@
           tableBody.innerHTML = '';
 
           DEFAULT_MEMBERS.forEach(member => {
-            const stats = rep.memberStats[member] || { tripCount: 0, km: 0, usagePct: 0, paid: 0, fairCost: 0, balance: 0 };
-
-            let balanceText = 'Quitado';
-            let balanceClass = 'text-slate-300';
-            if (stats.balance > 0.01) {
-              balanceText = `A RECEBER R$ ${stats.balance.toFixed(2)}`;
-              balanceClass = 'text-emerald-400 font-bold';
-            } else if (stats.balance < -0.01) {
-              balanceText = `A PAGAR R$ ${Math.abs(stats.balance).toFixed(2)}`;
-              balanceClass = 'text-amber-400 font-bold';
-            }
+            const stats = rep.memberStats[member] || { tripCount: 0, km: 0, usagePct: 0, valorAPagar: 0 };
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -1450,9 +1231,9 @@
               <td class="p-3 text-center text-slate-300">${stats.tripCount}</td>
               <td class="p-3 text-right font-semibold text-emerald-400">${stats.km.toFixed(1)} km</td>
               <td class="p-3 text-right font-bold text-slate-200">${stats.usagePct.toFixed(1)}%</td>
-              <td class="p-3 text-right text-slate-300">R$ ${stats.paid.toFixed(2)}</td>
-              <td class="p-3 text-right text-slate-300">R$ ${stats.fairCost.toFixed(2)}</td>
-              <td class="p-3 text-center ${balanceClass}">${balanceText}</td>
+              <td class="p-3 text-right font-bold ${stats.valorAPagar > 0 ? 'text-emerald-400' : 'text-slate-500'}">
+                R$ ${stats.valorAPagar.toFixed(2)}
+              </td>
             `;
             tableBody.appendChild(tr);
           });
@@ -1467,9 +1248,7 @@
 
       renderHistory() {
         const tripsBody = document.getElementById('history-trips-body');
-        const refuelsBody = document.getElementById('history-refuels-body');
-
-        if (!tripsBody || !refuelsBody) return;
+        if (!tripsBody) return;
 
         tripsBody.innerHTML = '';
         if (this.data.trips.length === 0) {
@@ -1501,33 +1280,8 @@
           });
         }
 
-        refuelsBody.innerHTML = '';
-        if (this.data.refuels.length === 0) {
-          refuelsBody.innerHTML = `<tr><td colspan="4" class="text-center p-6 text-slate-500">Nenhum abastecimento registrado até o momento.</td></tr>`;
-        } else {
-          this.data.refuels.forEach(r => {
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-slate-900/40 transition';
-            const contribSummary = Object.entries(r.contributions)
-              .map(([m, val]) => `${m}: R$ ${val.toFixed(2)}`)
-              .join(' | ');
-
-            tr.innerHTML = `
-              <td class="p-3.5 font-medium text-slate-200 whitespace-nowrap">${r.dateStr}</td>
-              <td class="p-3.5 text-right font-bold text-cyan-400 whitespace-nowrap">R$ ${r.totalAmount.toFixed(2)}</td>
-              <td class="p-3.5 text-xs text-slate-400 truncate max-w-xs" title="${contribSummary}">${contribSummary}</td>
-              <td class="p-3.5 text-center whitespace-nowrap">
-                <button type="button" onclick="window.app && window.app.deleteRefuel('${r.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Abastecimento">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
-              </td>
-            `;
-            refuelsBody.appendChild(tr);
-          });
-        }
-
         const countBadge = document.getElementById('history-count-badge');
-        if (countBadge) countBadge.textContent = `${this.data.trips.length} viagens e ${this.data.refuels.length} abastecimentos`;
+        if (countBadge) countBadge.textContent = `${this.data.trips.length} viagens registradas no total`;
       }
 
       deleteTrip(id) {
@@ -1538,16 +1292,8 @@
         }
       }
 
-      deleteRefuel(id) {
-        if (confirm('Deseja realmente excluir este abastecimento?')) {
-          this.data.refuels = this.data.refuels.filter(r => r.id !== id);
-          this.saveData();
-          this.showToast('Abastecimento excluído.', 'info');
-        }
-      }
-
       switchTab(tab) {
-        const tabsList = ['trips', 'refuel', 'report', 'reports-log', 'history'];
+        const tabsList = ['trips', 'report', 'reports-log', 'history'];
         tabsList.forEach(t => {
           const btn = document.getElementById(`tab-btn-${t}`);
           const content = document.getElementById(`tab-content-${t}`);
@@ -1561,25 +1307,6 @@
             }
           }
         });
-      }
-
-      switchHistorySubtab(sub) {
-        const btnTrips = document.getElementById('subtab-btn-trips');
-        const btnRefuels = document.getElementById('subtab-btn-refuels');
-        const tableTrips = document.getElementById('history-table-trips-container');
-        const tableRefuels = document.getElementById('history-table-refuels-container');
-
-        if (sub === 'trips') {
-          if (btnTrips) btnTrips.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-white shadow';
-          if (btnRefuels) btnRefuels.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white';
-          if (tableTrips) tableTrips.classList.remove('hidden');
-          if (tableRefuels) tableRefuels.classList.add('hidden');
-        } else {
-          if (btnRefuels) btnRefuels.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-white shadow';
-          if (btnTrips) btnTrips.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white';
-          if (tableRefuels) tableRefuels.classList.remove('hidden');
-          if (tableTrips) tableTrips.classList.add('hidden');
-        }
       }
 
       openLocationsModal() {
@@ -1710,7 +1437,7 @@
             members: DEFAULT_MEMBERS,
             presetLocations: [...DEFAULT_PRESET_LOCATIONS],
             trips: [],
-            refuels: [],
+            lastClosedTimestamp: 0,
             issuedReports: []
           };
           this.saveData();
