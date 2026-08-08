@@ -2,13 +2,13 @@
 <html lang="pt-BR" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle de Veículo Compartilhado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AutoShare - Controle de Veículo Compartilhado</title>
   
   <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- FontAwesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,8 +34,6 @@
               500: '#10b981',
               600: '#059669',
               700: '#047857',
-              800: '#065f46',
-              900: '#064e3b',
               dark: '#0f172a',
               card: '#1e293b',
             }
@@ -46,9 +44,13 @@
   </script>
 
   <style>
+    /* Prevent text zooming on iOS input focus */
+    input, select, textarea, button {
+      font-size: 16px !important;
+    }
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 4px;
+      height: 4px;
     }
     ::-webkit-scrollbar-track {
       background: #0f172a;
@@ -57,23 +59,23 @@
       background: #334155;
       border-radius: 9999px;
     }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
     .glass-card {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
-    .tab-btn {
+    .nav-tab {
       cursor: pointer;
       user-select: none;
       transition: all 0.2s ease-in-out;
     }
-    .tab-btn.active {
+    .nav-tab.active {
       background-color: #10b981 !important;
       color: #ffffff !important;
-      box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39) !important;
+      box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.35) !important;
+    }
+    .bottom-nav-item.active {
+      color: #10b981 !important;
     }
 
     /* Print styling rules */
@@ -84,9 +86,6 @@
       }
       .no-print {
         display: none !important;
-      }
-      .print-only {
-        display: block !important;
       }
       .glass-card {
         background: #ffffff !important;
@@ -100,299 +99,347 @@
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-full flex flex-col selection:bg-emerald-500 selection:text-white pb-12">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-full flex flex-col selection:bg-emerald-500 selection:text-white pb-24 md:pb-12 overflow-x-hidden">
 
-  <!-- Main Content Container -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-grow w-full">
-    
-    <!-- Top Action Bar (No Top Header) -->
-    <div class="flex items-center justify-between mb-6 flex-wrap gap-3 no-print">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-          <i class="fa-solid fa-car-side text-white text-lg"></i>
+  <!-- Mobile Top Header Bar -->
+  <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-3 no-print">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-md shadow-emerald-500/20">
+          <i class="fa-solid fa-car-side text-white text-base"></i>
         </div>
         <div>
-          <h1 class="text-lg font-bold text-white leading-tight">AutoShare <span class="text-xs text-emerald-400 font-normal">Ribeirão Preto - SP</span></h1>
-          <p class="text-xs text-slate-400">Cinthia • Arnaldo • Henri • Hector • Heric</p>
+          <h1 class="text-base font-bold text-white leading-tight">AutoShare</h1>
+          <p class="text-[11px] text-emerald-400 font-medium">Ribeirão Preto - SP</p>
         </div>
       </div>
 
-      <!-- Compact Utility Controls -->
-      <div class="flex items-center gap-2">
-        <button type="button" onclick="window.app && window.app.openFirebaseModal()" id="btn-firebase-status" class="px-3 py-1.5 text-xs font-medium bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-400 border border-emerald-800/40 rounded-xl transition flex items-center gap-1.5">
-          <i class="fa-solid fa-fire"></i> <span id="txt-firebase-status">Firebase Cloud</span>
+      <!-- Quick Action Controls -->
+      <div class="flex items-center gap-1.5">
+        <button type="button" onclick="window.app && window.app.openFirebaseModal()" id="btn-firebase-status" class="p-2 text-xs bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 rounded-xl" title="Status Cloud">
+          <i class="fa-solid fa-fire"></i>
         </button>
-        <button type="button" onclick="window.app && window.app.openLocationsModal()" class="px-3 py-1.5 text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 flex items-center gap-1.5">
-          <i class="fa-solid fa-location-dot text-emerald-400"></i> Locais Padrão
+        <button type="button" onclick="window.app && window.app.openLocationsModal()" class="p-2 text-xs bg-slate-800 text-slate-300 rounded-xl border border-slate-700" title="Locais Padrão">
+          <i class="fa-solid fa-location-dot text-emerald-400"></i>
         </button>
-        <button type="button" onclick="window.app && window.app.exportBackup()" class="px-3 py-1.5 text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 flex items-center gap-1.5" title="Exportar Backup JSON">
-          <i class="fa-solid fa-download text-cyan-400"></i> Backup
+        <button type="button" onclick="window.app && window.app.exportBackup()" class="p-2 text-xs bg-slate-800 text-slate-300 rounded-xl border border-slate-700" title="Backup JSON">
+          <i class="fa-solid fa-download text-cyan-400"></i>
         </button>
-        <button type="button" onclick="window.app && window.app.confirmReset()" class="px-3 py-1.5 text-xs font-medium bg-red-950/40 hover:bg-red-900/60 text-red-400 rounded-xl border border-red-800/40" title="Resetar Dados">
+        <button type="button" onclick="window.app && window.app.confirmReset()" class="p-2 text-xs bg-red-950/50 text-red-400 rounded-xl border border-red-800/40" title="Resetar Dados">
           <i class="fa-solid fa-trash-can"></i>
         </button>
       </div>
     </div>
+  </header>
 
-    <!-- Tab Navigation Bar -->
-    <div class="flex items-center justify-between mb-6 flex-wrap gap-3 no-print">
-      <nav class="flex space-x-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 overflow-x-auto w-full md:w-auto">
-        <button type="button" onclick="window.app && window.app.switchTab('trips')" id="tab-btn-trips" class="tab-btn active px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 flex-grow w-full">
+
+    <!-- Desktop Navigation Tabs (Hidden on Small Screens) -->
+    <div class="hidden md:flex items-center justify-between mb-6 no-print">
+      <nav class="flex space-x-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800">
+        <button type="button" onclick="window.app && window.app.switchTab('trips')" id="tab-btn-trips" class="nav-tab active px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
           <i class="fa-solid fa-car-on"></i> <span>Registrar Viagem</span>
         </button>
-        <button type="button" onclick="window.app && window.app.switchTab('report')" id="tab-btn-report" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-chart-pie"></i> <span>Relatório & Fechamento do Período</span>
+        <button type="button" onclick="window.app && window.app.switchTab('extra-refuel')" id="tab-btn-extra-refuel" class="nav-tab px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-gas-pump"></i> <span>Abastecimento Extra (Crédito)</span>
         </button>
-        <button type="button" onclick="window.app && window.app.switchTab('reports-log')" id="tab-btn-reports-log" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-file-lines"></i> <span>Log de Relatórios Emitidos</span>
+        <button type="button" onclick="window.app && window.app.switchTab('report')" id="tab-btn-report" class="nav-tab px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-chart-pie"></i> <span>Relatório & Fechamento</span>
         </button>
-        <button type="button" onclick="window.app && window.app.switchTab('history')" id="tab-btn-history" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 whitespace-nowrap">
-          <i class="fa-solid fa-list-check"></i> <span>Histórico de Viagens</span>
+        <button type="button" onclick="window.app && window.app.switchTab('reports-log')" id="tab-btn-reports-log" class="nav-tab px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-file-lines"></i> <span>Log de Relatórios</span>
+        </button>
+        <button type="button" onclick="window.app && window.app.switchTab('history')" id="tab-btn-history" class="nav-tab px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-list-check"></i> <span>Histórico</span>
         </button>
       </nav>
     </div>
 
     <!-- TAB 1: REGISTRAR VIAGEM -->
-    <section id="tab-content-trips" class="space-y-6">
-      <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-5 mb-6">
+    <section id="tab-content-trips" class="space-y-4">
+      <div class="glass-card rounded-3xl p-4 sm:p-6 shadow-xl border border-slate-800">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
           <div>
-            <h2 class="text-xl font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-car-on text-emerald-400"></i> Registrar Nova Viagem
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-car-on text-emerald-400"></i> Registrar Viagem
             </h2>
-            <p class="text-xs text-slate-400 mt-1">Cálculo automático de rota rodoviária (Google Maps / OSRM) entre todas as paradas.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Cálculo de rota rodoviária (Google Maps / OSRM).</p>
           </div>
-          <span class="text-xs font-semibold px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">Módulo 1</span>
+          <span class="text-[11px] font-semibold px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">Módulo 1</span>
         </div>
 
-        <form id="form-trip" onsubmit="window.app && window.app.saveTrip(event)" class="space-y-6">
+        <form id="form-trip" onsubmit="window.app && window.app.saveTrip(event)" class="space-y-4">
           
-          <!-- Data da Viagem e Participantes -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                <i class="fa-regular fa-calendar text-emerald-400 mr-1"></i> Data da Viagem
+          <!-- Data da Viagem -->
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+              <i class="fa-regular fa-calendar text-emerald-400 mr-1"></i> Data da Viagem
+            </label>
+            <input type="date" id="trip-date" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+          </div>
+
+          <!-- Seleção dos 5 Integrantes -->
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <i class="fa-solid fa-users text-emerald-400 mr-1"></i> Quem Utilizou o Carro?
               </label>
-              <input type="date" id="trip-date" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+              <button type="button" onclick="window.app && window.app.toggleSelectAllMembers()" class="text-xs text-emerald-400 font-semibold hover:underline">Todos</button>
             </div>
 
-            <!-- Seleção dos 5 Integrantes Fixos -->
-            <div>
-              <div class="flex justify-between items-center mb-2">
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                  <i class="fa-solid fa-users text-emerald-400 mr-1"></i> Quem Utilizou o Carro?
-                </label>
-                <button type="button" onclick="window.app && window.app.toggleSelectAllMembers()" class="text-xs text-emerald-400 hover:underline">Selecionar Todos</button>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
-                  <input type="checkbox" name="trip-members" value="Cinthia" onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-                  <span class="text-xs font-medium text-slate-200">Cinthia</span>
-                </label>
-                <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
-                  <input type="checkbox" name="trip-members" value="Arnaldo" onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-                  <span class="text-xs font-medium text-slate-200">Arnaldo</span>
-                </label>
-                <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
-                  <input type="checkbox" name="trip-members" value="Henri" onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-                  <span class="text-xs font-medium text-slate-200">Henri</span>
-                </label>
-                <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
-                  <input type="checkbox" name="trip-members" value="Hector" onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-                  <span class="text-xs font-medium text-slate-200">Hector</span>
-                </label>
-                <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
-                  <input type="checkbox" name="trip-members" value="Heric" onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-                  <span class="text-xs font-medium text-slate-200">Heric</span>
-                </label>
-              </div>
+            <!-- Mobile Touch Checkboxes -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              <label class="flex items-center gap-2 p-3 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition">
+                <input type="checkbox" name="trip-members" value="Cinthia" onchange="window.app && window.app.updateTripPreview()" class="w-5 h-5 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                <span class="text-xs font-bold text-slate-200">Cinthia</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition">
+                <input type="checkbox" name="trip-members" value="Arnaldo" onchange="window.app && window.app.updateTripPreview()" class="w-5 h-5 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                <span class="text-xs font-bold text-slate-200">Arnaldo</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition">
+                <input type="checkbox" name="trip-members" value="Henri" onchange="window.app && window.app.updateTripPreview()" class="w-5 h-5 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                <span class="text-xs font-bold text-slate-200">Henri</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition">
+                <input type="checkbox" name="trip-members" value="Hector" onchange="window.app && window.app.updateTripPreview()" class="w-5 h-5 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                <span class="text-xs font-bold text-slate-200">Hector</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition">
+                <input type="checkbox" name="trip-members" value="Heric" onchange="window.app && window.app.updateTripPreview()" class="w-5 h-5 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                <span class="text-xs font-bold text-slate-200">Heric</span>
+              </label>
             </div>
           </div>
 
           <!-- ROTA: Origem, Paradas e Destino -->
-          <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
             <div class="flex items-center justify-between">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                <i class="fa-solid fa-map-pin text-emerald-400"></i> Trajeto da Viagem (Origem, Paradas & Destino)
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+                <i class="fa-solid fa-map-pin text-emerald-400"></i> Trajeto (Origem & Destino)
               </h3>
-              <button type="button" onclick="window.app && window.app.addTripStop()" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded-lg text-xs font-semibold border border-emerald-500/30 transition flex items-center gap-1">
-                <i class="fa-solid fa-plus"></i> Adicionar Parada
+              <button type="button" onclick="window.app && window.app.addTripStop()" class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded-lg text-xs font-bold border border-emerald-500/30 transition flex items-center gap-1">
+                <i class="fa-solid fa-plus"></i> Parada
               </button>
             </div>
 
             <!-- Origem -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
-              <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1">Origem (Ponto Inicial)</label>
-                <select id="trip-origin" onchange="window.app && window.app.onLocationSelectChange('trip-origin', 'trip-origin-custom'); window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-                  <!-- Populated dynamically -->
-                </select>
-              </div>
-              <div id="container-origin-custom" class="hidden">
-                <input type="text" id="trip-origin-custom" placeholder="Digite o endereço completo da Origem..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Origem (Ponto Inicial)</label>
+              <select id="trip-origin" onchange="window.app && window.app.onLocationSelectChange('trip-origin', 'trip-origin-custom'); window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+                <!-- Populated dynamically -->
+              </select>
+              <div id="container-origin-custom" class="hidden mt-2">
+                <input type="text" id="trip-origin-custom" placeholder="Digite o endereço da Origem..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
               </div>
             </div>
 
             <!-- Paradas Intermediárias Container -->
-            <div id="trip-stops-container" class="space-y-3 pl-4 border-l-2 border-slate-800">
+            <div id="trip-stops-container" class="space-y-2 pl-3 border-l-2 border-slate-800">
               <!-- Dynamically added stops -->
             </div>
 
             <!-- Destino -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end pt-2">
-              <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1">Destino Final</label>
-                <select id="trip-destination" onchange="window.app && window.app.onLocationSelectChange('trip-destination', 'trip-dest-custom'); window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
-                  <!-- Populated dynamically -->
-                </select>
-              </div>
-              <div id="container-dest-custom" class="hidden">
-                <input type="text" id="trip-dest-custom" placeholder="Digite o endereço completo do Destino..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Destino Final</label>
+              <select id="trip-destination" onchange="window.app && window.app.onLocationSelectChange('trip-destination', 'trip-dest-custom'); window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+                <!-- Populated dynamically -->
+              </select>
+              <div id="container-dest-custom" class="hidden mt-2">
+                <input type="text" id="trip-dest-custom" placeholder="Digite o endereço do Destino..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
               </div>
             </div>
-
           </div>
 
-          <!-- Distância, Ida/Volta & Google Maps -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Distância e Opções -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center justify-between mb-1">
                 <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                  <i class="fa-solid fa-ruler-combined text-emerald-400 mr-1"></i> Distância Percorrida (km)
+                  Distância (km)
                 </label>
-                <span id="route-calc-spinner" class="hidden text-[11px] text-emerald-400 font-semibold animate-pulse flex items-center gap-1">
-                  <i class="fa-solid fa-spin fa-spinner"></i> Calculando rota...
+                <span id="route-calc-spinner" class="hidden text-[11px] text-emerald-400 font-semibold animate-pulse">
+                  <i class="fa-solid fa-spin fa-spinner"></i> Calculando...
                 </span>
               </div>
-              <div class="relative">
-                <input type="number" id="trip-distance" step="0.1" min="0.1" required oninput="window.app && window.app.updateTripPreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
-              </div>
+              <input type="number" id="trip-distance" step="0.1" min="0.1" required oninput="window.app && window.app.updateTripPreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-3 text-sm font-bold text-white focus:outline-none focus:border-emerald-500">
             </div>
 
             <!-- Toggle Ida e Volta -->
             <div class="flex items-center">
               <label class="flex items-center gap-3 cursor-pointer select-none bg-slate-900 p-3 rounded-xl border border-slate-800 w-full">
                 <input type="checkbox" id="trip-roundtrip" onchange="window.app && window.app.updateTripPreview()" class="sr-only peer">
-                <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 relative"></div>
-                <span class="text-xs font-semibold text-slate-200">
-                  Ida e Volta (Dobra KM)
-                </span>
+                <div class="w-10 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 relative"></div>
+                <span class="text-xs font-bold text-slate-200">Ida e Volta (Dobra KM)</span>
               </label>
-            </div>
-
-            <!-- Abrir Rota no Google Maps -->
-            <div class="flex items-center">
-              <a id="btn-gmaps-link" href="#" target="_blank" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-map-location text-sm"></i> Abrir Rota no Google Maps
-              </a>
             </div>
           </div>
 
-          <!-- Real-time Preview Calculation Box -->
-          <div id="trip-preview-box" class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center justify-between flex-wrap gap-3">
+          <!-- Google Maps Link Button -->
+          <a id="btn-gmaps-link" href="#" target="_blank" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-map-location text-sm"></i> Abrir Rota no Google Maps
+          </a>
+
+          <!-- Live Preview Box -->
+          <div id="trip-preview-box" class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between flex-wrap gap-2">
             <div>
-              <div class="text-xs text-slate-400">Divisão entre Participantes:</div>
-              <div id="preview-members-list" class="text-xs font-bold text-slate-200 mt-0.5">Selecione os integrantes</div>
+              <div class="text-[11px] text-slate-400">Participantes:</div>
+              <div id="preview-members-list" class="text-xs font-bold text-slate-200">Selecione os integrantes</div>
             </div>
             <div class="text-right">
-              <div class="text-slate-400 text-xs">Distância Total: <strong id="preview-total-dist" class="text-emerald-400 font-bold text-sm">0.0 km</strong></div>
-              <div class="text-slate-400 text-xs mt-0.5">Rateio por Pessoa: <strong id="preview-per-member" class="text-cyan-400 font-bold text-sm">0.0 km</strong></div>
+              <div class="text-slate-400 text-[11px]">Total: <strong id="preview-total-dist" class="text-emerald-400 font-bold">0.0 km</strong></div>
+              <div class="text-slate-400 text-[11px]">Por Pessoa: <strong id="preview-per-member" class="text-cyan-400 font-bold">0.0 km</strong></div>
             </div>
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/25 transition transform active:scale-[0.99] flex items-center justify-center gap-2">
-            <i class="fa-solid fa-floppy-disk text-lg"></i> Salvar Viagem
+          <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-emerald-600/25 active:scale-[0.98] transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-floppy-disk"></i> Salvar Viagem
           </button>
 
         </form>
       </div>
     </section>
 
-    <!-- TAB 2: RELATÓRIOS E FECHAMENTO -->
-    <section id="tab-content-report" class="space-y-6 hidden">
-      
-      <!-- Emit Report Action Banner with Manual Fuel Cost Input -->
-      <div class="glass-card rounded-3xl p-6 shadow-xl space-y-6 border border-emerald-500/20">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-          <div>
-            <h2 class="text-xl font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-chart-pie text-emerald-400"></i> Fechamento do Período Atual
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">
-              Digitar a nota do posto para dividir o custo estritamente conforme a porcentagem de uso. Ao emitir, os valores zeram e inicia-se um novo período!
-            </p>
-          </div>
-
-          <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800 text-right text-xs">
-            <span class="text-slate-400">Total KM Acumulado no Período:</span>
-            <div id="live-period-total-km" class="text-lg font-extrabold text-emerald-400">0,0 km</div>
-          </div>
+    <!-- TAB 2: ABASTECIMENTO EXTRA & CRÉDITO -->
+    <section id="tab-content-extra-refuel" class="space-y-4 hidden">
+      <div class="glass-card rounded-3xl p-4 sm:p-6 shadow-xl border border-slate-800">
+        <div class="border-b border-slate-800 pb-3 mb-4">
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-gas-pump text-cyan-400"></i> Abastecimento Extra (Crédito Individual)
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Quando alguém abastece o carro com o próprio dinheiro, este valor fica como <strong>Crédito Acumulado</strong> e será abatido automaticamente nos próximos relatórios!
+          </p>
         </div>
 
-        <!-- Manual Fuel Cost Input & Emission Button -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
-          <div class="md:col-span-2">
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
-              <i class="fa-solid fa-gas-pump text-cyan-400 mr-1"></i> Valor Total da Abastecida no Posto (R$)
-            </label>
-            <input type="number" id="manual-refuel-cost" step="0.01" min="0" placeholder="Ex: 250.00" oninput="window.app && window.app.renderReport()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 font-bold">
+        <!-- Form Abastecimento Extra -->
+        <form id="form-extra-refuel" onsubmit="window.app && window.app.saveExtraRefuel(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Quem Abasteceu?</label>
+              <select id="extra-refuel-member" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-cyan-500 font-bold">
+                <option value="Cinthia">Cinthia</option>
+                <option value="Arnaldo">Arnaldo</option>
+                <option value="Henri">Henri</option>
+                <option value="Hector">Hector</option>
+                <option value="Heric">Heric</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Data</label>
+              <input type="date" id="extra-refuel-date" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-cyan-500">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Valor Abastecido (R$)</label>
+              <input type="number" id="extra-refuel-amount" step="0.01" min="0.01" required placeholder="Ex: 100.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-cyan-500 font-bold">
+            </div>
           </div>
 
-          <div>
-            <button type="button" onclick="window.app && window.app.emitNewReport()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-emerald-500/25 transition transform active:scale-[0.98] flex items-center justify-center gap-2 text-xs">
-              <i class="fa-solid fa-file-invoice text-sm"></i> Emitir, Salvar & Zerar Período
-            </button>
-          </div>
-        </div>
+          <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-cyan-600/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-plus-circle text-sm"></i> Registrar Abastecimento Extra & Adicionar Crédito
+          </button>
+        </form>
       </div>
 
-      <!-- Live Period Summary Cards per Member (Pure % and Value) -->
-      <div id="report-members-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        <!-- Rendered dynamically -->
-      </div>
-    </section>
-
-    <!-- TAB 3: LOG DE RELATÓRIOS EMITIDOS -->
-    <section id="tab-content-reports-log" class="space-y-6 hidden">
-      <div class="glass-card rounded-3xl p-6 shadow-xl">
-        <div class="flex items-center justify-between mb-6 flex-wrap gap-3 border-b border-slate-800 pb-4">
-          <div>
-            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-file-lines text-cyan-400"></i> Histórico de Relatórios Emitidos
-            </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Todos os relatórios fechados ficam salvos neste log permanente com número, data e opção de impressão.</p>
-          </div>
-          <span class="text-xs text-slate-400" id="reports-log-count">0 relatórios salvos</span>
-        </div>
-
-        <div id="reports-log-list" class="space-y-4">
+      <!-- Saldo de Crédito dos 5 Integrantes -->
+      <div class="glass-card rounded-3xl p-4 shadow-xl border border-slate-800 space-y-3">
+        <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-wallet text-emerald-400"></i> Saldo Atual de Créditos por Integrante
+        </h3>
+        <div id="credits-balance-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2">
           <!-- Rendered dynamically -->
         </div>
       </div>
     </section>
 
-    <!-- TAB 4: HISTÓRICO DE VIAGENS -->
-    <section id="tab-content-history" class="space-y-6 hidden">
-      <div class="glass-card rounded-3xl p-6 shadow-xl">
-        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-list-check text-emerald-400"></i> Histórico Completo de Viagens Registradas
+    <!-- TAB 3: RELATÓRIOS E FECHAMENTO -->
+    <section id="tab-content-report" class="space-y-4 hidden">
+      
+      <!-- Emit Report Action Banner with Manual Fuel Cost Input -->
+      <div class="glass-card rounded-3xl p-4 sm:p-6 shadow-xl space-y-4 border border-emerald-500/20">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-chart-pie text-emerald-400"></i> Fechamento do Período
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Insira o valor da abastecida. Créditos pendentes serão abatidos automaticamente!
+            </p>
+          </div>
+
+          <div class="bg-slate-900 px-3 py-2 rounded-xl border border-slate-800 text-right text-xs">
+            <span class="text-slate-400">KM Acumulado:</span>
+            <div id="live-period-total-km" class="text-base font-extrabold text-emerald-400">0,0 km</div>
+          </div>
+        </div>
+
+        <!-- Manual Fuel Cost Input & Emission Button -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
+              <i class="fa-solid fa-gas-pump text-cyan-400 mr-1"></i> Valor Total da Abastecida no Posto (R$)
+            </label>
+            <input type="number" id="manual-refuel-cost" step="0.01" min="0" placeholder="Ex: 250.00" oninput="window.app && window.app.renderReport()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 font-bold">
+          </div>
+
+          <div>
+            <button type="button" onclick="window.app && window.app.emitNewReport()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition flex items-center justify-center gap-1.5 text-xs">
+              <i class="fa-solid fa-file-invoice text-sm"></i> Emitir & Abater Créditos
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Period Summary Cards per Member -->
+      <div id="report-members-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- TAB 4: LOG DE RELATÓRIOS EMITIDOS -->
+    <section id="tab-content-reports-log" class="space-y-4 hidden">
+      <div class="glass-card rounded-3xl p-4 sm:p-6 shadow-xl border border-slate-800">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2 border-b border-slate-800 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-file-lines text-cyan-400"></i> Relatórios Emitidos
+            </h2>
+            <p class="text-xs text-slate-400">Histórico de relatórios de fechamento salvos.</p>
+          </div>
+          <span class="text-xs text-slate-400" id="reports-log-count">0 relatórios salvos</span>
+        </div>
+
+        <div id="reports-log-list" class="space-y-3">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: HISTÓRICO DE VIAGENS -->
+    <section id="tab-content-history" class="space-y-4 hidden">
+      <div class="glass-card rounded-3xl p-4 sm:p-6 shadow-xl border border-slate-800">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-emerald-400"></i> Histórico de Viagens
           </h2>
-          <span class="text-xs text-slate-400" id="history-count-badge">0 viagens registradas</span>
+          <span class="text-xs text-slate-400" id="history-count-badge">0 viagens</span>
         </div>
 
         <div id="history-table-trips-container" class="overflow-x-auto">
           <table class="w-full text-left text-xs text-slate-300">
             <thead class="bg-slate-900/80 uppercase text-[10px] tracking-wider text-slate-400 font-bold border-b border-slate-800">
               <tr>
-                <th class="p-3.5">Data</th>
-                <th class="p-3.5">Quem Utilizou</th>
-                <th class="p-3.5">Trajeto</th>
-                <th class="p-3.5 text-center">Tipo</th>
-                <th class="p-3.5 text-right">KM Total</th>
-                <th class="p-3.5 text-right">KM / Pessoa</th>
-                <th class="p-3.5 text-center">Ações</th>
+                <th class="p-3">Data</th>
+                <th class="p-3">Quem Utilizou</th>
+                <th class="p-3">Trajeto</th>
+                <th class="p-3 text-center">Tipo</th>
+                <th class="p-3 text-right">KM Total</th>
+                <th class="p-3 text-right">KM / Pessoa</th>
+                <th class="p-3 text-center">Ações</th>
               </tr>
             </thead>
             <tbody id="history-trips-body" class="divide-y divide-slate-800/60">
@@ -405,52 +452,73 @@
 
   </main>
 
+  <!-- Mobile Bottom Navigation Bar (Thumb Friendly for Phones) -->
+  <div class="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 flex justify-around items-center px-1 py-2 md:hidden no-print">
+    <button type="button" onclick="window.app && window.app.switchTab('trips')" id="bottom-btn-trips" class="bottom-nav-item active flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400">
+      <i class="fa-solid fa-car-on text-lg"></i> Viagens
+    </button>
+    <button type="button" onclick="window.app && window.app.switchTab('extra-refuel')" id="bottom-btn-extra-refuel" class="bottom-nav-item flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400">
+      <i class="fa-solid fa-gas-pump text-lg"></i> Créditos
+    </button>
+    <button type="button" onclick="window.app && window.app.switchTab('report')" id="bottom-btn-report" class="bottom-nav-item flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400">
+      <i class="fa-solid fa-chart-pie text-lg"></i> Relatórios
+    </button>
+    <button type="button" onclick="window.app && window.app.switchTab('reports-log')" id="bottom-btn-reports-log" class="bottom-nav-item flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400">
+      <i class="fa-solid fa-file-lines text-lg"></i> Log
+    </button>
+    <button type="button" onclick="window.app && window.app.switchTab('history')" id="bottom-btn-history" class="bottom-nav-item flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400">
+      <i class="fa-solid fa-list-check text-lg"></i> Histórico
+    </button>
+  </div>
+
   <!-- MODAL DE VISUALIZAÇÃO E IMPRESSÃO DO RELATÓRIO EMITIDO -->
-  <div id="modal-view-report" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-card max-w-3xl w-full rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 border border-slate-700 max-h-[90vh] overflow-y-auto">
+  <div id="modal-view-report" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+    <div class="glass-card max-w-3xl w-full rounded-3xl p-5 sm:p-8 shadow-2xl space-y-5 border border-slate-700 max-h-[92vh] overflow-y-auto">
       
       <!-- Printable Content Area -->
-      <div id="printable-report-area" class="space-y-6">
+      <div id="printable-report-area" class="space-y-5">
         
         <!-- Header do Relatório -->
-        <div class="border-b border-slate-700 pb-4 flex justify-between items-start flex-wrap gap-3">
+        <div class="border-b border-slate-700 pb-3 flex justify-between items-start flex-wrap gap-2">
           <div>
             <div class="text-xs font-bold text-emerald-400 uppercase tracking-widest" id="print-report-num">RELATÓRIO DE USO Nº #000</div>
-            <h2 class="text-xl font-extrabold text-white mt-0.5">Fechamento de Uso do Veículo Compartilhado</h2>
-            <div class="text-xs text-slate-400 mt-1">Ribeirão Preto - SP • AutoShare System</div>
+            <h2 class="text-lg font-extrabold text-white mt-0.5">Fechamento de Uso do Veículo</h2>
+            <div class="text-[11px] text-slate-400">Ribeirão Preto - SP • AutoShare</div>
           </div>
-          <div class="text-right text-xs text-slate-300 bg-slate-900/90 p-3 rounded-2xl border border-slate-800">
-            <div>Data de Emissão: <strong id="print-report-date" class="text-white">--/--/----</strong></div>
+          <div class="text-right text-xs text-slate-300 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
+            <div>Emissão: <strong id="print-report-date" class="text-white">--/--/----</strong></div>
             <div class="mt-0.5 text-slate-400">Período: <span id="print-report-period" class="text-slate-200">--</span></div>
           </div>
         </div>
 
         <!-- Metric Badges -->
-        <div class="grid grid-cols-3 gap-3 text-center">
-          <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800">
-            <div class="text-[10px] text-slate-400 uppercase font-semibold">Total KM no Período</div>
-            <div id="print-report-km" class="text-base font-bold text-emerald-400 mt-0.5">0.0 km</div>
+        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+          <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Total KM</div>
+            <div id="print-report-km" class="text-sm font-bold text-emerald-400 mt-0.5">0.0 km</div>
           </div>
-          <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800">
-            <div class="text-[10px] text-slate-400 uppercase font-semibold">Total de Viagens</div>
-            <div id="print-report-trips" class="text-base font-bold text-purple-400 mt-0.5">0</div>
+          <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Viagens</div>
+            <div id="print-report-trips" class="text-sm font-bold text-purple-400 mt-0.5">0</div>
           </div>
-          <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800">
-            <div class="text-[10px] text-slate-400 uppercase font-semibold">Custo da Abastecida</div>
-            <div id="print-report-cost" class="text-base font-bold text-cyan-400 mt-0.5">R$ 0,00</div>
+          <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Custo Posto</div>
+            <div id="print-report-cost" class="text-sm font-bold text-cyan-400 mt-0.5">R$ 0,00</div>
           </div>
         </div>
 
-        <!-- Tabela Detalhada por Participante (Strictly % and Fair Share Value) -->
+        <!-- Tabela Detalhada por Participante com Abatimento de Créditos -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
             <thead>
-              <tr class="bg-slate-900 border-b border-slate-800 text-slate-400 text-[11px] uppercase font-bold">
-                <th class="p-3">Participante</th>
-                <th class="p-3 text-center">Nº Viagens</th>
-                <th class="p-3 text-right">KM Atribuído</th>
-                <th class="p-3 text-right">% Uso Veículo</th>
-                <th class="p-3 text-right">Valor a Pagar (R$)</th>
+              <tr class="bg-slate-900 border-b border-slate-800 text-slate-400 text-[10px] uppercase font-bold">
+                <th class="p-2.5">Participante</th>
+                <th class="p-2.5 text-center">Viagens</th>
+                <th class="p-2.5 text-right">KM</th>
+                <th class="p-2.5 text-right">% Uso</th>
+                <th class="p-2.5 text-right">Custo Justo</th>
+                <th class="p-2.5 text-right">Crédito Usado</th>
+                <th class="p-2.5 text-right">A Pagar (R$)</th>
               </tr>
             </thead>
             <tbody id="print-report-table-body" class="divide-y divide-slate-800">
@@ -462,11 +530,11 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="pt-4 border-t border-slate-800 flex justify-between items-center no-print">
+      <div class="pt-3 border-t border-slate-800 flex justify-between items-center no-print">
         <button type="button" onclick="window.app && window.app.closeReportModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
           Fechar
         </button>
-        <button type="button" onclick="window.print()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition flex items-center gap-2">
+        <button type="button" onclick="window.print()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition flex items-center gap-2">
           <i class="fa-solid fa-print"></i> Imprimir Relatório
         </button>
       </div>
@@ -474,76 +542,62 @@
     </div>
   </div>
 
-  <!-- MODAL: Criar e Gerenciar Locais Padrão (com Endereço) -->
-  <div id="modal-locations" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
-    <div class="glass-card max-w-2xl w-full rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-700 max-h-[90vh] overflow-y-auto">
+  <!-- MODAL: Locais Padrão -->
+  <div id="modal-locations" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden no-print">
+    <div class="glass-card max-w-xl w-full rounded-3xl p-5 shadow-2xl space-y-4 border border-slate-700 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-location-dot text-emerald-400"></i> Locais Padrão de Ribeirão Preto - SP
+          <i class="fa-solid fa-location-dot text-emerald-400"></i> Locais Padrão
         </h3>
         <button type="button" onclick="window.app && window.app.closeLocationsModal()" class="text-slate-400 hover:text-white text-lg">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <form id="form-add-location" onsubmit="window.app && window.app.addNewLocation(event)" class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-        <div class="font-semibold text-xs text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-          <i class="fa-solid fa-plus"></i> Adicionar Novo Local Padrão
+      <form id="form-add-location" onsubmit="window.app && window.app.addNewLocation(event)" class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+        <div class="font-semibold text-xs text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+          <i class="fa-solid fa-plus"></i> Novo Local Padrão
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block text-[11px] font-medium text-slate-300 mb-1">Nome do Local</label>
-            <input type="text" id="new-loc-name" required placeholder="Ex: Mercado Barão" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-          </div>
-          <div class="sm:col-span-2">
-            <label class="block text-[11px] font-medium text-slate-300 mb-1">Endereço Completo</label>
-            <input type="text" id="new-loc-address" required placeholder="Ex: Av. Presidente Vargas, Ribeirão Preto - SP" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-          </div>
+        <div class="space-y-2">
+          <input type="text" id="new-loc-name" required placeholder="Nome do Local (Ex: Mercado)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
+          <input type="text" id="new-loc-address" required placeholder="Endereço Completo em Ribeirão Preto" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
         </div>
-        <div class="flex justify-end items-center pt-1">
-          <button type="submit" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs rounded-xl shadow transition">
-            + Cadastrar Local
-          </button>
-        </div>
+        <button type="submit" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs rounded-xl shadow transition">
+          + Cadastrar Local
+        </button>
       </form>
 
       <div class="space-y-2">
-        <div class="font-semibold text-xs text-slate-300 uppercase tracking-wider">Locais Salvos (Ribeirão Preto - SP):</div>
-        <div id="locations-list-container" class="space-y-2 max-h-52 overflow-y-auto pr-1">
+        <div class="font-semibold text-xs text-slate-300 uppercase tracking-wider">Locais Cadastrados:</div>
+        <div id="locations-list-container" class="space-y-2 max-h-48 overflow-y-auto">
           <!-- Rendered dynamically -->
         </div>
       </div>
 
-      <div class="pt-3 border-t border-slate-800 flex justify-end">
-        <button type="button" onclick="window.app && window.app.closeLocationsModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">Fechar</button>
+      <div class="pt-2 border-t border-slate-800 flex justify-end">
+        <button type="button" onclick="window.app && window.app.closeLocationsModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200">Fechar</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL: Firebase Config -->
-  <div id="modal-firebase" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
-    <div class="glass-card max-w-xl w-full rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-700">
+  <div id="modal-firebase" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden no-print">
+    <div class="glass-card max-w-lg w-full rounded-3xl p-5 shadow-2xl space-y-4 border border-slate-700">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-fire text-amber-400"></i> Configuração do Firebase Cloud (Projeto: abastecimento-4d95f)
+          <i class="fa-solid fa-fire text-amber-400"></i> Firebase Cloud (abastecimento-4d95f)
         </h3>
         <button type="button" onclick="window.app && window.app.closeFirebaseModal()" class="text-slate-400 hover:text-white text-lg">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <p class="text-xs text-slate-400">
-        O seu banco de dados <strong>Firebase Cloud (abastecimento-4d95f)</strong> já está conectado e sincronizando em tempo real!
-      </p>
       <form id="form-firebase" onsubmit="window.app && window.app.saveFirebaseConfig(event)" class="space-y-3">
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Chaves do Firebase Ativas:</label>
-          <textarea id="firebase-config-json" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-emerald-400 font-mono focus:outline-none focus:border-amber-500"></textarea>
-        </div>
-        <div class="pt-3 border-t border-slate-800 flex justify-between items-center">
+        <textarea id="firebase-config-json" rows="5" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-emerald-400 font-mono focus:outline-none"></textarea>
+        <div class="pt-2 border-t border-slate-800 flex justify-between items-center">
           <button type="button" onclick="window.app && window.app.restoreDefaultFirebaseConfig()" class="text-xs text-cyan-400 hover:underline">Restaurar Padrão</button>
           <div class="flex gap-2">
-            <button type="button" onclick="window.app && window.app.closeFirebaseModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">Fechar</button>
-            <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-white font-bold shadow transition">Salvar Chaves</button>
+            <button type="button" onclick="window.app && window.app.closeFirebaseModal()" class="px-3 py-1.5 rounded-xl text-xs bg-slate-800 text-slate-300">Fechar</button>
+            <button type="submit" class="px-4 py-1.5 rounded-xl text-xs bg-emerald-500 text-white font-bold">Salvar</button>
           </div>
         </div>
       </form>
@@ -551,14 +605,14 @@
   </div>
 
   <!-- Toast Notification Container -->
-  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none no-print"></div>
+  <div id="toast-container" class="fixed bottom-16 md:bottom-5 right-3 left-3 md:left-auto z-50 flex flex-col gap-2 pointer-events-none no-print"></div>
 
   <!-- JavaScript Application Script -->
   <script>
     /**
      * Shared Car Usage & Cost Tracker Application
      */
-    const STORAGE_KEY = 'autoshare_car_data_v7';
+    const STORAGE_KEY = 'autoshare_car_data_v8';
     const FIREBASE_KEY = 'autoshare_firebase_config_v1';
 
     const DEFAULT_MEMBERS = ['Cinthia', 'Arnaldo', 'Henri', 'Hector', 'Heric'];
@@ -640,6 +694,7 @@
         this.setDefaultDates();
         this.populateLocationSelects();
         this.calculateTripRouteDistance();
+        this.renderCreditsBalanceGrid();
         this.renderReport();
         this.renderReportsLog();
         this.renderHistory();
@@ -649,7 +704,6 @@
         const rawConfig = localStorage.getItem(FIREBASE_KEY);
         const config = rawConfig ? JSON.parse(rawConfig) : DEFAULT_FIREBASE_CONFIG;
         const statusBtn = document.getElementById('btn-firebase-status');
-        const statusTxt = document.getElementById('txt-firebase-status');
 
         try {
           if (!firebase.apps.length) {
@@ -658,12 +712,11 @@
           this.db = firebase.firestore();
           this.firebaseEnabled = true;
 
-          if (statusBtn && statusTxt) {
-            statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-400 border border-emerald-800/40 rounded-xl transition flex items-center gap-1.5';
-            statusTxt.textContent = 'Cloud Conectado';
+          if (statusBtn) {
+            statusBtn.className = 'p-2 text-xs bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 rounded-xl';
           }
 
-          this.db.collection('autoshare').doc('main_data_v7').onSnapshot((doc) => {
+          this.db.collection('autoshare').doc('main_data_v8').onSnapshot((doc) => {
             if (doc.exists) {
               const cloudData = doc.data();
               if (cloudData) {
@@ -672,25 +725,27 @@
                   presetLocations: cloudData.presetLocations || [...DEFAULT_PRESET_LOCATIONS],
                   trips: cloudData.trips || [],
                   lastClosedTimestamp: cloudData.lastClosedTimestamp || 0,
-                  issuedReports: cloudData.issuedReports || []
+                  issuedReports: cloudData.issuedReports || [],
+                  memberCredits: cloudData.memberCredits || { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 },
+                  extraRefuels: cloudData.extraRefuels || []
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
                 this.populateLocationSelects();
+                this.renderCreditsBalanceGrid();
                 this.renderReport();
                 this.renderReportsLog();
                 this.renderHistory();
               }
             } else {
-              this.db.collection('autoshare').doc('main_data_v7').set(this.data);
+              this.db.collection('autoshare').doc('main_data_v8').set(this.data);
             }
           }, (err) => {
             console.warn('Fallback offline:', err);
           });
         } catch (e) {
           console.error('Erro Firebase:', e);
-          if (statusBtn && statusTxt) {
-            statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-amber-950/40 hover:bg-amber-900/60 text-amber-400 border border-amber-800/40 rounded-xl transition flex items-center gap-1.5';
-            statusTxt.textContent = 'Modo Local';
+          if (statusBtn) {
+            statusBtn.className = 'p-2 text-xs bg-amber-950/60 text-amber-400 border border-amber-800/40 rounded-xl';
           }
         }
       }
@@ -705,7 +760,9 @@
               presetLocations: parsed.presetLocations || [...DEFAULT_PRESET_LOCATIONS],
               trips: parsed.trips || [],
               lastClosedTimestamp: parsed.lastClosedTimestamp || 0,
-              issuedReports: parsed.issuedReports || []
+              issuedReports: parsed.issuedReports || [],
+              memberCredits: parsed.memberCredits || { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 },
+              extraRefuels: parsed.extraRefuels || []
             };
           } catch (e) {
             console.error('Erro LocalStorage:', e);
@@ -716,16 +773,19 @@
           presetLocations: [...DEFAULT_PRESET_LOCATIONS],
           trips: [],
           lastClosedTimestamp: 0,
-          issuedReports: []
+          issuedReports: [],
+          memberCredits: { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 },
+          extraRefuels: []
         };
       }
 
       saveData() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
         if (this.firebaseEnabled && this.db) {
-          this.db.collection('autoshare').doc('main_data_v7').set(this.data)
+          this.db.collection('autoshare').doc('main_data_v8').set(this.data)
             .catch(err => console.error('Erro ao enviar dados pro Firebase:', err));
         }
+        this.renderCreditsBalanceGrid();
         this.renderReport();
         this.renderReportsLog();
         this.renderHistory();
@@ -734,7 +794,9 @@
       setDefaultDates() {
         const todayStr = new Date().toISOString().slice(0, 10);
         const tripDt = document.getElementById('trip-date');
+        const extraRefuelDt = document.getElementById('extra-refuel-date');
         if (tripDt) tripDt.value = todayStr;
+        if (extraRefuelDt) extraRefuelDt.value = todayStr;
       }
 
       populateLocationSelects() {
@@ -760,12 +822,12 @@
 
         const customOpt1 = document.createElement('option');
         customOpt1.value = 'custom';
-        customOpt1.textContent = '+ Adicionar Novo Endereço Personalizado';
+        customOpt1.textContent = '+ Digitar Endereço';
         originSelect.appendChild(customOpt1);
 
         const customOpt2 = document.createElement('option');
         customOpt2.value = 'custom';
-        customOpt2.textContent = '+ Adicionar Novo Endereço Personalizado';
+        customOpt2.textContent = '+ Digitar Endereço';
         destSelect.appendChild(customOpt2);
 
         originSelect.value = this.data.presetLocations[0] ? this.data.presetLocations[0].id : 'loc_casa';
@@ -795,23 +857,23 @@
 
         const div = document.createElement('div');
         div.id = `wrapper_${stopId}`;
-        div.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 items-end bg-slate-950/60 p-3 rounded-xl border border-slate-800 relative';
+        div.className = 'grid grid-cols-1 gap-2 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800 relative';
 
         let optionsHtml = this.data.presetLocations.map(loc => `<option value="${loc.id}">${loc.name} (${loc.address.split('-')[0]})</option>`).join('');
-        optionsHtml += `<option value="custom">+ Digitar Endereço de Parada</option>`;
+        optionsHtml += `<option value="custom">+ Digitar Endereço</option>`;
 
         div.innerHTML = `
           <div>
             <div class="flex justify-between items-center mb-1">
               <label class="text-[11px] font-semibold text-emerald-400">Parada Intermediária ${this.stopCount}</label>
-              <button type="button" onclick="window.app && window.app.removeTripStop('${stopId}')" class="text-xs text-red-400 hover:underline">Remover</button>
+              <button type="button" onclick="window.app && window.app.removeTripStop('${stopId}')" class="text-xs text-red-400 font-bold">Remover</button>
             </div>
             <select id="${stopId}" onchange="window.app && window.app.onStopSelectChange('${stopId}')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
               ${optionsHtml}
             </select>
           </div>
           <div id="container_${stopId}_custom" class="hidden">
-            <input type="text" id="${stopId}_custom" placeholder="Digite o endereço da Parada..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <input type="text" id="${stopId}_custom" placeholder="Endereço da Parada..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
           </div>
         `;
 
@@ -1015,7 +1077,65 @@
         this.calculateTripRouteDistance();
       }
 
-      // Active Period: Trips since last closed timestamp
+      // Save Extra Refuel & Add Member Credit
+      saveExtraRefuel(e) {
+        e.preventDefault();
+        const member = document.getElementById('extra-refuel-member').value;
+        const rawDate = document.getElementById('extra-refuel-date').value;
+        const amount = parseFloat(document.getElementById('extra-refuel-amount').value);
+
+        if (isNaN(amount) || amount <= 0) {
+          this.showToast('Informe um valor de abastecimento válido!', 'warning');
+          return;
+        }
+
+        if (!this.data.memberCredits) {
+          this.data.memberCredits = { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+        }
+
+        this.data.memberCredits[member] = (this.data.memberCredits[member] || 0) + amount;
+
+        const formattedDateParts = rawDate.split('-');
+        const formattedDate = formattedDateParts.length === 3 ? `${formattedDateParts[2]}/${formattedDateParts[1]}/${formattedDateParts[0]}` : rawDate;
+
+        const extraEntry = {
+          id: 'extra_' + Date.now(),
+          member,
+          dateStr: formattedDate,
+          timestamp: new Date(rawDate).getTime(),
+          amount
+        };
+
+        if (!this.data.extraRefuels) this.data.extraRefuels = [];
+        this.data.extraRefuels.unshift(extraEntry);
+
+        this.saveData();
+        this.showToast(`Crédito de R$ ${amount.toFixed(2)} adicionado para ${member}!`, 'success');
+        document.getElementById('extra-refuel-amount').value = '';
+      }
+
+      renderCreditsBalanceGrid() {
+        const grid = document.getElementById('credits-balance-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const credits = this.data.memberCredits || { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+
+        DEFAULT_MEMBERS.forEach(member => {
+          const val = credits[member] || 0;
+          const card = document.createElement('div');
+          card.className = 'bg-slate-900/90 p-3 rounded-2xl border border-slate-800 text-center';
+          card.innerHTML = `
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">${member}</div>
+            <div class="text-sm font-extrabold ${val > 0 ? 'text-emerald-400' : 'text-slate-500'} mt-0.5">
+              R$ ${val.toFixed(2)}
+            </div>
+            <div class="text-[9px] text-slate-500">${val > 0 ? 'Crédito Ativo' : 'Sem Crédito'}</div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
       getActivePeriodTrips() {
         const lastClosed = this.data.lastClosedTimestamp || 0;
         return this.data.trips.filter(t => t.timestamp >= lastClosed);
@@ -1035,6 +1155,8 @@
         if (!gridContainer) return;
         gridContainer.innerHTML = '';
 
+        const credits = this.data.memberCredits || { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+
         DEFAULT_MEMBERS.forEach(member => {
           let tripCount = 0;
           const memberKm = periodTrips.reduce((acc, t) => {
@@ -1046,42 +1168,53 @@
           }, 0);
 
           const usagePct = periodTotalKm > 0 ? (memberKm / periodTotalKm) * 100 : 0;
-          const memberPayShare = manualCost * (usagePct / 100);
+          const rawShareCost = manualCost * (usagePct / 100);
+          const currentCredit = credits[member] || 0;
+          const creditDeduction = Math.min(currentCredit, rawShareCost);
+          const finalPay = rawShareCost - creditDeduction;
 
           const card = document.createElement('div');
-          card.className = 'glass-card rounded-3xl p-6 shadow-xl relative overflow-hidden border border-slate-800';
+          card.className = 'glass-card rounded-3xl p-4 sm:p-6 shadow-xl relative overflow-hidden border border-slate-800';
 
           card.innerHTML = `
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center font-bold text-emerald-400 border border-slate-700">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-2xl bg-slate-800 flex items-center justify-center font-bold text-emerald-400 border border-slate-700">
                   ${member.charAt(0)}
                 </div>
                 <div>
-                  <h4 class="text-base font-bold text-white">${member}</h4>
-                  <div class="text-xs text-slate-400">${tripCount} corrida${tripCount !== 1 ? 's' : ''} • ${memberKm.toFixed(1)} km</div>
+                  <h4 class="text-sm font-bold text-white">${member}</h4>
+                  <div class="text-[11px] text-slate-400">${tripCount} corrida${tripCount !== 1 ? 's' : ''} • ${memberKm.toFixed(1)} km</div>
                 </div>
               </div>
-              <span class="px-3 py-1 rounded-full text-xs font-extrabold ${usagePct > 0 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500'}">
-                ${usagePct.toFixed(1)}% de Uso
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${usagePct > 0 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500'}">
+                ${usagePct.toFixed(1)}%
               </span>
             </div>
 
-            <div class="space-y-1.5 mb-4">
-              <div class="flex justify-between text-xs text-slate-400">
-                <span>Participação no veículo</span>
-                <span class="font-bold text-slate-200">${usagePct.toFixed(1)}%</span>
-              </div>
-              <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
+            <div class="space-y-1 mb-3">
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
                 <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-500" style="width: ${Math.min(usagePct, 100)}%"></div>
               </div>
             </div>
 
-            <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center text-xs">
-              <span class="text-slate-400 font-semibold">Valor a Pagar:</span>
-              <strong class="text-base font-bold ${memberPayShare > 0 ? 'text-emerald-400' : 'text-slate-500'}">
-                R$ ${memberPayShare.toFixed(2)}
-              </strong>
+            <div class="space-y-1.5 bg-slate-900/90 p-3 rounded-2xl border border-slate-800 text-xs">
+              <div class="flex justify-between text-slate-400">
+                <span>Custo Bruto:</span>
+                <strong class="text-slate-200">R$ ${rawShareCost.toFixed(2)}</strong>
+              </div>
+              ${currentCredit > 0 ? `
+              <div class="flex justify-between text-emerald-400">
+                <span>Crédito Abatido:</span>
+                <strong class="font-bold">- R$ ${creditDeduction.toFixed(2)}</strong>
+              </div>
+              ` : ''}
+              <div class="flex justify-between items-center border-t border-slate-800 pt-1.5">
+                <span class="font-bold text-slate-200">A Pagar:</span>
+                <strong class="text-base font-extrabold ${finalPay > 0 ? 'text-emerald-400' : 'text-slate-500'}">
+                  R$ ${finalPay.toFixed(2)}
+                </strong>
+              </div>
             </div>
           `;
 
@@ -1089,7 +1222,7 @@
         });
       }
 
-      // Emit, Save Report & Reset Active Period
+      // Emit Report & Deduct Member Credits
       emitNewReport() {
         const periodTrips = this.getActivePeriodTrips();
         const periodTotalKm = periodTrips.reduce((acc, t) => acc + t.totalDistance, 0);
@@ -1106,6 +1239,10 @@
         const reportNum = (this.data.issuedReports.length + 1).toString().padStart(3, '0');
         const reportDateStr = now.toLocaleDateString('pt-BR');
 
+        if (!this.data.memberCredits) {
+          this.data.memberCredits = { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+        }
+
         const memberStats = {};
         DEFAULT_MEMBERS.forEach(member => {
           let tripCount = 0;
@@ -1118,13 +1255,22 @@
           }, 0);
 
           const usagePct = periodTotalKm > 0 ? (km / periodTotalKm) * 100 : 0;
-          const valorAPagar = manualCost * (usagePct / 100);
+          const rawShareCost = manualCost * (usagePct / 100);
+
+          // Deduct credit balance
+          const availableCredit = this.data.memberCredits[member] || 0;
+          const creditDeduction = Math.min(availableCredit, rawShareCost);
+          this.data.memberCredits[member] -= creditDeduction;
+          const finalPay = rawShareCost - creditDeduction;
 
           memberStats[member] = {
             tripCount,
             km,
             usagePct,
-            valorAPagar
+            rawShareCost,
+            creditDeduction,
+            remainingCredit: this.data.memberCredits[member],
+            finalPay
           };
         });
 
@@ -1144,13 +1290,12 @@
         };
 
         this.data.issuedReports.unshift(reportObject);
-        // Reset/close current active period to 0!
         this.data.lastClosedTimestamp = now.getTime();
         this.saveData();
 
         if (manualCostInput) manualCostInput.value = '';
 
-        this.showToast(`Relatório Nº #${reportNum} emitido! O período foi zerado.`, 'success');
+        this.showToast(`Relatório Nº #${reportNum} emitido! Créditos abatidos.`, 'success');
         this.openReportModal(reportObject);
       }
 
@@ -1164,30 +1309,30 @@
         container.innerHTML = '';
 
         if (this.data.issuedReports.length === 0) {
-          container.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">Nenhum relatório foi emitido ainda. Clique em "Emitir & Salvar Relatório" na aba Relatórios para fechar o período.</div>`;
+          container.innerHTML = `<div class="text-center p-6 text-slate-500 text-xs">Nenhum relatório emitido ainda.</div>`;
           return;
         }
 
         this.data.issuedReports.forEach(rep => {
           const card = document.createElement('div');
-          card.className = 'bg-slate-900 border border-slate-800 p-4 rounded-2xl flex items-center justify-between flex-wrap gap-3 hover:border-slate-700 transition';
+          card.className = 'bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between flex-wrap gap-2 hover:border-slate-700 transition';
 
           card.innerHTML = `
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-sm border border-emerald-500/20">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xs border border-emerald-500/20">
                 #${rep.number}
               </div>
               <div>
-                <h4 class="text-sm font-bold text-white">Relatório de Fechamento Nº #${rep.number}</h4>
-                <div class="text-xs text-slate-400">Emitido em ${rep.dateStr} • ${rep.totalKm.toFixed(1)} km • ${rep.totalTrips} viagens • Custo: R$ ${rep.totalCost.toFixed(2)}</div>
+                <h4 class="text-xs font-bold text-white">Relatório Nº #${rep.number}</h4>
+                <div class="text-[11px] text-slate-400">${rep.dateStr} • ${rep.totalKm.toFixed(1)} km • Custo: R$ ${rep.totalCost.toFixed(2)}</div>
               </div>
             </div>
 
             <div class="flex items-center gap-2">
-              <button type="button" onclick="window.app && window.app.viewReportById('${rep.id}')" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-eye text-emerald-400"></i> Visualizar / Imprimir
+              <button type="button" onclick="window.app && window.app.viewReportById('${rep.id}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center gap-1">
+                <i class="fa-solid fa-eye text-emerald-400"></i> Ver
               </button>
-              <button type="button" onclick="window.app && window.app.deleteReportById('${rep.id}')" class="p-1.5 text-red-400 hover:text-red-300 text-xs transition" title="Excluir do Log">
+              <button type="button" onclick="window.app && window.app.deleteReportById('${rep.id}')" class="p-1.5 text-red-400 text-xs transition" title="Excluir">
                 <i class="fa-solid fa-trash-can"></i>
               </button>
             </div>
@@ -1223,16 +1368,18 @@
           tableBody.innerHTML = '';
 
           DEFAULT_MEMBERS.forEach(member => {
-            const stats = rep.memberStats[member] || { tripCount: 0, km: 0, usagePct: 0, valorAPagar: 0 };
+            const stats = rep.memberStats[member] || { tripCount: 0, km: 0, usagePct: 0, rawShareCost: 0, creditDeduction: 0, finalPay: 0 };
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-              <td class="p-3 font-bold text-white">${member}</td>
-              <td class="p-3 text-center text-slate-300">${stats.tripCount}</td>
-              <td class="p-3 text-right font-semibold text-emerald-400">${stats.km.toFixed(1)} km</td>
-              <td class="p-3 text-right font-bold text-slate-200">${stats.usagePct.toFixed(1)}%</td>
-              <td class="p-3 text-right font-bold ${stats.valorAPagar > 0 ? 'text-emerald-400' : 'text-slate-500'}">
-                R$ ${stats.valorAPagar.toFixed(2)}
+              <td class="p-2.5 font-bold text-white">${member}</td>
+              <td class="p-2.5 text-center text-slate-300">${stats.tripCount}</td>
+              <td class="p-2.5 text-right font-semibold text-emerald-400">${stats.km.toFixed(1)} km</td>
+              <td class="p-2.5 text-right font-bold text-slate-200">${stats.usagePct.toFixed(1)}%</td>
+              <td class="p-2.5 text-right text-slate-300">R$ ${stats.rawShareCost.toFixed(2)}</td>
+              <td class="p-2.5 text-right text-emerald-400 font-semibold">- R$ ${(stats.creditDeduction || 0).toFixed(2)}</td>
+              <td class="p-2.5 text-right font-extrabold ${stats.finalPay > 0 ? 'text-emerald-400' : 'text-slate-500'}">
+                R$ ${stats.finalPay.toFixed(2)}
               </td>
             `;
             tableBody.appendChild(tr);
@@ -1258,19 +1405,19 @@
             const tr = document.createElement('tr');
             tr.className = 'hover:bg-slate-900/40 transition';
             tr.innerHTML = `
-              <td class="p-3.5 font-medium text-slate-200 whitespace-nowrap">${t.dateStr}</td>
-              <td class="p-3.5 whitespace-nowrap">
+              <td class="p-3 font-medium text-slate-200 whitespace-nowrap">${t.dateStr}</td>
+              <td class="p-3 whitespace-nowrap">
                 <div class="flex flex-wrap gap-1">
                   ${t.members.map(m => `<span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded-md text-[10px] border border-slate-700">${m}</span>`).join('')}
                 </div>
               </td>
-              <td class="p-3.5 whitespace-nowrap text-slate-300">${t.origin} ➔ ${t.destination}</td>
-              <td class="p-3.5 text-center whitespace-nowrap">
-                ${t.isRoundTrip ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px] border border-emerald-500/20 font-semibold">Ida e Volta</span>' : '<span class="px-2 py-0.5 bg-slate-800 text-slate-400 rounded text-[10px]">Só Ida</span>'}
+              <td class="p-3 whitespace-nowrap text-slate-300">${t.origin} ➔ ${t.destination}</td>
+              <td class="p-3 text-center whitespace-nowrap">
+                ${t.isRoundTrip ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px] font-semibold">Ida e Volta</span>' : '<span class="px-2 py-0.5 bg-slate-800 text-slate-400 rounded text-[10px]">Só Ida</span>'}
               </td>
-              <td class="p-3.5 text-right font-bold text-emerald-400 whitespace-nowrap">${t.totalDistance.toFixed(1)} km</td>
-              <td class="p-3.5 text-right text-cyan-400 font-semibold whitespace-nowrap">${t.kmPerMember.toFixed(1)} km</td>
-              <td class="p-3.5 text-center whitespace-nowrap">
+              <td class="p-3 text-right font-bold text-emerald-400 whitespace-nowrap">${t.totalDistance.toFixed(1)} km</td>
+              <td class="p-3 text-right text-cyan-400 font-semibold whitespace-nowrap">${t.kmPerMember.toFixed(1)} km</td>
+              <td class="p-3 text-center whitespace-nowrap">
                 <button type="button" onclick="window.app && window.app.deleteTrip('${t.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Viagem">
                   <i class="fa-solid fa-trash-can"></i>
                 </button>
@@ -1281,7 +1428,7 @@
         }
 
         const countBadge = document.getElementById('history-count-badge');
-        if (countBadge) countBadge.textContent = `${this.data.trips.length} viagens registradas no total`;
+        if (countBadge) countBadge.textContent = `${this.data.trips.length} viagens registradas`;
       }
 
       deleteTrip(id) {
@@ -1292,21 +1439,27 @@
         }
       }
 
+      // Tab switcher for Desktop & Mobile Bottom Nav
       switchTab(tab) {
-        const tabsList = ['trips', 'report', 'reports-log', 'history'];
+        const tabsList = ['trips', 'extra-refuel', 'report', 'reports-log', 'history'];
         tabsList.forEach(t => {
           const btn = document.getElementById(`tab-btn-${t}`);
+          const bottomBtn = document.getElementById(`bottom-btn-${t}`);
           const content = document.getElementById(`tab-content-${t}`);
-          if (btn && content) {
+          
+          if (content) {
             if (t === tab) {
-              btn.classList.add('active');
+              if (btn) btn.classList.add('active');
+              if (bottomBtn) bottomBtn.classList.add('active');
               content.classList.remove('hidden');
             } else {
-              btn.classList.remove('active');
+              if (btn) btn.classList.remove('active');
+              if (bottomBtn) bottomBtn.classList.remove('active');
               content.classList.add('hidden');
             }
           }
         });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       openLocationsModal() {
@@ -1333,7 +1486,7 @@
               <strong class="text-white font-bold">${loc.name}</strong>
               <div class="text-slate-400 text-[11px]">${loc.address}</div>
             </div>
-            ${loc.name !== 'Casa' ? `<button type="button" onclick="window.app && window.app.removePresetLocation(${index})" class="text-red-400 hover:text-red-300 text-xs font-semibold p-1">Excluir</button>` : '<span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Padrão</span>'}
+            ${loc.name !== 'Casa' ? `<button type="button" onclick="window.app && window.app.removePresetLocation(${index})" class="text-red-400 text-xs font-semibold p-1">Excluir</button>` : '<span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Padrão</span>'}
           `;
           container.appendChild(div);
         });
@@ -1438,7 +1591,9 @@
             presetLocations: [...DEFAULT_PRESET_LOCATIONS],
             trips: [],
             lastClosedTimestamp: 0,
-            issuedReports: []
+            issuedReports: [],
+            memberCredits: { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 },
+            extraRefuels: []
           };
           this.saveData();
           this.populateLocationSelects();
@@ -1468,7 +1623,7 @@
         if (type === 'warning') bgClass = 'bg-amber-950 border-amber-700 text-amber-200';
 
         toast.className = `px-4 py-3 rounded-2xl border text-xs font-semibold shadow-2xl flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto ${bgClass}`;
-        toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${msg}</span>`;
+        toast.innerHTML = `<i class="fa-solid fa-circle-info text-sm"></i> <span>${msg}</span>`;
 
         container.appendChild(toast);
 
