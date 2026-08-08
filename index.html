@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Veículo Compartilhado</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Firebase App & Firestore Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              dark: '#0f172a',
+              card: '#1e293b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar & Micro-interactions */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .tab-btn.active {
+      background-color: #10b981;
+      color: #ffffff;
+      box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-full flex flex-col selection:bg-emerald-500 selection:text-white pb-12">
+
+  <!-- Header Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+            <i class="fa-solid fa-car-side text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+              AutoShare <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Veículo Compartilhado</span>
+            </h1>
+            <p class="text-xs text-slate-400">Controle de Uso, Distâncias e Balanço Financeiro</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="app.openFirebaseModal()" id="btn-firebase-status" class="px-3 py-1.5 text-xs font-medium bg-amber-950/40 hover:bg-amber-900/60 text-amber-400 border border-amber-800/40 rounded-xl transition flex items-center gap-1.5" title="Configurar Firebase Cloud Database">
+            <i class="fa-solid fa-fire"></i> <span class="hidden sm:inline" id="txt-firebase-status">Firebase Cloud</span>
+          </button>
+
+          <button onclick="app.loadDemoData()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition border border-slate-700/60 flex items-center gap-1.5" title="Carregar dados de exemplo">
+            <i class="fa-solid fa-flask text-emerald-400"></i> <span class="hidden sm:inline">Dados Demo</span>
+          </button>
+          
+          <button onclick="app.exportBackup()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition border border-slate-700/60 flex items-center gap-1.5" title="Exportar Backup JSON">
+            <i class="fa-solid fa-download text-cyan-400"></i> <span class="hidden sm:inline">Backup</span>
+          </button>
+
+          <button onclick="app.confirmReset()" class="px-3 py-1.5 text-xs font-medium bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-200 rounded-xl transition border border-red-800/40 flex items-center gap-1.5" title="Resetar Todos os Dados">
+            <i class="fa-solid fa-trash-can"></i> <span class="hidden sm:inline">Resetar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Top Metrics Overview Bar -->
+  <section class="bg-slate-900/50 border-b border-slate-800/80 py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        
+        <!-- Metric 1: KM Rodados no Período -->
+        <div class="glass-card p-3.5 rounded-2xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
+            <i class="fa-solid fa-gauge-high text-lg"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-medium">KM no Período</div>
+            <div id="stat-period-km" class="text-lg font-bold text-white">0,0 km</div>
+          </div>
+        </div>
+
+        <!-- Metric 2: Gasto de Combustível -->
+        <div class="glass-card p-3.5 rounded-2xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center shrink-0 border border-cyan-500/20">
+            <i class="fa-solid fa-gas-pump text-lg"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-medium">Posto no Período</div>
+            <div id="stat-period-cost" class="text-lg font-bold text-white">R$ 0,00</div>
+          </div>
+        </div>
+
+        <!-- Metric 3: Total de Viagens -->
+        <div class="glass-card p-3.5 rounded-2xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/20">
+            <i class="fa-solid fa-route text-lg"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-medium">Viagens no Período</div>
+            <div id="stat-period-trips" class="text-lg font-bold text-white">0</div>
+          </div>
+        </div>
+
+        <!-- Metric 4: Status do Período -->
+        <div class="glass-card p-3.5 rounded-2xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+            <i class="fa-solid fa-calendar-check text-lg"></i>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-medium">Último Abastecimento</div>
+            <div id="stat-last-refuel" class="text-xs font-bold text-slate-200">Sem registros</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-grow w-full">
+    
+    <!-- Tab Navigation Bar -->
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <nav class="flex space-x-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800">
+        <button onclick="app.switchTab('trips')" id="tab-btn-trips" class="tab-btn active px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-car-on"></i> <span>Registrar Viagem</span>
+        </button>
+        <button onclick="app.switchTab('refuel')" id="tab-btn-refuel" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-gas-pump"></i> <span>Registrar Abastecimento</span>
+        </button>
+        <button onclick="app.switchTab('report')" id="tab-btn-report" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-chart-pie"></i> <span>Relatórios & Balanço</span>
+        </button>
+        <button onclick="app.switchTab('history')" id="tab-btn-history" class="tab-btn px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
+          <i class="fa-solid fa-list-check"></i> <span>Histórico</span>
+        </button>
+      </nav>
+
+      <button onclick="app.openLocationsModal()" class="text-xs text-slate-400 hover:text-emerald-400 transition flex items-center gap-1.5 bg-slate-900 px-3.5 py-2.5 rounded-xl border border-slate-800">
+        <i class="fa-solid fa-map-location-dot"></i> Gerenciar Locais e Distâncias Base
+      </button>
+    </div>
+
+    <!-- TAB 1: REGISTRAR VIAGEM -->
+    <section id="tab-content-trips" class="space-y-6">
+      <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-5 mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-car-on text-emerald-400"></i> Registrar Nova Viagem
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Informe os participantes, origem, destino e se foi percurso de ida e volta.</p>
+          </div>
+          <span class="text-xs font-semibold px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">Módulo 1</span>
+        </div>
+
+        <form id="form-trip" onsubmit="app.saveTrip(event)" class="space-y-6">
+          
+          <!-- Data e Hora -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                <i class="fa-regular fa-clock text-emerald-400 mr-1"></i> Data e Hora da Viagem
+              </label>
+              <input type="datetime-local" id="trip-datetime" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+            </div>
+
+            <!-- Seleção de Integrantes -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <i class="fa-solid fa-users text-emerald-400 mr-1"></i> Quem Utilizou o Carro?
+                </label>
+                <button type="button" onclick="app.toggleSelectAllMembers()" class="text-xs text-emerald-400 hover:underline">Selecionar Todos</button>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
+                  <input type="checkbox" name="trip-members" value="Cíntia" onchange="app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                  <span class="text-sm font-medium text-slate-200">Cíntia</span>
+                </label>
+                <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
+                  <input type="checkbox" name="trip-members" value="Arnaldo" onchange="app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                  <span class="text-sm font-medium text-slate-200">Arnaldo</span>
+                </label>
+                <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
+                  <input type="checkbox" name="trip-members" value="Henrique" onchange="app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                  <span class="text-sm font-medium text-slate-200">Henrique</span>
+                </label>
+                <label class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700 transition">
+                  <input type="checkbox" name="trip-members" value="Eric" onchange="app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                  <span class="text-sm font-medium text-slate-200">Eric</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Origem, Destino e Distância -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Origem -->
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                <i class="fa-solid fa-location-dot text-emerald-400 mr-1"></i> Origem
+              </label>
+              <select id="trip-origin" onchange="app.calculateTripDistance()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <!-- Destino -->
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                <i class="fa-solid fa-location-arrow text-emerald-400 mr-1"></i> Destino
+              </label>
+              <select id="trip-destination" onchange="app.calculateTripDistance()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <!-- Distância Calculada -->
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                <i class="fa-solid fa-ruler text-emerald-400 mr-1"></i> Distância Base (km)
+              </label>
+              <input type="number" id="trip-distance" step="0.1" min="0.1" required oninput="app.updateTripPreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+            </div>
+
+          </div>
+
+          <!-- Toggle Ida e Volta & Preview da Divisão -->
+          <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            
+            <!-- Toggle Ida e Volta -->
+            <label class="flex items-center gap-3 cursor-pointer select-none">
+              <input type="checkbox" id="trip-roundtrip" onchange="app.updateTripPreview()" class="sr-only peer">
+              <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 relative"></div>
+              <span class="text-sm font-semibold text-slate-200 flex items-center gap-1.5">
+                <i class="fa-solid fa-arrows-rotate text-emerald-400"></i> Percurso de Ida e Volta (Dobra a Distância)
+              </span>
+            </label>
+
+            <!-- Real-time Preview Calculation -->
+            <div id="trip-preview-box" class="text-right sm:text-right w-full sm:w-auto text-xs bg-slate-950 p-3 rounded-xl border border-slate-800">
+              <div class="text-slate-400">Distância Total: <strong id="preview-total-dist" class="text-emerald-400 font-bold text-sm">0.0 km</strong></div>
+              <div class="text-slate-400 mt-0.5">KM por Integrante: <strong id="preview-per-member" class="text-cyan-400 font-bold">0.0 km</strong></div>
+            </div>
+
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold rounded-2xl shadow-lg shadow-emerald-600/25 transition transform active:scale-[0.99] flex items-center justify-center gap-2">
+            <i class="fa-solid fa-floppy-disk text-lg"></i> Salvar Viagem
+          </button>
+
+        </form>
+      </div>
+    </section>
+
+    <!-- TAB 2: REGISTRAR ABASTECIMENTO -->
+    <section id="tab-content-refuel" class="space-y-6 hidden">
+      <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-5 mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-gas-pump text-cyan-400"></i> Registrar Abastecimento
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Insira a quilometragem atual do odômetro, o valor total pago no posto e quanto cada integrante contribuiu.</p>
+          </div>
+          <span class="text-xs font-semibold px-3 py-1 bg-cyan-500/10 text-cyan-400 rounded-full border border-cyan-500/20">Módulo 2</span>
+        </div>
+
+        <form id="form-refuel" onsubmit="app.saveRefuel(event)" class="space-y-6">
+          
+          <!-- Data, Odômetro e Valor Total -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                <i class="fa-regular fa-calendar text-cyan-400 mr-1"></i> Data do Abastecimento
+              </label>
+              <input type="date" id="refuel-date" required class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                <i class="fa-solid fa-gauge text-cyan-400 mr-1"></i> Odômetro Atual (km)
+              </label>
+              <input type="number" id="refuel-odometer" step="1" min="0" required placeholder="Ex: 45200" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                <i class="fa-solid fa-sack-dollar text-cyan-400 mr-1"></i> Valor Total do Posto (R$)
+              </label>
+              <input type="number" id="refuel-total-amount" step="0.01" min="0.01" required placeholder="Ex: 250.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 transition">
+            </div>
+
+          </div>
+
+          <!-- Contribuições Individuais -->
+          <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-hand-holding-dollar text-cyan-400"></i> Contribuição Individual (Quanto cada um pagou)
+              </h3>
+              <button type="button" onclick="app.splitRefuelEqually()" class="text-xs text-cyan-400 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-calculator"></i> Dividir Igualmente
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Cíntia (R$)</label>
+                <input type="number" step="0.01" min="0" id="contrib-cintia" value="0.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Arnaldo (R$)</label>
+                <input type="number" step="0.01" min="0" id="contrib-arnaldo" value="0.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Henrique (R$)</label>
+                <input type="number" step="0.01" min="0" id="contrib-henrique" value="0.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Eric (R$)</label>
+                <input type="number" step="0.01" min="0" id="contrib-eric" value="0.00" oninput="app.validateRefuelSum()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500">
+              </div>
+            </div>
+
+            <!-- Dynamic Sum Check Indicator -->
+            <div id="refuel-sum-status" class="p-3 rounded-xl text-xs font-medium flex items-center justify-between bg-slate-950 border border-slate-800">
+              <span class="text-slate-400">Soma das Contribuições: <strong id="refuel-contrib-sum" class="text-white">R$ 0,00</strong></span>
+              <span id="refuel-sum-badge" class="px-2.5 py-0.5 rounded-full text-slate-400 bg-slate-800">Insira os valores</span>
+            </div>
+
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-2xl shadow-lg shadow-cyan-600/25 transition transform active:scale-[0.99] flex items-center justify-center gap-2">
+            <i class="fa-solid fa-check text-lg"></i> Registrar Abastecimento e Fechar Período
+          </button>
+
+        </form>
+      </div>
+    </section>
+
+    <!-- TAB 3: RELATÓRIOS E FECHAMENTO -->
+    <section id="tab-content-report" class="space-y-6 hidden">
+      
+      <!-- Period Selector Banner -->
+      <div class="glass-card rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-chart-pie text-emerald-400"></i> Relatório & Balanço Financeiro
+          </h2>
+          <p id="report-period-subtitle" class="text-xs text-slate-400 mt-1">Apuração referente ao período ativo (desde o último abastecimento).</p>
+        </div>
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <label class="text-xs text-slate-300 font-medium whitespace-nowrap">Selecione o Período:</label>
+          <select id="report-period-select" onchange="app.renderReport()" class="bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 w-full md:w-auto">
+            <option value="active">Período Ativo (Em aberto)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Financial Balance Cards Grid per Member -->
+      <div id="report-members-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Financial Summary & Settlement Guide -->
+      <div class="glass-card rounded-3xl p-6 shadow-xl space-y-4">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-scale-balanced text-cyan-400"></i> Como Funciona o Acerto de Contas?
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
+          <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+            <div class="font-bold text-emerald-400 mb-1">1. Distância Proporcional</div>
+            <p>Cada corrida divide a quilometragem igualmente entre quem estava no carro. Se 2 pessoas usaram numa viagem de 20 km, cada uma acumula 10 km.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+            <div class="font-bold text-cyan-400 mb-1">2. Rateio do Combustível</div>
+            <p>O custo total gasto no posto durante o período é multiplicado pela porcentagem de uso do carro de cada integrante (% de KM no período).</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+            <div class="font-bold text-purple-400 mb-1">3. Saldo Final</div>
+            <p>Se o integrante pagou no posto mais do que o seu uso justo, fica com saldo <strong>A Receber</strong>. Se pagou menos, fica com saldo <strong>A Pagar</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB 4: HISTÓRICO -->
+    <section id="tab-content-history" class="space-y-6 hidden">
+      
+      <!-- Sub-Tabs: Viagens vs Abastecimentos -->
+      <div class="glass-card rounded-3xl p-6 shadow-xl">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div class="flex gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800">
+            <button onclick="app.switchHistorySubtab('trips')" id="subtab-btn-trips" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-white shadow">
+              <i class="fa-solid fa-car"></i> Viagens Registradas
+            </button>
+            <button onclick="app.switchHistorySubtab('refuels')" id="subtab-btn-refuels" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white">
+              <i class="fa-solid fa-gas-pump"></i> Abastecimentos
+            </button>
+          </div>
+          <span class="text-xs text-slate-400" id="history-count-badge">0 registros encontrados</span>
+        </div>
+
+        <!-- History Table Viagens -->
+        <div id="history-table-trips-container" class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900/80 uppercase text-[10px] tracking-wider text-slate-400 font-bold border-b border-slate-800">
+              <tr>
+                <th class="p-3.5">Data / Hora</th>
+                <th class="p-3.5">Quem Utilizou</th>
+                <th class="p-3.5">Trajeto</th>
+                <th class="p-3.5 text-center">Tipo</th>
+                <th class="p-3.5 text-right">KM Total</th>
+                <th class="p-3.5 text-right">KM / Pessoa</th>
+                <th class="p-3.5 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="history-trips-body" class="divide-y divide-slate-800/60">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- History Table Abastecimentos -->
+        <div id="history-table-refuels-container" class="overflow-x-auto hidden">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900/80 uppercase text-[10px] tracking-wider text-slate-400 font-bold border-b border-slate-800">
+              <tr>
+                <th class="p-3.5">Data</th>
+                <th class="p-3.5 text-right">Odômetro (km)</th>
+                <th class="p-3.5 text-right">Valor Total (R$)</th>
+                <th class="p-3.5">Contribuições Individuais</th>
+                <th class="p-3.5 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="history-refuels-body" class="divide-y divide-slate-800/60">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL: Gerenciar Locais e Distâncias Base -->
+  <div id="modal-locations" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-lg w-full rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-700">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-map-location-dot text-emerald-400"></i> Distâncias Base a partir da Casa (km)
+        </h3>
+        <button onclick="app.closeLocationsModal()" class="text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400">Ajuste os valores em quilômetros considerando o ponto de partida padrão "Casa" (0 km).</p>
+
+      <form id="form-locations" onsubmit="app.saveLocations(event)" class="space-y-3">
+        <div id="locations-fields-container" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div class="pt-3 border-t border-slate-800 flex justify-end gap-2">
+          <button type="button" onclick="app.closeLocationsModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-white shadow transition">Salvar Distâncias</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Firebase Config Cloud Database -->
+  <div id="modal-firebase" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-xl w-full rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-700">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-fire text-amber-400"></i> Configurar Banco de Dados Firebase Cloud
+        </h3>
+        <button onclick="app.closeFirebaseModal()" class="text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400">
+        Conecte o seu banco de dados <strong>Firebase Firestore</strong> para sincronizar dados em tempo real entre diferentes celulares e navegadores!
+      </p>
+
+      <form id="form-firebase" onsubmit="app.saveFirebaseConfig(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Cole aqui as chaves do Firebase (JSON ou Objeto JS):</label>
+          <textarea id="firebase-config-json" rows="6" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "seu-app.firebaseapp.com",
+  "projectId": "seu-app",
+  "storageBucket": "seu-app.appspot.com",
+  "messagingSenderId": "123...",
+  "appId": "1:123..."
+}' class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-emerald-400 font-mono focus:outline-none focus:border-amber-500"></textarea>
+        </div>
+
+        <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-[11px] text-slate-400 space-y-1">
+          <div class="font-bold text-amber-400"><i class="fa-solid fa-circle-info"></i> Como obter gratuitamente no Firebase:</div>
+          <ol class="list-decimal list-inside space-y-0.5">
+            <li>Acesse <a href="https://console.firebase.google.com" target="_blank" class="text-cyan-400 hover:underline">console.firebase.google.com</a> e crie um projeto gratuito.</li>
+            <li>Adicione um Web App no seu projeto para obter o objeto de configuração acima.</li>
+            <li>Crie um banco de dados **Cloud Firestore** em modo de teste/público.</li>
+          </ol>
+        </div>
+
+        <div class="pt-3 border-t border-slate-800 flex justify-between items-center">
+          <button type="button" onclick="app.clearFirebaseConfig()" class="text-xs text-red-400 hover:underline">Desconectar Firebase</button>
+          <div class="flex gap-2">
+            <button type="button" onclick="app.closeFirebaseModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">Cancelar</button>
+            <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow transition">Conectar Firestore</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- JavaScript Application Script -->
+  <script>
+    /**
+     * Shared Car Usage & Cost Tracker Application
+     */
+    const STORAGE_KEY = 'autoshare_car_data_v1';
+    const FIREBASE_KEY = 'autoshare_firebase_config_v1';
+
+    const DEFAULT_MEMBERS = ['Cíntia', 'Arnaldo', 'Henrique', 'Eric'];
+
+    const DEFAULT_LOCATIONS = {
+      'Casa': 0,
+      'Trabalho': 12,
+      'Trabalho da Cíntia': 15,
+      'Trabalho do Arnaldo': 8,
+      'Trabalho do Henrique': 22,
+      'Trabalho do Eric': 18
+    };
+
+    class AutoShareApp {
+      constructor() {
+        this.db = null;
+        this.firebaseEnabled = false;
+        this.data = this.loadData();
+        this.init();
+      }
+
+      // Initialize Application State, Firebase & UI
+      init() {
+        this.initFirebase();
+        this.setDefaultDates();
+        this.populateLocationSelects();
+        this.calculateTripDistance();
+        this.updateTripPreview();
+        this.renderStatsHeader();
+        this.renderReport();
+        this.renderHistory();
+      }
+
+      // Init Firebase if user configured credentials
+      initFirebase() {
+        const rawConfig = localStorage.getItem(FIREBASE_KEY);
+        const statusBtn = document.getElementById('btn-firebase-status');
+        const statusTxt = document.getElementById('txt-firebase-status');
+
+        if (!rawConfig) {
+          statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-amber-950/40 hover:bg-amber-900/60 text-amber-400 border border-amber-800/40 rounded-xl transition flex items-center gap-1.5';
+          statusTxt.textContent = 'Firebase Cloud';
+          return;
+        }
+
+        try {
+          const config = JSON.parse(rawConfig);
+          if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+          }
+          this.db = firebase.firestore();
+          this.firebaseEnabled = true;
+
+          statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-400 border border-emerald-800/40 rounded-xl transition flex items-center gap-1.5';
+          statusTxt.textContent = 'Cloud Conectado';
+
+          // Real-time Cloud Listener
+          this.db.collection('autoshare').doc('main_data').onSnapshot((doc) => {
+            if (doc.exists) {
+              const cloudData = doc.data();
+              if (cloudData) {
+                this.data = {
+                  members: cloudData.members || DEFAULT_MEMBERS,
+                  locations: cloudData.locations || { ...DEFAULT_LOCATIONS },
+                  trips: cloudData.trips || [],
+                  refuels: cloudData.refuels || []
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+                this.renderStatsHeader();
+                this.renderReport();
+                this.renderHistory();
+              }
+            }
+          }, (err) => {
+            console.warn('Erro na sincronização Firebase Firestore:', err);
+          });
+
+        } catch (e) {
+          console.error('Erro ao inicializar Firebase:', e);
+          statusBtn.className = 'px-3 py-1.5 text-xs font-medium bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 rounded-xl transition flex items-center gap-1.5';
+          statusTxt.textContent = 'Erro Firebase';
+        }
+      }
+
+      // Load State from LocalStorage
+      loadData() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            return {
+              members: parsed.members || DEFAULT_MEMBERS,
+              locations: parsed.locations || { ...DEFAULT_LOCATIONS },
+              trips: parsed.trips || [],
+              refuels: parsed.refuels || []
+            };
+          } catch (e) {
+            console.error('Erro ao ler LocalStorage', e);
+          }
+        }
+        return {
+          members: [...DEFAULT_MEMBERS],
+          locations: { ...DEFAULT_LOCATIONS },
+          trips: [],
+          refuels: []
+        };
+      }
+
+      // Save State to LocalStorage & Sync to Firebase
+      saveData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+        
+        if (this.firebaseEnabled && this.db) {
+          this.db.collection('autoshare').doc('main_data').set(this.data)
+            .then(() => console.log('Dados sincronizados com o Firebase Cloud!'))
+            .catch((err) => console.error('Erro ao enviar dados pro Firebase:', err));
+        }
+
+        this.renderStatsHeader();
+        this.renderReport();
+        this.renderHistory();
+      }
+
+      // Set default input values
+      setDefaultDates() {
+        const now = new Date();
+        const tzOffset = now.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 16);
+        document.getElementById('trip-datetime').value = localISOTime;
+        document.getElementById('refuel-date').value = now.toISOString().slice(0, 10);
+      }
+
+      // Populate Origin/Destination Select Dropdowns
+      populateLocationSelects() {
+        const originSelect = document.getElementById('trip-origin');
+        const destSelect = document.getElementById('trip-destination');
+
+        originSelect.innerHTML = '';
+        destSelect.innerHTML = '';
+
+        const keys = Object.keys(this.data.locations);
+        keys.forEach(loc => {
+          const opt1 = document.createElement('option');
+          opt1.value = loc;
+          opt1.textContent = `${loc} (${this.data.locations[loc]} km da Casa)`;
+          originSelect.appendChild(opt1);
+
+          const opt2 = document.createElement('option');
+          opt2.value = loc;
+          opt2.textContent = `${loc} (${this.data.locations[loc]} km da Casa)`;
+          destSelect.appendChild(opt2);
+        });
+
+        // Add custom option
+        const customOpt1 = document.createElement('option');
+        customOpt1.value = 'Outro';
+        customOpt1.textContent = 'Outro local (Digitar distância customizada)';
+        originSelect.appendChild(customOpt1);
+
+        const customOpt2 = document.createElement('option');
+        customOpt2.value = 'Outro';
+        customOpt2.textContent = 'Outro local (Digitar distância customizada)';
+        destSelect.appendChild(customOpt2);
+
+        originSelect.value = 'Casa';
+        destSelect.value = keys[1] || 'Trabalho';
+      }
+
+      // Calculate base distance between selected locations
+      calculateTripDistance() {
+        const orig = document.getElementById('trip-origin').value;
+        const dest = document.getElementById('trip-destination').value;
+        const distInput = document.getElementById('trip-distance');
+
+        if (orig === 'Outro' || dest === 'Outro') {
+          distInput.readOnly = false;
+          distInput.focus();
+          return;
+        }
+
+        const distOrig = this.data.locations[orig] || 0;
+        const distDest = this.data.locations[dest] || 0;
+        
+        let calculated = 0;
+        if (orig === 'Casa' || dest === 'Casa') {
+          calculated = Math.max(distOrig, distDest);
+        } else {
+          calculated = Math.abs(distDest - distOrig);
+        }
+
+        distInput.value = calculated.toFixed(1);
+        distInput.readOnly = true;
+
+        this.updateTripPreview();
+      }
+
+      // Update Real-time Trip Split Preview
+      updateTripPreview() {
+        const baseDist = parseFloat(document.getElementById('trip-distance').value) || 0;
+        const isRoundTrip = document.getElementById('trip-roundtrip').checked;
+        const selectedMembers = Array.from(document.querySelectorAll('input[name="trip-members"]:checked')).map(cb => cb.value);
+
+        const totalDist = baseDist * (isRoundTrip ? 2 : 1);
+        const perMember = selectedMembers.length > 0 ? (totalDist / selectedMembers.length) : 0;
+
+        document.getElementById('preview-total-dist').textContent = `${totalDist.toFixed(1)} km`;
+        document.getElementById('preview-per-member').textContent = `${perMember.toFixed(1)} km (${selectedMembers.length} participante${selectedMembers.length !== 1 ? 's' : ''})`;
+      }
+
+      // Toggle select all members in trip form
+      toggleSelectAllMembers() {
+        const checkboxes = document.querySelectorAll('input[name="trip-members"]');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        this.updateTripPreview();
+      }
+
+      // Save New Trip
+      saveTrip(e) {
+        e.preventDefault();
+
+        const datetime = document.getElementById('trip-datetime').value;
+        const selectedMembers = Array.from(document.querySelectorAll('input[name="trip-members"]:checked')).map(cb => cb.value);
+        const origin = document.getElementById('trip-origin').value;
+        const destination = document.getElementById('trip-destination').value;
+        const baseDist = parseFloat(document.getElementById('trip-distance').value);
+        const isRoundTrip = document.getElementById('trip-roundtrip').checked;
+
+        if (selectedMembers.length === 0) {
+          this.showToast('Selecione pelo menos um participante para a corrida!', 'warning');
+          return;
+        }
+
+        if (isNaN(baseDist) || baseDist <= 0) {
+          this.showToast('Informe uma distância válida!', 'warning');
+          return;
+        }
+
+        const totalDistance = baseDist * (isRoundTrip ? 2 : 1);
+        const kmPerMember = totalDistance / selectedMembers.length;
+
+        const newTrip = {
+          id: 'trip_' + Date.now(),
+          timestamp: new Date(datetime).getTime(),
+          dateStr: datetime.replace('T', ' '),
+          members: selectedMembers,
+          origin,
+          destination,
+          baseDistance: baseDist,
+          isRoundTrip,
+          totalDistance,
+          kmPerMember
+        };
+
+        this.data.trips.push(newTrip);
+        this.data.trips.sort((a, b) => b.timestamp - a.timestamp);
+
+        this.saveData();
+        this.showToast('Viagem registrada com sucesso!', 'success');
+
+        document.querySelectorAll('input[name="trip-members"]').forEach(cb => cb.checked = false);
+        document.getElementById('trip-roundtrip').checked = false;
+        this.calculateTripDistance();
+      }
+
+      // Validate Refuel Contribution Sum
+      validateRefuelSum() {
+        const total = parseFloat(document.getElementById('refuel-total-amount').value) || 0;
+        const c1 = parseFloat(document.getElementById('contrib-cintia').value) || 0;
+        const c2 = parseFloat(document.getElementById('contrib-arnaldo').value) || 0;
+        const c3 = parseFloat(document.getElementById('contrib-henrique').value) || 0;
+        const c4 = parseFloat(document.getElementById('contrib-eric').value) || 0;
+
+        const sum = c1 + c2 + c3 + c4;
+        const diff = Math.abs(total - sum);
+
+        const sumEl = document.getElementById('refuel-contrib-sum');
+        const badgeEl = document.getElementById('refuel-sum-badge');
+
+        sumEl.textContent = `R$ ${sum.toFixed(2)}`;
+
+        if (total <= 0) {
+          badgeEl.textContent = 'Informe o valor total do posto';
+          badgeEl.className = 'px-2.5 py-0.5 rounded-full text-slate-400 bg-slate-800';
+        } else if (diff < 0.01) {
+          badgeEl.textContent = '✓ Valores conferem!';
+          badgeEl.className = 'px-2.5 py-0.5 rounded-full text-emerald-400 bg-emerald-500/20 border border-emerald-500/30';
+        } else {
+          const delta = total - sum;
+          if (delta > 0) {
+            badgeEl.textContent = `Faltam R$ ${delta.toFixed(2)}`;
+            badgeEl.className = 'px-2.5 py-0.5 rounded-full text-amber-400 bg-amber-500/20 border border-amber-500/30';
+          } else {
+            badgeEl.textContent = `Excesso de R$ ${Math.abs(delta).toFixed(2)}`;
+            badgeEl.className = 'px-2.5 py-0.5 rounded-full text-red-400 bg-red-500/20 border border-red-500/30';
+          }
+        }
+      }
+
+      // Helper to split refuel amount equally
+      splitRefuelEqually() {
+        const total = parseFloat(document.getElementById('refuel-total-amount').value) || 0;
+        if (total <= 0) {
+          this.showToast('Informe o valor total antes de dividir!', 'warning');
+          return;
+        }
+        const each = (total / 4).toFixed(2);
+        document.getElementById('contrib-cintia').value = each;
+        document.getElementById('contrib-arnaldo').value = each;
+        document.getElementById('contrib-henrique').value = each;
+        document.getElementById('contrib-eric').value = each;
+        this.validateRefuelSum();
+      }
+
+      // Save Refuel
+      saveRefuel(e) {
+        e.preventDefault();
+
+        const date = document.getElementById('refuel-date').value;
+        const odometer = parseFloat(document.getElementById('refuel-odometer').value);
+        const totalAmount = parseFloat(document.getElementById('refuel-total-amount').value);
+
+        const contributions = {
+          'Cíntia': parseFloat(document.getElementById('contrib-cintia').value) || 0,
+          'Arnaldo': parseFloat(document.getElementById('contrib-arnaldo').value) || 0,
+          'Henrique': parseFloat(document.getElementById('contrib-henrique').value) || 0,
+          'Eric': parseFloat(document.getElementById('contrib-eric').value) || 0
+        };
+
+        const contribSum = Object.values(contributions).reduce((acc, v) => acc + v, 0);
+
+        if (isNaN(odometer) || odometer < 0) {
+          this.showToast('Informe uma quilometragem de odômetro válida!', 'warning');
+          return;
+        }
+
+        if (isNaN(totalAmount) || totalAmount <= 0) {
+          this.showToast('Informe o valor total do abastecimento!', 'warning');
+          return;
+        }
+
+        if (Math.abs(totalAmount - contribSum) > 0.05) {
+          this.showToast(`A soma das contribuições (R$ ${contribSum.toFixed(2)}) deve ser igual ao total do abastecimento (R$ ${totalAmount.toFixed(2)})!`, 'warning');
+          return;
+        }
+
+        const newRefuel = {
+          id: 'refuel_' + Date.now(),
+          timestamp: new Date(date).getTime(),
+          dateStr: date,
+          odometer,
+          totalAmount,
+          contributions
+        };
+
+        this.data.refuels.push(newRefuel);
+        this.data.refuels.sort((a, b) => b.timestamp - a.timestamp);
+
+        this.saveData();
+        this.showToast('Abastecimento registrado com sucesso! Período fechado.', 'success');
+
+        document.getElementById('refuel-odometer').value = '';
+        document.getElementById('refuel-total-amount').value = '';
+        document.getElementById('contrib-cintia').value = '0.00';
+        document.getElementById('contrib-arnaldo').value = '0.00';
+        document.getElementById('contrib-henrique').value = '0.00';
+        document.getElementById('contrib-eric').value = '0.00';
+        this.validateRefuelSum();
+        this.switchTab('report');
+      }
+
+      // Get Active Period Trips & Refuels
+      getActivePeriodData() {
+        const lastRefuel = this.data.refuels.length > 0 ? this.data.refuels[0] : null;
+        const lastRefuelTime = lastRefuel ? lastRefuel.timestamp : 0;
+        const periodTrips = this.data.trips.filter(t => t.timestamp >= lastRefuelTime);
+        const periodRefuels = lastRefuel ? [lastRefuel] : [];
+
+        return {
+          lastRefuel,
+          trips: periodTrips,
+          refuels: periodRefuels
+        };
+      }
+
+      // Render Top Stats Header Metrics
+      renderStatsHeader() {
+        const period = this.getActivePeriodData();
+        const periodTotalKm = period.trips.reduce((acc, t) => acc + t.totalDistance, 0);
+        const periodTotalCost = period.refuels.reduce((acc, r) => acc + r.totalAmount, 0);
+
+        document.getElementById('stat-period-km').textContent = `${periodTotalKm.toFixed(1)} km`;
+        document.getElementById('stat-period-cost').textContent = `R$ ${periodTotalCost.toFixed(2)}`;
+        document.getElementById('stat-period-trips').textContent = `${period.trips.length}`;
+        
+        if (period.lastRefuel) {
+          document.getElementById('stat-last-refuel').textContent = `${period.lastRefuel.dateStr} (${period.lastRefuel.odometer} km)`;
+        } else {
+          document.getElementById('stat-last-refuel').textContent = 'Sem registros';
+        }
+      }
+
+      // Render Reports & Financial Settlement (Module 3)
+      renderReport() {
+        const periodData = this.getActivePeriodData();
+        const periodTotalKm = periodData.trips.reduce((acc, t) => acc + t.totalDistance, 0);
+        const periodTotalRefuelCost = periodData.refuels.reduce((acc, r) => acc + r.totalAmount, 0);
+
+        const gridContainer = document.getElementById('report-members-grid');
+        gridContainer.innerHTML = '';
+
+        DEFAULT_MEMBERS.forEach(member => {
+          const memberKm = periodData.trips.reduce((acc, t) => {
+            if (t.members.includes(member)) {
+              return acc + t.kmPerMember;
+            }
+            return acc;
+          }, 0);
+
+          const usagePct = periodTotalKm > 0 ? (memberKm / periodTotalKm) * 100 : 0;
+          const memberPaid = periodData.refuels.reduce((acc, r) => acc + (r.contributions[member] || 0), 0);
+          const fairShareCost = periodTotalRefuelCost * (usagePct / 100);
+          const balance = memberPaid - fairShareCost;
+
+          const card = document.createElement('div');
+          card.className = 'glass-card rounded-3xl p-6 shadow-xl relative overflow-hidden border border-slate-800';
+
+          let statusBadge = '';
+          if (Math.abs(balance) < 0.01) {
+            statusBadge = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">Quitado (R$ 0,00)</span>`;
+          } else if (balance > 0) {
+            statusBadge = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1"><i class="fa-solid fa-arrow-down-left"></i> A RECEBER R$ ${balance.toFixed(2)}</span>`;
+          } else {
+            statusBadge = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1"><i class="fa-solid fa-arrow-up-right"></i> A PAGAR R$ ${Math.abs(balance).toFixed(2)}</span>`;
+          }
+
+          card.innerHTML = `
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-slate-800 flex items-center justify-center font-bold text-emerald-400 border border-slate-700">
+                  ${member.charAt(0)}
+                </div>
+                <div>
+                  <h4 class="text-base font-bold text-white">${member}</h4>
+                  <div class="text-xs text-slate-400">${memberKm.toFixed(1)} km rodados (${usagePct.toFixed(1)}%)</div>
+                </div>
+              </div>
+              ${statusBadge}
+            </div>
+
+            <div class="space-y-1.5 mb-4">
+              <div class="flex justify-between text-xs text-slate-400">
+                <span>Participação no uso do carro</span>
+                <span class="font-bold text-slate-200">${usagePct.toFixed(1)}%</span>
+              </div>
+              <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
+                <div class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-full transition-all duration-500" style="width: ${Math.min(usagePct, 100)}%"></div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 bg-slate-900/90 p-3 rounded-2xl border border-slate-800 text-center text-xs">
+              <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Pago no Posto</div>
+                <div class="font-bold text-white mt-0.5">R$ ${memberPaid.toFixed(2)}</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Custo Justo</div>
+                <div class="font-bold text-slate-300 mt-0.5">R$ ${fairShareCost.toFixed(2)}</div>
+              </div>
+              <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Balanço</div>
+                <div class="font-bold ${balance >= 0 ? 'text-emerald-400' : 'text-amber-400'} mt-0.5">
+                  ${balance >= 0 ? '+' : ''}R$ ${balance.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          `;
+
+          gridContainer.appendChild(card);
+        });
+      }
+
+      // Render History Tables (Module 5)
+      renderHistory() {
+        const tripsBody = document.getElementById('history-trips-body');
+        const refuelsBody = document.getElementById('history-refuels-body');
+
+        // Trips Table
+        tripsBody.innerHTML = '';
+        if (this.data.trips.length === 0) {
+          tripsBody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-slate-500">Nenhuma viagem registrada até o momento.</td></tr>`;
+        } else {
+          this.data.trips.forEach(t => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-900/40 transition';
+            tr.innerHTML = `
+              <td class="p-3.5 font-medium text-slate-200 whitespace-nowrap">${t.dateStr}</td>
+              <td class="p-3.5 whitespace-nowrap">
+                <div class="flex flex-wrap gap-1">
+                  ${t.members.map(m => `<span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded-md text-[10px] border border-slate-700">${m}</span>`).join('')}
+                </div>
+              </td>
+              <td class="p-3.5 whitespace-nowrap text-slate-300">${t.origin} ➔ ${t.destination}</td>
+              <td class="p-3.5 text-center whitespace-nowrap">
+                ${t.isRoundTrip ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px] border border-emerald-500/20 font-semibold">Ida e Volta</span>' : '<span class="px-2 py-0.5 bg-slate-800 text-slate-400 rounded text-[10px]">Só Ida</span>'}
+              </td>
+              <td class="p-3.5 text-right font-bold text-emerald-400 whitespace-nowrap">${t.totalDistance.toFixed(1)} km</td>
+              <td class="p-3.5 text-right text-cyan-400 font-semibold whitespace-nowrap">${t.kmPerMember.toFixed(1)} km</td>
+              <td class="p-3.5 text-center whitespace-nowrap">
+                <button onclick="app.deleteTrip('${t.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Viagem">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </td>
+            `;
+            tripsBody.appendChild(tr);
+          });
+        }
+
+        // Refuels Table
+        refuelsBody.innerHTML = '';
+        if (this.data.refuels.length === 0) {
+          refuelsBody.innerHTML = `<tr><td colspan="5" class="text-center p-6 text-slate-500">Nenhum abastecimento registrado até o momento.</td></tr>`;
+        } else {
+          this.data.refuels.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-900/40 transition';
+            
+            const contribSummary = Object.entries(r.contributions)
+              .map(([m, val]) => `${m}: R$ ${val.toFixed(2)}`)
+              .join(' | ');
+
+            tr.innerHTML = `
+              <td class="p-3.5 font-medium text-slate-200 whitespace-nowrap">${r.dateStr}</td>
+              <td class="p-3.5 text-right font-semibold text-slate-300 whitespace-nowrap">${r.odometer} km</td>
+              <td class="p-3.5 text-right font-bold text-cyan-400 whitespace-nowrap">R$ ${r.totalAmount.toFixed(2)}</td>
+              <td class="p-3.5 text-xs text-slate-400 truncate max-w-xs" title="${contribSummary}">${contribSummary}</td>
+              <td class="p-3.5 text-center whitespace-nowrap">
+                <button onclick="app.deleteRefuel('${r.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Abastecimento">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </td>
+            `;
+            refuelsBody.appendChild(tr);
+          });
+        }
+
+        document.getElementById('history-count-badge').textContent = `${this.data.trips.length} viagens e ${this.data.refuels.length} abastecimentos`;
+      }
+
+      // Delete Trip Entry
+      deleteTrip(id) {
+        if (confirm('Deseja realmente excluir esta viagem?')) {
+          this.data.trips = this.data.trips.filter(t => t.id !== id);
+          this.saveData();
+          this.showToast('Viagem excluída.', 'info');
+        }
+      }
+
+      // Delete Refuel Entry
+      deleteRefuel(id) {
+        if (confirm('Deseja realmente excluir este abastecimento?')) {
+          this.data.refuels = this.data.refuels.filter(r => r.id !== id);
+          this.saveData();
+          this.showToast('Abastecimento excluído.', 'info');
+        }
+      }
+
+      // Switch Main Dashboard Tabs
+      switchTab(tab) {
+        ['trips', 'refuel', 'report', 'history'].forEach(t => {
+          const btn = document.getElementById(`tab-btn-${t}`);
+          const content = document.getElementById(`tab-content-${t}`);
+          if (t === tab) {
+            btn.classList.add('active');
+            content.classList.remove('hidden');
+          } else {
+            btn.classList.remove('active');
+            content.classList.add('hidden');
+          }
+        });
+      }
+
+      // Switch History Subtab
+      switchHistorySubtab(sub) {
+        const btnTrips = document.getElementById('subtab-btn-trips');
+        const btnRefuels = document.getElementById('subtab-btn-refuels');
+        const tableTrips = document.getElementById('history-table-trips-container');
+        const tableRefuels = document.getElementById('history-table-refuels-container');
+
+        if (sub === 'trips') {
+          btnTrips.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-white shadow';
+          btnRefuels.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white';
+          tableTrips.classList.remove('hidden');
+          tableRefuels.classList.add('hidden');
+        } else {
+          btnRefuels.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-white shadow';
+          btnTrips.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white';
+          tableRefuels.classList.remove('hidden');
+          tableTrips.classList.add('hidden');
+        }
+      }
+
+      // Modal Locations Management
+      openLocationsModal() {
+        const container = document.getElementById('locations-fields-container');
+        container.innerHTML = '';
+
+        Object.keys(this.data.locations).forEach(loc => {
+          if (loc === 'Casa') return;
+
+          const div = document.createElement('div');
+          div.className = 'flex items-center gap-3 bg-slate-900 p-2.5 rounded-xl border border-slate-800';
+          div.innerHTML = `
+            <span class="text-xs font-semibold text-slate-200 flex-grow">${loc}</span>
+            <div class="flex items-center gap-1.5">
+              <input type="number" step="0.1" min="0" data-location-name="${loc}" value="${this.data.locations[loc]}" class="w-24 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-emerald-500 text-right">
+              <span class="text-xs text-slate-400 font-medium">km</span>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+
+        document.getElementById('modal-locations').classList.remove('hidden');
+      }
+
+      closeLocationsModal() {
+        document.getElementById('modal-locations').classList.add('hidden');
+      }
+
+      saveLocations(e) {
+        e.preventDefault();
+        const inputs = document.querySelectorAll('[data-location-name]');
+        inputs.forEach(input => {
+          const loc = input.getAttribute('data-location-name');
+          const val = parseFloat(input.value) || 0;
+          this.data.locations[loc] = val;
+        });
+
+        this.saveData();
+        this.populateLocationSelects();
+        this.closeLocationsModal();
+        this.showToast('Distâncias atualizadas!', 'success');
+      }
+
+      // Firebase Modal Handlers
+      openFirebaseModal() {
+        const saved = localStorage.getItem(FIREBASE_KEY);
+        if (saved) {
+          document.getElementById('firebase-config-json').value = saved;
+        }
+        document.getElementById('modal-firebase').classList.remove('hidden');
+      }
+
+      closeFirebaseModal() {
+        document.getElementById('modal-firebase').classList.add('hidden');
+      }
+
+      saveFirebaseConfig(e) {
+        e.preventDefault();
+        const raw = document.getElementById('firebase-config-json').value.trim();
+        if (!raw) {
+          this.showToast('Insira as chaves do seu projeto Firebase!', 'warning');
+          return;
+        }
+
+        try {
+          // Attempt JSON parse or extract JS object
+          let parsed;
+          if (raw.startsWith('{')) {
+            parsed = JSON.parse(raw);
+          } else {
+            // Evaluated if JS snippet pasted
+            parsed = eval('(' + raw + ')');
+          }
+
+          if (!parsed.apiKey || !parsed.projectId) {
+            throw new Error('Chaves apiKey e projectId são obrigatórias');
+          }
+
+          localStorage.setItem(FIREBASE_KEY, JSON.stringify(parsed));
+          this.closeFirebaseModal();
+          this.showToast('Firebase salvo! Recarregando conexão...', 'success');
+          setTimeout(() => location.reload(), 1000);
+        } catch (err) {
+          this.showToast('Formato do JSON do Firebase inválido. Verifique o código inserido.', 'warning');
+        }
+      }
+
+      clearFirebaseConfig() {
+        if (confirm('Deseja desconectar o banco de dados Firebase Cloud?')) {
+          localStorage.removeItem(FIREBASE_KEY);
+          this.closeFirebaseModal();
+          this.showToast('Firebase desconectado. Voltando ao LocalStorage local.', 'info');
+          setTimeout(() => location.reload(), 1000);
+        }
+      }
+
+      // Load Sample Demo Data
+      loadDemoData() {
+        if (!confirm('Deseja carregar dados de demonstração para testar a aplicação?')) return;
+
+        const now = Date.now();
+        const dayMs = 86400000;
+
+        this.data = {
+          members: [...DEFAULT_MEMBERS],
+          locations: { ...DEFAULT_LOCATIONS },
+          trips: [
+            {
+              id: 'demo_t1',
+              timestamp: now - (dayMs * 5),
+              dateStr: new Date(now - (dayMs * 5)).toISOString().slice(0, 16).replace('T', ' '),
+              members: ['Cíntia', 'Arnaldo'],
+              origin: 'Casa',
+              destination: 'Trabalho da Cíntia',
+              baseDistance: 15,
+              isRoundTrip: true,
+              totalDistance: 30,
+              kmPerMember: 15
+            },
+            {
+              id: 'demo_t2',
+              timestamp: now - (dayMs * 3),
+              dateStr: new Date(now - (dayMs * 3)).toISOString().slice(0, 16).replace('T', ' '),
+              members: ['Henrique', 'Eric'],
+              origin: 'Casa',
+              destination: 'Trabalho do Henrique',
+              baseDistance: 22,
+              isRoundTrip: true,
+              totalDistance: 44,
+              kmPerMember: 22
+            },
+            {
+              id: 'demo_t3',
+              timestamp: now - (dayMs * 1),
+              dateStr: new Date(now - (dayMs * 1)).toISOString().slice(0, 16).replace('T', ' '),
+              members: ['Cíntia', 'Arnaldo', 'Henrique', 'Eric'],
+              origin: 'Casa',
+              destination: 'Trabalho',
+              baseDistance: 12,
+              isRoundTrip: true,
+              totalDistance: 24,
+              kmPerMember: 6
+            }
+          ],
+          refuels: [
+            {
+              id: 'demo_r1',
+              timestamp: now - (dayMs * 6),
+              dateStr: new Date(now - (dayMs * 6)).toISOString().slice(0, 10),
+              odometer: 45000,
+              totalAmount: 200.00,
+              contributions: { 'Cíntia': 100.00, 'Arnaldo': 100.00, 'Henrique': 0.00, 'Eric': 0.00 }
+            }
+          ]
+        };
+
+        this.saveData();
+        this.populateLocationSelects();
+        this.showToast('Dados de demonstração carregados com sucesso!', 'success');
+        this.switchTab('report');
+      }
+
+      // Reset All LocalStorage Data
+      confirmReset() {
+        if (confirm('Tem certeza que deseja apagar TODOS os registros de viagens e abastecimentos? Esta ação não pode ser desfeita.')) {
+          localStorage.removeItem(STORAGE_KEY);
+          this.data = {
+            members: [...DEFAULT_MEMBERS],
+            locations: { ...DEFAULT_LOCATIONS },
+            trips: [],
+            refuels: []
+          };
+          this.saveData();
+          this.populateLocationSelects();
+          this.showToast('Dados do LocalStorage limpados.', 'info');
+        }
+      }
+
+      // Export Backup JSON
+      exportBackup() {
+        const json = JSON.stringify(this.data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `autoshare_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.showToast('Backup JSON baixado!', 'success');
+      }
+
+      // Show Floating Toast Feedback
+      showToast(msg, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        
+        let bgClass = 'bg-slate-900 border-slate-700 text-slate-200';
+        if (type === 'success') bgClass = 'bg-emerald-950 border-emerald-700 text-emerald-200';
+        if (type === 'warning') bgClass = 'bg-amber-950 border-amber-700 text-amber-200';
+
+        toast.className = `px-4 py-3 rounded-2xl border text-xs font-semibold shadow-2xl flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto ${bgClass}`;
+        toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${msg}</span>`;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.remove('translate-y-2', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+          toast.classList.add('opacity-0');
+          setTimeout(() => toast.remove(), 300);
+        }, 3500);
+      }
+    }
+
+    // Launch Application
+    let app;
+    window.addEventListener('DOMContentLoaded', () => {
+      app = new AutoShareApp();
+    });
+  </script>
+</body>
+</html>
