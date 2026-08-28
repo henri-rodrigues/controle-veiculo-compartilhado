@@ -9,6 +9,7 @@
 O **AutoShare** é uma plataforma web desenvolvida para gerenciar o uso compartilhado de veículos entre múltiplos integrantes (**Cinthia, Arnaldo, Henri, Hector e Heric**), operando sob uma constante de consumo de **7,0 km/L** (`1 Litro a cada 7 km rodados`).
 
 ### Principais Recursos:
+- 🛣️ **Rotas Pré-definidas (Modelos com Paradas e Ocupantes)**: Carregamento instantâneo com 1 clique de trajetos com pontos intermediários e passageiros pré-selecionados.
 - 🛣️ **Cálculo de Distância (KM) & Consumo (Litros)**: Rotas reais com OSRM/OpenStreetMap. O KM é registrado e convertido automaticamente em Litros (`Litros = KM / 7`).
 - 👥 **Divisão Justa por Trecho**: Seleção de quem estava no carro em cada trecho da viagem, dividindo tanto o KM quanto os Litros.
 - ⛽ **Abastecimento Extra & Créditos em Litros (L)**: Quando um participante abastece com recursos próprios, a quantidade de **Litros** abastecida vira crédito acumulado.
@@ -17,24 +18,26 @@ O **AutoShare** é uma plataforma web desenvolvida para gerenciar o uso comparti
 
 ---
 
-## 🛣️ 2. Módulo 1: Registrar Viagem
+## 🛣️ 2. Módulo 1: Registrar Viagem & Rotas Pré-definidas
 
-Utilizado para registrar cada corrida realizada com o veículo.
+Utilizado para registrar cada corrida realizada com o veículo no dia a dia.
 
-### Passo a Passo:
+### ⚡ Como Usar uma Rota Pré-definida:
+1. No topo do formulário de registro de viagem, abra o menu **`⚡ Carregar Rota Modelo...`**.
+2. Selecione a rota desejada (ex: *Casa ➔ Trab. Cinthia ➔ Facul. Henri/Hector*).
+3. O sistema preenche instantaneamente:
+   - Origem
+   - Todas as paradas intermediárias
+   - Destino final
+   - Ocupantes marcados em cada perna do trajeto
+   - Distância e consumo total em Litros
+4. Basta conferir e clicar em **`Salvar Viagem`**!
 
-1. **Selecione a Data**: Informe a data em que a corrida foi realizada.
-2. **Escolha a Origem e o Destino Final**:
-   - Escolha entre os **Locais Padrão** cadastrados (*Casa*, *Trabalho*, *Faculdade*, etc.) ou selecione `+ Digitar Endereço`.
-3. **Adicionar Paradas Intermediárias (Opcional)**:
-   - Clique em **`+ Adicionar Parada`** caso a corrida tenha tido paradas intermediárias para desembarque ou embarque.
-4. **Definir os Ocupantes em Cada Trecho**:
-   - Para cada perna do percurso (ex: *Trecho 1: Casa ➔ Parada 1*, *Trecho 2: Parada 1 ➔ Destino*), marque apenas os integrantes presentes.
-   - O sistema divide o KM e os **Litros consumidos** daquele trecho específico **somente** entre os passageiros marcados!
-5. **Ida e Volta**:
-   - Marque **`Ida e Volta`** caso o trajeto tenha sido percorrido nos dois sentidos (dobra a distância e os litros).
-6. **Salvar Viagem**:
-   - Clique em **`Salvar Viagem`**. A corrida é registrada com a distância em KM e os Litros consumidos.
+### 💾 Como Salvar uma Nova Rota Pré-definida:
+1. Monte o trajeto com a Origem, Paradas e Destino desejados.
+2. Marque os ocupantes de cada trecho.
+3. Clique no botão âmbar **`Salvar este Trajeto com Paradas e Ocupantes como Modelo`**.
+4. Dê um nome para a rota e clique em OK. Pronto! Ela estará disponível para uso imediato em todos os dispositivos.
 
 ---
 

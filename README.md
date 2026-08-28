@@ -9,6 +9,7 @@ Aplicação web single-page (SPA) responsiva, intuitiva e moderna para gestão d
 
 ## ⚡ Funcionalidades
 
+- **🛣️ Rotas Pré-definidas com Paradas & Ocupantes**: Salve e carregue instantaneamente trajetos frequentes com 1 clique. O sistema preenche a origem, paradas, destino final e os integrantes de cada perna do percurso automaticamente!
 - **⛽ Consumo Real por Litros (7 km/L)**: Cada quilômetro percorrido é automaticamente convertido para Litros consumidos (`Litros = KM / 7`). O KM percorrido continua visível e registrado.
 - **📍 Locais Pré-definidos & Rota Real OSRM**: Cálculo automático de rota com suporte a múltiplas paradas intermediárias e link direto para navegação no Google Maps.
 - **👥 Divisão Justa por Trecho**: Seleção de ocupantes em cada perna do trajeto com cálculo proporcional imediato de KM e Litros atribuídos.
