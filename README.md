@@ -9,13 +9,14 @@ Aplicação web single-page (SPA) responsiva, intuitiva e moderna para gestão d
 
 ## ⚡ Funcionalidades
 
+- **📅 Relatório por Intervalo de Datas (PDF/Impressão)**: Selecione a **Data de Início** e a **Data de Término/Emissão** (com limite máximo na data de hoje) para apuração detalhada de consumo em Litros e custo em R$.
+- **📄 Extrato Detalhado de Rotas e Paradas no PDF**: O relatório para PDF/impressão agora inclui a relação completa de todas as corridas do período, discriminando o trajeto, todas as paradas intermediárias, ocupantes de cada trecho e o rateio individual.
+- **🛣️ Histórico com Mapa de Paradas & Fluxo de Passageiros**: Visualização rica do trajeto passo a passo com stepper de paradas, identificando claramente quem entrou no veículo, quem permaneceu e quem desceu em cada parada.
 - **🛣️ Rotas Pré-definidas com Paradas & Ocupantes**: Salve e carregue instantaneamente trajetos frequentes com 1 clique. O sistema preenche a origem, paradas, destino final e os integrantes de cada perna do percurso automaticamente!
 - **⛽ Consumo Real por Litros (7 km/L)**: Cada quilômetro percorrido é automaticamente convertido para Litros consumidos (`Litros = KM / 7`). O KM percorrido continua visível e registrado.
 - **📍 Locais Pré-definidos & Rota Real OSRM**: Cálculo automático de rota com suporte a múltiplas paradas intermediárias e link direto para navegação no Google Maps.
 - **👥 Divisão Justa por Trecho**: Seleção de ocupantes em cada perna do trajeto com cálculo proporcional imediato de KM e Litros atribuídos.
 - **⛽ Abastecimento Extra & Saldo de Créditos em Litros (L)**: Quando um integrante abastece o carro com recursos próprios, os litros entram como crédito acumulado para abatimento automático no fechamento.
-- **📊 Relatório & Fechamento de Período**: Apuração proporcional ao consumo do carro (% de uso e Litros a pagar) com conversão automática para valor em R$ conforme o preço do combustível ou valor total do posto.
-- **🖨️ Relatório Oficial Imprimível (A4 / PDF)**: Modal pronto para impressão e salvamento em PDF com tabela completa de auditoria.
 - **🔥 Firebase Cloud Database & LocalStorage**: Sincronização em tempo real na nuvem via Firebase Firestore com suporte offline completo via LocalStorage.
 - **📦 Backup & Restauração**: Exportação e importação de dados em JSON.
 

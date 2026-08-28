@@ -89,12 +89,17 @@
       }
       .glass-card {
         background: #ffffff !important;
-        border: 1px solid #cccccc !important;
+        border: 1px solid #e2e8f0 !important;
         box-shadow: none !important;
         color: #000000 !important;
       }
       .text-white, .text-slate-200, .text-slate-300, .text-slate-400 {
         color: #000000 !important;
+      }
+      .bg-slate-900, .bg-slate-950, .bg-slate-800 {
+        background-color: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
       }
     }
   </style>
@@ -148,13 +153,13 @@
           <i class="fa-solid fa-gas-pump"></i> <span>Abastecimento Extra (Crédito em L)</span>
         </button>
         <button type="button" onclick="window.app && window.app.switchTab('report')" id="tab-btn-report" class="nav-tab px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
-          <i class="fa-solid fa-chart-pie"></i> <span>Relatório & Fechamento</span>
+          <i class="fa-solid fa-chart-pie"></i> <span>Relatório por Período</span>
         </button>
         <button type="button" onclick="window.app && window.app.switchTab('reports-log')" id="tab-btn-reports-log" class="nav-tab px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
           <i class="fa-solid fa-file-lines"></i> <span>Log de Relatórios</span>
         </button>
         <button type="button" onclick="window.app && window.app.switchTab('history')" id="tab-btn-history" class="nav-tab px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
-          <i class="fa-solid fa-list-check"></i> <span>Histórico</span>
+          <i class="fa-solid fa-list-check"></i> <span>Histórico & Fluxo de Paradas</span>
         </button>
       </nav>
     </div>
@@ -382,22 +387,39 @@
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
           <div>
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-chart-pie text-emerald-400"></i> Fechamento do Período (Consumo: 7,0 km/L)
+              <i class="fa-solid fa-chart-pie text-emerald-400"></i> Relatório de Consumo por Período (7,0 km/L)
             </h2>
             <p class="text-xs text-slate-400 mt-0.5">
-              Apuração por <strong>Litros consumidos</strong> com abatimento automático dos créditos individuais em Litros!
+              Selecione o intervalo de datas para apurar o consumo e gerar o relatório em PDF com rotas e paradas detalhadas.
             </p>
           </div>
 
           <div class="flex gap-2">
             <div class="bg-slate-900 px-3 py-2 rounded-xl border border-slate-800 text-right text-xs">
-              <span class="text-slate-400 text-[10px] uppercase font-semibold">KM Acumulado</span>
+              <span class="text-slate-400 text-[10px] uppercase font-semibold">KM no Período</span>
               <div id="live-period-total-km" class="text-sm font-bold text-slate-200">0,0 km</div>
             </div>
             <div class="bg-slate-900 px-3 py-2 rounded-xl border border-slate-800 text-right text-xs">
-              <span class="text-slate-400 text-[10px] uppercase font-semibold">Total Consumido</span>
+              <span class="text-slate-400 text-[10px] uppercase font-semibold">Total Litros</span>
               <div id="live-period-total-liters" class="text-base font-extrabold text-emerald-400">0,00 L</div>
             </div>
+          </div>
+        </div>
+
+        <!-- SELETORES DE DATA (INÍCIO E EMISSÃO/FIM) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
+              <i class="fa-regular fa-calendar text-emerald-400 mr-1"></i> Data de Início
+            </label>
+            <input type="date" id="report-start-date" onchange="window.app && window.app.onReportDateRangeChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white font-semibold focus:outline-none focus:border-emerald-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
+              <i class="fa-regular fa-calendar-check text-cyan-400 mr-1"></i> Data de Emissão / Fim (Máx: Hoje)
+            </label>
+            <input type="date" id="report-end-date" onchange="window.app && window.app.onReportDateRangeChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white font-semibold focus:outline-none focus:border-emerald-500">
           </div>
         </div>
 
@@ -419,7 +441,7 @@
 
           <div>
             <button type="button" onclick="window.app && window.app.emitNewReport()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition flex items-center justify-center gap-1.5 text-xs">
-              <i class="fa-solid fa-file-invoice text-sm"></i> Emitir & Abater Créditos (L)
+              <i class="fa-solid fa-file-pdf text-sm"></i> Gerar Relatório em PDF / Imprimir
             </button>
           </div>
         </div>
@@ -453,30 +475,19 @@
     <!-- TAB 5: HISTÓRICO DE VIAGENS -->
     <section id="tab-content-history" class="space-y-4 hidden">
       <div class="glass-card rounded-3xl p-4 sm:p-6 shadow-xl border border-slate-800">
-        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <h2 class="text-base font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-list-check text-emerald-400"></i> Histórico de Viagens
-          </h2>
-          <span class="text-xs text-slate-400" id="history-count-badge">0 viagens</span>
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2 border-b border-slate-800 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-emerald-400"></i> Histórico de Viagens & Fluxo de Paradas
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">Visualização completa do trajeto, paradas intermediárias e fluxo de entradas e saídas de ocupantes.</p>
+          </div>
+          <span class="text-xs text-slate-400 font-semibold px-2.5 py-1 bg-slate-900 rounded-xl border border-slate-800" id="history-count-badge">0 viagens</span>
         </div>
 
-        <div id="history-table-trips-container" class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-slate-900/80 uppercase text-[10px] tracking-wider text-slate-400 font-bold border-b border-slate-800">
-              <tr>
-                <th class="p-3">Data</th>
-                <th class="p-3">Quem Utilizou</th>
-                <th class="p-3">Trajeto</th>
-                <th class="p-3 text-center">Tipo</th>
-                <th class="p-3 text-right">KM Total (Litros)</th>
-                <th class="p-3 text-right">Rateio / Pessoa</th>
-                <th class="p-3 text-center">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="history-trips-body" class="divide-y divide-slate-800/60">
-              <!-- Rendered dynamically -->
-            </tbody>
-          </table>
+        <!-- Trips History Cards / Stepper List -->
+        <div id="history-trips-list" class="space-y-3">
+          <!-- Rendered dynamically -->
         </div>
       </div>
     </section>
@@ -534,9 +545,9 @@
     </div>
   </div>
 
-  <!-- MODAL DE VISUALIZAÇÃO E IMPRESSÃO DO RELATÓRIO EMITIDO -->
+  <!-- MODAL DE VISUALIZAÇÃO E IMPRESSÃO DO RELATÓRIO EMITIDO (PDF COMPLETO COM VIAGENS E PARADAS) -->
   <div id="modal-view-report" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-    <div class="glass-card max-w-3xl w-full rounded-3xl p-5 sm:p-8 shadow-2xl space-y-5 border border-slate-700 max-h-[92vh] overflow-y-auto">
+    <div class="glass-card max-w-4xl w-full rounded-3xl p-5 sm:p-8 shadow-2xl space-y-5 border border-slate-700 max-h-[92vh] overflow-y-auto">
       
       <!-- Printable Content Area -->
       <div id="printable-report-area" class="space-y-5">
@@ -569,13 +580,16 @@
             <div id="print-report-cost" class="text-sm font-bold text-cyan-400 mt-0.5">R$ 0,00</div>
           </div>
           <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
-            <div class="text-[10px] text-slate-400 uppercase font-semibold">Viagens</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Viagens no Período</div>
             <div id="print-report-trips" class="text-sm font-bold text-purple-400 mt-0.5">0</div>
           </div>
         </div>
 
         <!-- Tabela Detalhada por Participante com Rateio em Litros e Abatimento de Créditos -->
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto space-y-2">
+          <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-users text-emerald-400"></i> Divisão por Participante
+          </h3>
           <table class="w-full text-left text-xs border-collapse">
             <thead>
               <tr class="bg-slate-900 border-b border-slate-800 text-slate-400 text-[10px] uppercase font-bold">
@@ -595,6 +609,16 @@
           </table>
         </div>
 
+        <!-- Extrato Detalhado de Todas as Viagens do Período com Paradas e Ocupantes -->
+        <div class="space-y-3 pt-2">
+          <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
+            <i class="fa-solid fa-route text-amber-400"></i> Extrato Detalhado de Viagens, Rotas & Paradas
+          </h3>
+          <div id="print-report-trips-list" class="space-y-2 max-h-80 overflow-y-auto pr-1">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
       </div>
 
       <!-- Action Buttons -->
@@ -603,7 +627,7 @@
           Fechar
         </button>
         <button type="button" onclick="window.print()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition flex items-center gap-2">
-          <i class="fa-solid fa-print"></i> Imprimir Relatório
+          <i class="fa-solid fa-print"></i> Imprimir / Salvar em PDF
         </button>
       </div>
 
@@ -973,11 +997,28 @@
       }
 
       setDefaultDates() {
-        const todayStr = new Date().toISOString().slice(0, 10);
+        const today = new Date();
+        const todayStr = today.toISOString().slice(0, 10);
+
+        // First day of current month for report start date default
+        const firstDayMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`;
+
         const tripDt = document.getElementById('trip-date');
         const extraRefuelDt = document.getElementById('extra-refuel-date');
+        const reportStartDt = document.getElementById('report-start-date');
+        const reportEndDt = document.getElementById('report-end-date');
+
         if (tripDt) tripDt.value = todayStr;
         if (extraRefuelDt) extraRefuelDt.value = todayStr;
+
+        if (reportStartDt && !reportStartDt.value) {
+          reportStartDt.value = firstDayMonthStr;
+          reportStartDt.max = todayStr;
+        }
+        if (reportEndDt) {
+          reportEndDt.value = todayStr;
+          reportEndDt.max = todayStr; // Máxima data disponível é a do dia atual
+        }
       }
 
       populateLocationSelects() {
@@ -1681,8 +1722,9 @@
 
         const newTrip = {
           id: 'trip_' + Date.now(),
-          timestamp: new Date(rawDate).getTime(),
+          timestamp: new Date(rawDate + 'T12:00:00').getTime(),
           dateStr: formattedDate,
+          rawDate: rawDate,
           members: Array.from(allTripMembers),
           origin: originName,
           destination: destName,
@@ -1732,7 +1774,8 @@
           id: 'extra_' + Date.now(),
           member,
           dateStr: formattedDate,
-          timestamp: new Date(rawDate).getTime(),
+          rawDate: rawDate,
+          timestamp: new Date(rawDate + 'T12:00:00').getTime(),
           liters: liters
         };
 
@@ -1766,9 +1809,29 @@
         });
       }
 
-      getActivePeriodTrips() {
-        const lastClosed = this.data.lastClosedTimestamp || 0;
-        return this.data.trips.filter(t => t.timestamp >= lastClosed);
+      // Filter trips by Start Date and End Date
+      getFilteredReportTrips() {
+        const startInput = document.getElementById('report-start-date')?.value;
+        const endInput = document.getElementById('report-end-date')?.value;
+
+        const startTimestamp = startInput ? new Date(startInput + 'T00:00:00').getTime() : 0;
+        const endTimestamp = endInput ? new Date(endInput + 'T23:59:59').getTime() : Infinity;
+
+        return this.data.trips.filter(t => {
+          let tTime = t.timestamp;
+          if (!tTime && t.dateStr) {
+            const parts = t.dateStr.split('/');
+            if (parts.length === 3) {
+              tTime = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00`).getTime();
+            }
+          }
+          tTime ||= 0;
+          return tTime >= startTimestamp && tTime <= endTimestamp;
+        });
+      }
+
+      onReportDateRangeChange() {
+        this.renderReport();
       }
 
       // Synchronize Fuel Price / Total Cost Inputs
@@ -1776,7 +1839,7 @@
         const priceInput = document.getElementById('fuel-price-per-liter');
         const costInput = document.getElementById('manual-refuel-cost');
         const price = parseFloat(priceInput?.value) || 0;
-        const periodTrips = this.getActivePeriodTrips();
+        const periodTrips = this.getFilteredReportTrips();
         const periodTotalKm = periodTrips.reduce((acc, t) => acc + (t.totalDistance || 0), 0);
         const periodTotalLiters = periodTotalKm / KM_PER_LITER;
 
@@ -1790,7 +1853,7 @@
         const priceInput = document.getElementById('fuel-price-per-liter');
         const costInput = document.getElementById('manual-refuel-cost');
         const totalCost = parseFloat(costInput?.value) || 0;
-        const periodTrips = this.getActivePeriodTrips();
+        const periodTrips = this.getFilteredReportTrips();
         const periodTotalKm = periodTrips.reduce((acc, t) => acc + (t.totalDistance || 0), 0);
         const periodTotalLiters = periodTotalKm / KM_PER_LITER;
 
@@ -1800,7 +1863,7 @@
         this.renderReport();
       }
 
-      // Calculate member KM, Liters, and share cost breakdown for active period
+      // Calculate member KM, Liters, and share cost breakdown for the filtered period
       calculatePeriodMemberStats(periodTrips, manualCost, pricePerLiter, deductCredits = false) {
         const periodTotalKm = periodTrips.reduce((acc, t) => acc + (t.totalDistance || 0), 0);
         const periodTotalLiters = periodTotalKm / KM_PER_LITER;
@@ -1855,7 +1918,7 @@
       }
 
       renderReport() {
-        const periodTrips = this.getActivePeriodTrips();
+        const periodTrips = this.getFilteredReportTrips();
         const manualCostInput = document.getElementById('manual-refuel-cost');
         const priceInput = document.getElementById('fuel-price-per-liter');
 
@@ -1903,7 +1966,7 @@
 
             <div class="space-y-2 bg-slate-900/90 p-3 rounded-2xl border border-slate-800 text-xs">
               <div class="flex justify-between text-slate-300">
-                <span>Consumo em Litros:</span>
+                <span>Consumo no Período:</span>
                 <strong class="text-white font-bold">${stats.liters.toFixed(2)} L</strong>
               </div>
               ${stats.currentCreditLiters > 0 ? `
@@ -1933,14 +1996,17 @@
         });
       }
 
-      // Emit Report & Deduct Member Credits in Liters
+      // Emit Detailed Report for PDF / Print
       emitNewReport() {
-        const periodTrips = this.getActivePeriodTrips();
+        const periodTrips = this.getFilteredReportTrips();
 
         if (periodTrips.length === 0) {
-          this.showToast('Nenhuma viagem registrada no período atual para emitir relatório.', 'warning');
+          this.showToast('Nenhuma viagem encontrada no intervalo de datas selecionado.', 'warning');
           return;
         }
+
+        const startInput = document.getElementById('report-start-date')?.value;
+        const endInput = document.getElementById('report-end-date')?.value;
 
         const manualCostInput = document.getElementById('manual-refuel-cost');
         const priceInput = document.getElementById('fuel-price-per-liter');
@@ -1952,10 +2018,11 @@
         const reportNum = (this.data.issuedReports.length + 1).toString().padStart(3, '0');
         const reportDateStr = now.toLocaleDateString('pt-BR');
 
-        const { periodTotalKm, periodTotalLiters, effectivePricePerL, memberStats } = this.calculatePeriodMemberStats(periodTrips, manualCost, pricePerLiter, true);
+        const formattedStart = startInput ? this.formatDateString(startInput) : 'Início';
+        const formattedEnd = endInput ? this.formatDateString(endInput) : reportDateStr;
+        const periodRange = `${formattedStart} até ${formattedEnd}`;
 
-        const firstTripDate = periodTrips[periodTrips.length - 1]?.dateStr || reportDateStr;
-        const periodRange = `${firstTripDate} até ${reportDateStr}`;
+        const { periodTotalKm, periodTotalLiters, effectivePricePerL, memberStats } = this.calculatePeriodMemberStats(periodTrips, manualCost, pricePerLiter, false);
 
         const reportObject = {
           id: 'rep_' + Date.now(),
@@ -1968,17 +2035,14 @@
           effectivePricePerL,
           totalTrips: periodTrips.length,
           totalCost: manualCost > 0 ? manualCost : (periodTotalLiters * effectivePricePerL),
-          memberStats
+          memberStats,
+          trips: periodTrips
         };
 
         this.data.issuedReports.unshift(reportObject);
-        this.data.lastClosedTimestamp = now.getTime();
         this.saveData();
 
-        if (manualCostInput) manualCostInput.value = '';
-        if (priceInput) priceInput.value = '';
-
-        this.showToast(`Relatório Nº #${reportNum} emitido! Créditos em Litros abatidos.`, 'success');
+        this.showToast(`Relatório Nº #${reportNum} gerado com sucesso!`, 'success');
         this.openReportModal(reportObject);
       }
 
@@ -2010,7 +2074,7 @@
               </div>
               <div>
                 <h4 class="text-xs font-bold text-white">Relatório Nº #${rep.number}</h4>
-                <div class="text-[11px] text-slate-400">${rep.dateStr} • ${rep.totalKm.toFixed(1)} km (${totalLit.toFixed(2)} L)${costStr}</div>
+                <div class="text-[11px] text-slate-400">${rep.periodRange || rep.dateStr} • ${rep.totalKm.toFixed(1)} km (${totalLit.toFixed(2)} L)${costStr}</div>
               </div>
             </div>
 
@@ -2044,7 +2108,7 @@
       openReportModal(rep) {
         document.getElementById('print-report-num').textContent = `RELATÓRIO DE USO Nº #${rep.number}`;
         document.getElementById('print-report-date').textContent = rep.dateStr;
-        document.getElementById('print-report-period').textContent = rep.periodRange;
+        document.getElementById('print-report-period').textContent = rep.periodRange || rep.dateStr;
         document.getElementById('print-report-km').textContent = `${rep.totalKm.toFixed(1)} km`;
         
         const totalLit = rep.totalLiters || (rep.totalKm / KM_PER_LITER);
@@ -2052,6 +2116,7 @@
         document.getElementById('print-report-trips').textContent = `${rep.totalTrips}`;
         document.getElementById('print-report-cost').textContent = rep.totalCost > 0 ? `R$ ${rep.totalCost.toFixed(2)}` : 'A Ratear em L';
 
+        // 1. Tabela de Rateio por Participante
         const tableBody = document.getElementById('print-report-table-body');
         if (tableBody) {
           tableBody.innerHTML = '';
@@ -2082,6 +2147,85 @@
           });
         }
 
+        // 2. Extrato Detalhado de Viagens e Paradas do Período
+        const tripsContainer = document.getElementById('print-report-trips-list');
+        if (tripsContainer) {
+          tripsContainer.innerHTML = '';
+          const tripsToRender = rep.trips || [];
+
+          if (tripsToRender.length === 0) {
+            tripsContainer.innerHTML = `<div class="text-xs text-slate-400 p-3 text-center">Nenhuma viagem detalhada disponível para este relatório.</div>`;
+          } else {
+            tripsToRender.forEach((t, tIdx) => {
+              const card = document.createElement('div');
+              card.className = 'bg-slate-900 p-3 rounded-2xl border border-slate-800 space-y-2 text-xs';
+
+              const legs = (t.legsSummary && t.legsSummary.length > 0) ? t.legsSummary : [
+                { legIndex: 0, fromName: t.origin, toName: t.destination, distanceKm: t.totalDistance, distanceLiters: t.totalLiters || (t.totalDistance / KM_PER_LITER), members: t.members || [] }
+              ];
+
+              let legsHtml = legs.map((leg, lIdx) => {
+                const prevMembers = (lIdx === 0) ? [] : (legs[lIdx - 1].members || []);
+                const currMembers = leg.members || [];
+                const nextMembers = (lIdx === legs.length - 1) ? [] : (legs[lIdx + 1].members || []);
+
+                const entered = currMembers.filter(m => !prevMembers.includes(m));
+                const exited = currMembers.filter(m => !nextMembers.includes(m));
+
+                return `
+                  <div class="bg-slate-950/70 p-2 rounded-xl border border-slate-800/80 space-y-1">
+                    <div class="flex justify-between items-center text-slate-200 font-semibold">
+                      <span>Trecho ${lIdx + 1}: ${leg.fromName} ➔ ${leg.toName}</span>
+                      <span class="text-emerald-400 font-bold">${leg.distanceKm.toFixed(1)} km (${leg.distanceLiters.toFixed(2)} L)</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400 flex items-center justify-between flex-wrap gap-1">
+                      <div>👥 Ocupantes: <strong class="text-slate-300">${currMembers.join(', ')}</strong></div>
+                      <div class="flex gap-1.5 text-[10px]">
+                        ${entered.length > 0 ? `<span class="text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">🟢 Entrou: ${entered.join(', ')}</span>` : ''}
+                        ${exited.length > 0 ? `<span class="text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded">🔴 Desceu: ${exited.join(', ')}</span>` : ''}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('');
+
+              let splitText = '';
+              if (t.memberLitersMap) {
+                splitText = Object.entries(t.memberLitersMap)
+                  .filter(([m, lit]) => lit > 0)
+                  .map(([m, lit]) => `${m}: ${lit.toFixed(2)} L`)
+                  .join(' | ');
+              }
+
+              card.innerHTML = `
+                <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800/80 pb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-slate-800 text-slate-300 font-bold flex items-center justify-center text-[10px]">#${tIdx + 1}</span>
+                    <strong class="text-white">${t.dateStr}</strong>
+                    <span class="text-slate-400">• ${t.origin} ➔ ${t.destination}</span>
+                    ${t.isRoundTrip ? '<span class="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] font-bold">Ida e Volta</span>' : ''}
+                  </div>
+                  <div class="text-right">
+                    <strong class="text-emerald-400">${t.totalDistance.toFixed(1)} km</strong>
+                    <span class="text-slate-400">(${(t.totalLiters || (t.totalDistance / KM_PER_LITER)).toFixed(2)} L)</span>
+                  </div>
+                </div>
+                <div class="space-y-1.5">
+                  ${legsHtml}
+                </div>
+                ${splitText ? `
+                <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-800/60 flex justify-between items-center">
+                  <span>Rateio da Corrida:</span>
+                  <span class="text-emerald-300 font-semibold">${splitText}</span>
+                </div>
+                ` : ''}
+              `;
+
+              tripsContainer.appendChild(card);
+            });
+          }
+        }
+
         document.getElementById('modal-view-report').classList.remove('hidden');
       }
 
@@ -2089,58 +2233,148 @@
         document.getElementById('modal-view-report').classList.add('hidden');
       }
 
+      // Render History with Full Route, Stops Stepper & Passenger Entry/Exit Flow
       renderHistory() {
-        const tripsBody = document.getElementById('history-trips-body');
-        if (!tripsBody) return;
+        const container = document.getElementById('history-trips-list');
+        const countBadge = document.getElementById('history-count-badge');
 
-        tripsBody.innerHTML = '';
+        if (!container) return;
+
+        container.innerHTML = '';
+        if (countBadge) countBadge.textContent = `${this.data.trips.length} viagens registradas`;
+
         if (this.data.trips.length === 0) {
-          tripsBody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-slate-500">Nenhuma viagem registrada até o momento.</td></tr>`;
-        } else {
-          this.data.trips.forEach(t => {
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-slate-900/40 transition';
-            const totalLit = t.totalLiters || (t.totalDistance / KM_PER_LITER);
-
-            let rateioDetails = '';
-            if (t.memberKmMap) {
-              rateioDetails = Object.entries(t.memberKmMap)
-                .filter(([m, km]) => km > 0)
-                .map(([m, km]) => `${m}: ${km.toFixed(1)} km (${(km / KM_PER_LITER).toFixed(2)} L)`)
-                .join(', ');
-            } else {
-              rateioDetails = `${(t.members || []).join(', ')}`;
-            }
-
-            tr.innerHTML = `
-              <td class="p-3 font-medium text-slate-200 whitespace-nowrap">${t.dateStr}</td>
-              <td class="p-3 whitespace-nowrap">
-                <div class="flex flex-wrap gap-1">
-                  ${(t.members || []).map(m => `<span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded-md text-[10px] border border-slate-700">${m}</span>`).join('')}
-                </div>
-              </td>
-              <td class="p-3 whitespace-nowrap text-slate-300">${t.origin} ➔ ${t.destination}</td>
-              <td class="p-3 text-center whitespace-nowrap">
-                ${t.isRoundTrip ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px] font-semibold">Ida e Volta</span>' : '<span class="px-2 py-0.5 bg-slate-800 text-slate-400 rounded text-[10px]">Só Ida</span>'}
-              </td>
-              <td class="p-3 text-right font-bold text-emerald-400 whitespace-nowrap">
-                ${t.totalDistance.toFixed(1)} km <span class="text-xs text-slate-400">(${totalLit.toFixed(2)} L)</span>
-              </td>
-              <td class="p-3 text-right text-xs text-slate-300 whitespace-nowrap" title="${rateioDetails}">
-                ${rateioDetails.length > 35 ? rateioDetails.slice(0, 35) + '...' : rateioDetails}
-              </td>
-              <td class="p-3 text-center whitespace-nowrap">
-                <button type="button" onclick="window.app && window.app.deleteTrip('${t.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Viagem">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
-              </td>
-            `;
-            tripsBody.appendChild(tr);
-          });
+          container.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs glass-card rounded-2xl">Nenhuma viagem registrada até o momento.</div>`;
+          return;
         }
 
-        const countBadge = document.getElementById('history-count-badge');
-        if (countBadge) countBadge.textContent = `${this.data.trips.length} viagens registradas`;
+        this.data.trips.forEach((t, idx) => {
+          const card = document.createElement('div');
+          card.className = 'glass-card rounded-3xl p-4 sm:p-5 shadow-xl border border-slate-800 space-y-3';
+
+          const totalLit = t.totalLiters || (t.totalDistance / KM_PER_LITER);
+
+          const legs = (t.legsSummary && t.legsSummary.length > 0) ? t.legsSummary : [
+            {
+              legIndex: 0,
+              fromName: t.origin,
+              toName: t.destination,
+              distanceKm: t.totalDistance,
+              distanceLiters: totalLit,
+              members: t.members || []
+            }
+          ];
+
+          let legsFlowHtml = legs.map((leg, lIdx) => {
+            const prevMembers = (lIdx === 0) ? [] : (legs[lIdx - 1].members || []);
+            const currMembers = leg.members || [];
+            const nextMembers = (lIdx === legs.length - 1) ? [] : (legs[lIdx + 1].members || []);
+
+            const entered = currMembers.filter(m => !prevMembers.includes(m));
+            const exited = currMembers.filter(m => !nextMembers.includes(m));
+            const stayed = currMembers.filter(m => prevMembers.includes(m));
+
+            return `
+              <div class="relative pl-6 pb-3 last:pb-0">
+                <!-- Stepper Node -->
+                <div class="absolute left-0 top-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-950 flex items-center justify-center">
+                  <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+                </div>
+                ${lIdx < legs.length - 1 ? '<div class="absolute left-[6px] top-4.5 bottom-0 w-0.5 bg-slate-800"></div>' : ''}
+
+                <div class="bg-slate-900/90 p-3 rounded-2xl border border-slate-800 space-y-2">
+                  <div class="flex items-center justify-between flex-wrap gap-1">
+                    <div class="font-bold text-xs text-white flex items-center gap-1.5">
+                      <span class="text-amber-400">Trecho ${lIdx + 1}:</span>
+                      <span>${leg.fromName} ➔ ${leg.toName}</span>
+                    </div>
+                    <div class="text-emerald-400 font-extrabold text-xs">
+                      ${leg.distanceKm.toFixed(1)} km <span class="text-[11px] text-slate-400">(${leg.distanceLiters.toFixed(2)} L)</span>
+                    </div>
+                  </div>
+
+                  <!-- Passenger Entry / Exit Flow Badges -->
+                  <div class="flex items-center justify-between flex-wrap gap-2 pt-1 border-t border-slate-800/80 text-xs">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <span class="text-[11px] text-slate-400">No Carro:</span>
+                      ${currMembers.map(m => `<span class="px-2 py-0.5 bg-slate-800 text-slate-200 font-semibold rounded-md text-[10px] border border-slate-700">${m}</span>`).join('')}
+                    </div>
+
+                    <div class="flex items-center gap-1.5 flex-wrap text-[10px]">
+                      ${entered.length > 0 ? `<span class="px-2 py-0.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-lg font-bold">🟢 Entrou: ${entered.join(', ')}</span>` : ''}
+                      ${stayed.length > 0 && lIdx > 0 ? `<span class="px-2 py-0.5 bg-slate-800/80 text-slate-400 border border-slate-700 rounded-lg">👤 Permanece: ${stayed.join(', ')}</span>` : ''}
+                      ${exited.length > 0 ? `<span class="px-2 py-0.5 bg-red-500/15 text-red-400 border border-red-500/30 rounded-lg font-bold">🔴 Desceu: ${exited.join(', ')}</span>` : ''}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          let memberSplitBadges = '';
+          if (t.memberKmMap) {
+            memberSplitBadges = Object.entries(t.memberKmMap)
+              .filter(([m, km]) => km > 0)
+              .map(([m, km]) => `
+                <div class="bg-slate-950/80 px-2.5 py-1 rounded-xl border border-slate-800 text-center">
+                  <div class="text-[9px] text-slate-400 uppercase font-semibold">${m}</div>
+                  <div class="text-xs font-bold text-emerald-400">${(km / KM_PER_LITER).toFixed(2)} L <span class="text-[10px] text-slate-400 font-normal">(${km.toFixed(1)} km)</span></div>
+                </div>
+              `).join('');
+          }
+
+          card.innerHTML = `
+            <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center font-bold text-xs text-emerald-400 shadow-md">
+                  <i class="fa-solid fa-car-side"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h4 class="text-sm font-bold text-white">${t.dateStr}</h4>
+                    ${t.isRoundTrip ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-md text-[10px] font-bold border border-emerald-500/20">Ida e Volta</span>' : '<span class="px-2 py-0.5 bg-slate-800 text-slate-400 rounded-md text-[10px]">Só Ida</span>'}
+                  </div>
+                  <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
+                    <span>${t.origin} ➔ ${t.destination}</span>
+                    ${legs.length > 1 ? `<span class="text-amber-400 font-semibold">(${legs.length - 1} parada${legs.length > 2 ? 's' : ''})</span>` : ''}
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div class="text-right">
+                  <div class="text-sm font-extrabold text-emerald-400">${t.totalDistance.toFixed(1)} km</div>
+                  <div class="text-[11px] text-slate-400 font-bold">${totalLit.toFixed(2)} Litros</div>
+                </div>
+                <button type="button" onclick="window.app && window.app.deleteTrip('${t.id}')" class="p-2 text-red-400 hover:text-red-300 rounded-xl bg-red-950/30 hover:bg-red-900/40 border border-red-900/40 text-xs transition" title="Excluir Viagem">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Visual Flow of Stops and Occupants -->
+            <div class="space-y-1 pt-1">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+                <i class="fa-solid fa-route text-emerald-400"></i> Mapa de Paradas & Fluxo de Passageiros
+              </div>
+              <div class="pl-1">
+                ${legsFlowHtml}
+              </div>
+            </div>
+
+            <!-- Rateio por Integrante da Viagem -->
+            ${memberSplitBadges ? `
+            <div class="pt-2 border-t border-slate-800/80">
+              <div class="text-[10px] text-slate-400 uppercase font-semibold mb-1.5">Consumo Atribuído por Integrante:</div>
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
+                ${memberSplitBadges}
+              </div>
+            </div>
+            ` : ''}
+          `;
+
+          container.appendChild(card);
+        });
       }
 
       deleteTrip(id) {

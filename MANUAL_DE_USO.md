@@ -9,11 +9,12 @@
 O **AutoShare** é uma plataforma web desenvolvida para gerenciar o uso compartilhado de veículos entre múltiplos integrantes (**Cinthia, Arnaldo, Henri, Hector e Heric**), operando sob uma constante de consumo de **7,0 km/L** (`1 Litro a cada 7 km rodados`).
 
 ### Principais Recursos:
-- 🛣️ **Rotas Pré-definidas (Modelos com Paradas e Ocupantes)**: Carregamento instantâneo com 1 clique de trajetos com pontos intermediários e passageiros pré-selecionados.
-- 🛣️ **Cálculo de Distância (KM) & Consumo (Litros)**: Rotas reais com OSRM/OpenStreetMap. O KM é registrado e convertido automaticamente em Litros (`Litros = KM / 7`).
+- 📅 **Relatório por Intervalo de Datas**: O usuário define livremente a **Data de Início** e a **Data de Emissão/Fim** (sendo a data máxima permitida o dia atual) para apurar os gastos do período exato.
+- 📄 **Extrato Completo para PDF/Impressão**: O relatório exportável em PDF inclui resumo executivo, tabela de rateio por pessoa e a relação detalhada de **todas as viagens, rotas, paradas e passageiros**.
+- 🛣️ **Histórico com Fluxo de Passageiros**: Visualização das corridas com linha do tempo de paradas e indicador de quem entrou (`🟢 Entrou`), permaneceu (`👤 Permanece`) e desceu (`🔴 Desceu`) em cada trecho.
+- 🛣️ **Rotas Pré-definidas (Modelos Salvos)**: Carregamento instantâneo de trajetos frequentes com paradas e ocupantes pré-configurados.
 - 👥 **Divisão Justa por Trecho**: Seleção de quem estava no carro em cada trecho da viagem, dividindo tanto o KM quanto os Litros.
-- ⛽ **Abastecimento Extra & Créditos em Litros (L)**: Quando um participante abastece com recursos próprios, a quantidade de **Litros** abastecida vira crédito acumulado.
-- 📊 **Fechamento de Período & Rateio por Litro**: Divisão proporcional ao consumo em Litros de cada um, com abatimento automático dos créditos em Litros e cálculo opcional do valor financeiro a pagar em R$.
+- ⛽ **Abastecimento Extra & Créditos em Litros (L)**: Quando um participante abastece com recursos próprios, a quantidade de **Litros** abastecida vira crédito acumulado para abatimento.
 - ☁️ **Sincronização em Nuvem (Firebase)**: Dados sincronizados em tempo real entre celulares e computadores com suporte offline.
 
 ---
@@ -22,22 +23,17 @@ O **AutoShare** é uma plataforma web desenvolvida para gerenciar o uso comparti
 
 Utilizado para registrar cada corrida realizada com o veículo no dia a dia.
 
-### ⚡ Como Usar uma Rota Pré-definida:
-1. No topo do formulário de registro de viagem, abra o menu **`⚡ Carregar Rota Modelo...`**.
-2. Selecione a rota desejada (ex: *Casa ➔ Trab. Cinthia ➔ Facul. Henri/Hector*).
-3. O sistema preenche instantaneamente:
-   - Origem
-   - Todas as paradas intermediárias
-   - Destino final
-   - Ocupantes marcados em cada perna do trajeto
-   - Distância e consumo total em Litros
-4. Basta conferir e clicar em **`Salvar Viagem`**!
+### ⚡ Como Registrar uma Viagem:
+1. Informe a **Data da Viagem**.
+2. Defina a **Origem**, adicione **Paradas Intermediárias** (se houver) e o **Destino Final**.
+3. Em cada trecho gerado, marque os integrantes que estavam dentro do carro.
+4. O sistema calcula a distância real via OSRM, a conversão para Litros (7 km/L) e o rateio proporcional.
+5. Clique em **`Salvar Viagem`**.
 
-### 💾 Como Salvar uma Nova Rota Pré-definida:
-1. Monte o trajeto com a Origem, Paradas e Destino desejados.
-2. Marque os ocupantes de cada trecho.
-3. Clique no botão âmbar **`Salvar este Trajeto com Paradas e Ocupantes como Modelo`**.
-4. Dê um nome para a rota e clique em OK. Pronto! Ela estará disponível para uso imediato em todos os dispositivos.
+### 💾 Modelos de Rotas Pré-definidas:
+- Para usar: abra o menu **`⚡ Carregar Rota Modelo...`**.
+- Para salvar uma rota nova: monte o trajeto e clique em **`Salvar este Trajeto com Paradas e Ocupantes como Modelo`**.
+- Para gerenciar ou excluir modelos: clique no botão com ícone de rota no cabeçalho.
 
 ---
 
@@ -45,57 +41,36 @@ Utilizado para registrar cada corrida realizada com o veículo no dia a dia.
 
 Quando um integrante abastece o veículo pagando do próprio bolso, a quantidade de combustível entra como **Crédito em Litros (L)**.
 
-### Como Registrar:
 1. Acesse a aba **`Abastecimento Extra (Crédito em L)`**.
-2. Selecione **Quem Abasteceu** (ex: *Cinthia*).
-3. Informe a **Data** e a quantidade de **Litros Abastecidos (L)** (ex: *20,0 L*).
-4. Clique em **`Registrar Abastecimento Extra & Adicionar Crédito (L)`**.
-
-### Saldo Atual de Créditos:
-- O painel exibe o saldo de crédito acumulado em Litros de cada participante.
-- **Abatimento Automático**: No fechamento, os Litros consumidos pelo participante abatem prioritariamente do seu saldo de créditos em Litros!
+2. Selecione quem abasteceu, a data e os **Litros Abastecidos (L)**.
+3. Clique em **`Registrar Abastecimento Extra & Adicionar Crédito (L)`**.
+4. O saldo de créditos é atualizado e abaterá automaticamente nos relatórios de consumo.
 
 ---
 
-## 📊 4. Módulo 3: Relatório & Fechamento de Período
+## 📊 4. Módulo 3: Relatório de Consumo por Período & PDF
 
-Ao final de um período, realiza-se o fechamento dos consumos do veículo.
+Gera o fechamento e a prestação de contas de qualquer período desejado.
 
-### Como Funciona o Fechamento:
-1. Acesse a aba **`Relatório & Fechamento`**.
-2. O sistema exibe o **KM Total** e os **Litros Totais Consumidos** no período (`Total KM / 7`).
-3. Opcionalmente, preencha:
-   - **Preço do Litro (R$/L)** (ex: *R$ 5,89*); OU
-   - **Custo Total no Posto (R$)** (ex: *R$ 250,00*).
-4. O sistema calcula para cada participante:
-   - **KM Rodado** e **Litros Consumidos (L)**.
-   - **Porcentagem de Uso (%)**.
-   - **Crédito em Litros Abatido (L)**.
-   - **Litros a Pagar (L)** (Saldo devedor em combustível).
-   - **Valor Final a Pagar (R$)** (se informado preço do combustível).
-5. Clique em **`Emitir & Abater Créditos (L)`**. O relatório é salvo no log e um modal de impressão é exibido.
+### Como Gerar o Relatório:
+1. Acesse a aba **`Relatório por Período`**.
+2. Selecione a **Data de Início** e a **Data de Emissão/Fim** (a data máxima disponível é o dia de hoje).
+3. O sistema filtra as viagens do período e exibe o consumo total em KM e Litros.
+4. Opcionalmente, informe o **Preço do Litro (R$/L)** ou o **Custo Total no Posto (R$)** para conversão financeira automática.
+5. Clique em **`Gerar Relatório em PDF / Imprimir`**.
+6. Um modal completo será exibido contendo:
+   - Resumo geral de métricas.
+   - Tabela de rateio e consumo por participante.
+   - Extrato detalhado com todas as viagens, paradas e ocupantes daquele período.
+7. Clique em **`Imprimir / Salvar em PDF`** para exportar o arquivo oficial.
 
 ---
 
-## 📄 5. Módulo 4: Log de Relatórios & Histórico
+## 📄 5. Módulo 4 & 5: Log de Relatórios & Histórico Visual de Viagens
 
-- **Histórico de Viagens**: Tabela completa com data, ocupantes, trajeto, KM total e Litros equivalentes.
-- **Log de Relatórios Salvos**: Registro histórico de todos os fechamentos anteriores com opção de visualização e reimpressão.
-
----
-
-## 💡 6. Exemplo Prático de Divisão (Constante 7 km/L)
-
-Suponha uma viagem de **14,0 km** (equivalente a **2,0 Litros** de combustível):
-
-- **Trecho 1 (7,0 km = 1,0 L)**: Ocupantes **Cinthia** e **Henri**
-  - *Atribuição*: 3,5 km (0,5 L) para Cinthia e 3,5 km (0,5 L) para Henri.
-
-- **Trecho 2 (7,0 km = 1,0 L)**: Apenas **Henri** no carro
-  - *Atribuição*: 7,0 km (1,0 L) para Henri.
-
-- **Resultado da Viagem**:
-  - **Cinthia**: 3,5 km (0,50 L)
-  - **Henri**: 10,5 km (1,50 L)
-
-Se Cinthia possuir **2,0 L de crédito prévio**, no fechamento seus **0,5 L** consumidos serão abatidos, resultando em **0,0 L a pagar** e um saldo restante de **1,5 L de crédito**!
+- **Log de Relatórios**: Consulta histórica de todos os relatórios emitidos anteriormente para reimpressão rápida.
+- **Histórico & Fluxo de Paradas**: Cada viagem exibe uma linha do tempo com:
+  - Distância e litros de cada perna do trajeto.
+  - Ocupantes no carro.
+  - Indicador de quem subiu e quem desceu em cada parada.
+  - Rateio individual detalhado daquela corrida.
