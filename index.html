@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AutoShare - Controle de Veículo Compartilhado</title>
+  <title>AutoShare - Controle de Veículo Compartilhado (7 km/L)</title>
   
   <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -110,7 +110,7 @@
         </div>
         <div>
           <h1 class="text-base font-bold text-white leading-tight">AutoShare</h1>
-          <p class="text-[11px] text-emerald-400 font-medium">Ribeirão Preto - SP</p>
+          <p class="text-[11px] text-emerald-400 font-medium">Consumo Base: 7,0 km/L • Ribeirão Preto</p>
         </div>
       </div>
 
@@ -142,7 +142,7 @@
           <i class="fa-solid fa-car-on"></i> <span>Registrar Viagem</span>
         </button>
         <button type="button" onclick="window.app && window.app.switchTab('extra-refuel')" id="tab-btn-extra-refuel" class="nav-tab px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
-          <i class="fa-solid fa-gas-pump"></i> <span>Abastecimento Extra (Crédito)</span>
+          <i class="fa-solid fa-gas-pump"></i> <span>Abastecimento Extra (Crédito em L)</span>
         </button>
         <button type="button" onclick="window.app && window.app.switchTab('report')" id="tab-btn-report" class="nav-tab px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
           <i class="fa-solid fa-chart-pie"></i> <span>Relatório & Fechamento</span>
@@ -164,7 +164,7 @@
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-car-on text-emerald-400"></i> Registrar Viagem
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Cálculo de rota com seleção de passageiros por trecho/parada.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Cálculo de rota com conversão direta de KM para Litros (7 km/L).</p>
           </div>
           <span class="text-[11px] font-semibold px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">Módulo 1</span>
         </div>
@@ -197,7 +197,7 @@
                 <!-- Populated dynamically -->
               </select>
               <div id="container-origin-custom" class="hidden mt-2">
-                <input type="text" id="trip-origin-custom" placeholder="Digite o endereço da Origem..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
+                <input type="text" id="trip-origin-custom" placeholder="Digite o endereço da Origem..." onchange="window.app && window.app.calculateTripRouteDistance()" oninput="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
               </div>
             </div>
 
@@ -213,18 +213,18 @@
                 <!-- Populated dynamically -->
               </select>
               <div id="container-dest-custom" class="hidden mt-2">
-                <input type="text" id="trip-dest-custom" placeholder="Digite o endereço do Destino..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
+                <input type="text" id="trip-dest-custom" placeholder="Digite o endereço do Destino..." onchange="window.app && window.app.calculateTripRouteDistance()" oninput="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
               </div>
             </div>
           </div>
 
-          <!-- SELEÇÃO DE INTEGRANTES POR TRECHO/PARADA (NOVO RECURSO) -->
+          <!-- SELEÇÃO DE INTEGRANTES POR TRECHO/PARADA -->
           <div class="p-4 rounded-2xl bg-slate-900/90 border border-emerald-500/20 space-y-3">
             <div class="flex items-center justify-between">
               <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
                 <i class="fa-solid fa-user-group"></i> Ocupantes do Carro em Cada Trecho
               </h3>
-              <span class="text-[10px] text-slate-400">Adicione/Retire integrantes por parada</span>
+              <span class="text-[10px] text-slate-400">Divisão do consumo proporcional por trecho</span>
             </div>
 
             <!-- Dynamic Legs Members Selectors Container -->
@@ -252,7 +252,7 @@
               <label class="flex items-center gap-3 cursor-pointer select-none bg-slate-900 p-3 rounded-xl border border-slate-800 w-full">
                 <input type="checkbox" id="trip-roundtrip" onchange="window.app && window.app.updateTripPreview()" class="sr-only peer">
                 <div class="w-10 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 relative"></div>
-                <span class="text-xs font-bold text-slate-200">Ida e Volta (Dobra KM)</span>
+                <span class="text-xs font-bold text-slate-200">Ida e Volta (Dobra KM e Litros)</span>
               </label>
             </div>
           </div>
@@ -262,14 +262,18 @@
             <i class="fa-solid fa-map-location text-sm"></i> Abrir Rota no Google Maps
           </a>
 
-          <!-- Live Preview Box -->
+          <!-- Live Preview Box com KM e Litros -->
           <div id="trip-preview-box" class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between flex-wrap gap-2">
             <div>
-              <div class="text-[11px] text-slate-400">Total KM Atribuído por Pessoa nesta Corrida:</div>
+              <div class="text-[11px] text-slate-400">Rateio por Pessoa nesta Viagem:</div>
               <div id="preview-members-list" class="text-xs font-bold text-slate-200 mt-0.5">Defina os integrantes dos trechos</div>
             </div>
             <div class="text-right">
-              <div class="text-slate-400 text-[11px]">Distância Total: <strong id="preview-total-dist" class="text-emerald-400 font-bold">0.0 km</strong></div>
+              <div class="text-slate-400 text-[11px]">Consumo da Viagem:</div>
+              <div class="text-xs">
+                <span id="preview-total-dist" class="text-slate-300 font-semibold">0.0 km</span> • 
+                <strong id="preview-total-liters" class="text-emerald-400 font-bold">0.00 L</strong>
+              </div>
             </div>
           </div>
 
@@ -282,19 +286,19 @@
       </div>
     </section>
 
-    <!-- TAB 2: ABASTECIMENTO EXTRA & CRÉDITO -->
+    <!-- TAB 2: ABASTECIMENTO EXTRA & CRÉDITO EM LITROS -->
     <section id="tab-content-extra-refuel" class="space-y-4 hidden">
       <div class="glass-card rounded-3xl p-4 sm:p-6 shadow-xl border border-slate-800">
         <div class="border-b border-slate-800 pb-3 mb-4">
           <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-gas-pump text-cyan-400"></i> Abastecimento Extra (Crédito Individual)
+            <i class="fa-solid fa-gas-pump text-cyan-400"></i> Abastecimento Extra (Crédito em Litros)
           </h2>
           <p class="text-xs text-slate-400 mt-0.5">
-            Quando alguém abastece o carro com o próprio dinheiro, este valor fica como <strong>Crédito Acumulado</strong> e será abatido automaticamente nos próximos relatórios!
+            Quando alguém abastece o carro com o próprio dinheiro, os <strong>Litros abastecidos</strong> ficam registrados como <strong>Crédito de Litros</strong> e são abatidos diretamente na divisão de consumo!
           </p>
         </div>
 
-        <!-- Form Abastecimento Extra -->
+        <!-- Form Abastecimento Extra em Litros -->
         <form id="form-extra-refuel" onsubmit="window.app && window.app.saveExtraRefuel(event)" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
@@ -314,21 +318,21 @@
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-300 mb-1">Valor Abastecido (R$)</label>
-              <input type="number" id="extra-refuel-amount" step="0.01" min="0.01" required placeholder="Ex: 100.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-cyan-500 font-bold">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Litros Abastecidos (L)</label>
+              <input type="number" id="extra-refuel-liters" step="0.01" min="0.01" required placeholder="Ex: 20.50" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-cyan-500 font-bold">
             </div>
           </div>
 
           <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-cyan-600/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-plus-circle text-sm"></i> Registrar Abastecimento Extra & Adicionar Crédito
+            <i class="fa-solid fa-plus-circle text-sm"></i> Registrar Abastecimento Extra & Adicionar Crédito (L)
           </button>
         </form>
       </div>
 
-      <!-- Saldo de Crédito dos 5 Integrantes -->
+      <!-- Saldo de Crédito em Litros por Integrante -->
       <div class="glass-card rounded-3xl p-4 shadow-xl border border-slate-800 space-y-3">
         <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-          <i class="fa-solid fa-wallet text-emerald-400"></i> Saldo Atual de Créditos por Integrante
+          <i class="fa-solid fa-gas-pump text-emerald-400"></i> Saldo Atual de Créditos em Litros (L)
         </h3>
         <div id="credits-balance-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2">
           <!-- Rendered dynamically -->
@@ -339,36 +343,49 @@
     <!-- TAB 3: RELATÓRIOS E FECHAMENTO -->
     <section id="tab-content-report" class="space-y-4 hidden">
       
-      <!-- Emit Report Action Banner with Manual Fuel Cost Input -->
+      <!-- Emit Report Action Banner -->
       <div class="glass-card rounded-3xl p-4 sm:p-6 shadow-xl space-y-4 border border-emerald-500/20">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
           <div>
             <h2 class="text-lg font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-chart-pie text-emerald-400"></i> Fechamento do Período
+              <i class="fa-solid fa-chart-pie text-emerald-400"></i> Fechamento do Período (Consumo: 7,0 km/L)
             </h2>
             <p class="text-xs text-slate-400 mt-0.5">
-              Insira o valor da abastecida. Créditos pendentes serão abatidos automaticamente!
+              Apuração por <strong>Litros consumidos</strong> com abatimento automático dos créditos individuais em Litros!
             </p>
           </div>
 
-          <div class="bg-slate-900 px-3 py-2 rounded-xl border border-slate-800 text-right text-xs">
-            <span class="text-slate-400">KM Acumulado:</span>
-            <div id="live-period-total-km" class="text-base font-extrabold text-emerald-400">0,0 km</div>
+          <div class="flex gap-2">
+            <div class="bg-slate-900 px-3 py-2 rounded-xl border border-slate-800 text-right text-xs">
+              <span class="text-slate-400 text-[10px] uppercase font-semibold">KM Acumulado</span>
+              <div id="live-period-total-km" class="text-sm font-bold text-slate-200">0,0 km</div>
+            </div>
+            <div class="bg-slate-900 px-3 py-2 rounded-xl border border-slate-800 text-right text-xs">
+              <span class="text-slate-400 text-[10px] uppercase font-semibold">Total Consumido</span>
+              <div id="live-period-total-liters" class="text-base font-extrabold text-emerald-400">0,00 L</div>
+            </div>
           </div>
         </div>
 
-        <!-- Manual Fuel Cost Input & Emission Button -->
+        <!-- Fuel Cost & Pricing Inputs & Emission Button -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800">
-          <div class="sm:col-span-2">
+          <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
-              <i class="fa-solid fa-gas-pump text-cyan-400 mr-1"></i> Valor Total da Abastecida no Posto (R$)
+              <i class="fa-solid fa-tag text-cyan-400 mr-1"></i> Preço do Litro (R$/L)
             </label>
-            <input type="number" id="manual-refuel-cost" step="0.01" min="0" placeholder="Ex: 250.00" oninput="window.app && window.app.renderReport()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 font-bold">
+            <input type="number" id="fuel-price-per-liter" step="0.01" min="0" placeholder="Ex: 5.89" oninput="window.app && window.app.onFuelPriceChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 font-bold">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
+              <i class="fa-solid fa-gas-pump text-cyan-400 mr-1"></i> Custo Total no Posto (R$)
+            </label>
+            <input type="number" id="manual-refuel-cost" step="0.01" min="0" placeholder="Ex: 250.00" oninput="window.app && window.app.onTotalCostChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 font-bold">
           </div>
 
           <div>
             <button type="button" onclick="window.app && window.app.emitNewReport()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition flex items-center justify-center gap-1.5 text-xs">
-              <i class="fa-solid fa-file-invoice text-sm"></i> Emitir & Abater Créditos
+              <i class="fa-solid fa-file-invoice text-sm"></i> Emitir & Abater Créditos (L)
             </button>
           </div>
         </div>
@@ -388,7 +405,7 @@
             <h2 class="text-base font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-file-lines text-cyan-400"></i> Relatórios Emitidos
             </h2>
-            <p class="text-xs text-slate-400">Histórico de relatórios de fechamento salvos.</p>
+            <p class="text-xs text-slate-400">Histórico de relatórios de fechamento com divisão em Litros.</p>
           </div>
           <span class="text-xs text-slate-400" id="reports-log-count">0 relatórios salvos</span>
         </div>
@@ -417,8 +434,8 @@
                 <th class="p-3">Quem Utilizou</th>
                 <th class="p-3">Trajeto</th>
                 <th class="p-3 text-center">Tipo</th>
-                <th class="p-3 text-right">KM Total</th>
-                <th class="p-3 text-right">KM / Pessoa</th>
+                <th class="p-3 text-right">KM Total (Litros)</th>
+                <th class="p-3 text-right">Rateio / Pessoa</th>
                 <th class="p-3 text-center">Ações</th>
               </tr>
             </thead>
@@ -438,7 +455,7 @@
       <i class="fa-solid fa-car-on text-lg"></i> Viagens
     </button>
     <button type="button" onclick="window.app && window.app.switchTab('extra-refuel')" id="bottom-btn-extra-refuel" class="bottom-nav-item flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400">
-      <i class="fa-solid fa-gas-pump text-lg"></i> Créditos
+      <i class="fa-solid fa-gas-pump text-lg"></i> Créditos L
     </button>
     <button type="button" onclick="window.app && window.app.switchTab('report')" id="bottom-btn-report" class="bottom-nav-item flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400">
       <i class="fa-solid fa-chart-pie text-lg"></i> Relatórios
@@ -462,7 +479,7 @@
         <div class="border-b border-slate-700 pb-3 flex justify-between items-start flex-wrap gap-2">
           <div>
             <div class="text-xs font-bold text-emerald-400 uppercase tracking-widest" id="print-report-num">RELATÓRIO DE USO Nº #000</div>
-            <h2 class="text-lg font-extrabold text-white mt-0.5">Fechamento de Uso do Veículo</h2>
+            <h2 class="text-lg font-extrabold text-white mt-0.5">Fechamento de Uso do Veículo (Consumo 7 km/L)</h2>
             <div class="text-[11px] text-slate-400">Ribeirão Preto - SP • AutoShare</div>
           </div>
           <div class="text-right text-xs text-slate-300 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800">
@@ -472,22 +489,26 @@
         </div>
 
         <!-- Metric Badges -->
-        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
           <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
             <div class="text-[10px] text-slate-400 uppercase font-semibold">Total KM</div>
-            <div id="print-report-km" class="text-sm font-bold text-emerald-400 mt-0.5">0.0 km</div>
+            <div id="print-report-km" class="text-sm font-bold text-slate-200 mt-0.5">0.0 km</div>
+          </div>
+          <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Total Litros</div>
+            <div id="print-report-liters" class="text-sm font-bold text-emerald-400 mt-0.5">0.00 L</div>
+          </div>
+          <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Custo Total</div>
+            <div id="print-report-cost" class="text-sm font-bold text-cyan-400 mt-0.5">R$ 0,00</div>
           </div>
           <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
             <div class="text-[10px] text-slate-400 uppercase font-semibold">Viagens</div>
             <div id="print-report-trips" class="text-sm font-bold text-purple-400 mt-0.5">0</div>
           </div>
-          <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
-            <div class="text-[10px] text-slate-400 uppercase font-semibold">Custo Posto</div>
-            <div id="print-report-cost" class="text-sm font-bold text-cyan-400 mt-0.5">R$ 0,00</div>
-          </div>
         </div>
 
-        <!-- Tabela Detalhada por Participante com Abatimento de Créditos -->
+        <!-- Tabela Detalhada por Participante com Rateio em Litros e Abatimento de Créditos -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
             <thead>
@@ -495,9 +516,10 @@
                 <th class="p-2.5">Participante</th>
                 <th class="p-2.5 text-center">Viagens</th>
                 <th class="p-2.5 text-right">KM</th>
+                <th class="p-2.5 text-right">Litros (L)</th>
                 <th class="p-2.5 text-right">% Uso</th>
-                <th class="p-2.5 text-right">Custo Justo</th>
-                <th class="p-2.5 text-right">Crédito Usado</th>
+                <th class="p-2.5 text-right">Crédito Usado (L)</th>
+                <th class="p-2.5 text-right">Litros a Pagar (L)</th>
                 <th class="p-2.5 text-right">A Pagar (R$)</th>
               </tr>
             </thead>
@@ -591,9 +613,13 @@
   <script>
     /**
      * Shared Car Usage & Cost Tracker Application
+     * Base Fuel Consumption: 7 km/L (KM / 7 = Liters)
      */
-    const STORAGE_KEY = 'autoshare_car_data_v9';
+    const STORAGE_KEY = 'autoshare_car_data_v10';
+    const OLD_STORAGE_KEY = 'autoshare_car_data_v9';
     const FIREBASE_KEY = 'autoshare_firebase_config_v1';
+
+    const KM_PER_LITER = 7.0; // Constante de consumo: 7 km por litro
 
     const DEFAULT_MEMBERS = ['Cinthia', 'Arnaldo', 'Henri', 'Hector', 'Heric'];
 
@@ -697,7 +723,7 @@
             statusBtn.className = 'p-2 text-xs bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 rounded-xl';
           }
 
-          this.db.collection('autoshare').doc('main_data_v9').onSnapshot((doc) => {
+          this.db.collection('autoshare').doc('main_data_v10').onSnapshot((doc) => {
             if (doc.exists) {
               const cloudData = doc.data();
               if (cloudData) {
@@ -718,7 +744,24 @@
                 this.renderHistory();
               }
             } else {
-              this.db.collection('autoshare').doc('main_data_v9').set(this.data);
+              // Try migrating from main_data_v9 if exists
+              this.db.collection('autoshare').doc('main_data_v9').get().then(oldDoc => {
+                if (oldDoc.exists) {
+                  const oldData = oldDoc.data();
+                  this.data = {
+                    members: DEFAULT_MEMBERS,
+                    presetLocations: oldData.presetLocations || [...DEFAULT_PRESET_LOCATIONS],
+                    trips: oldData.trips || [],
+                    lastClosedTimestamp: oldData.lastClosedTimestamp || 0,
+                    issuedReports: oldData.issuedReports || [],
+                    memberCredits: oldData.memberCredits || { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 },
+                    extraRefuels: oldData.extraRefuels || []
+                  };
+                }
+                this.db.collection('autoshare').doc('main_data_v10').set(this.data);
+              }).catch(() => {
+                this.db.collection('autoshare').doc('main_data_v10').set(this.data);
+              });
             }
           }, (err) => {
             console.warn('Fallback offline:', err);
@@ -732,7 +775,7 @@
       }
 
       loadData() {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(OLD_STORAGE_KEY);
         if (raw) {
           try {
             const parsed = JSON.parse(raw);
@@ -763,7 +806,7 @@
       saveData() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
         if (this.firebaseEnabled && this.db) {
-          this.db.collection('autoshare').doc('main_data_v9').set(this.data)
+          this.db.collection('autoshare').doc('main_data_v10').set(this.data)
             .catch(err => console.error('Erro ao enviar dados pro Firebase:', err));
         }
         this.renderCreditsBalanceGrid();
@@ -819,12 +862,21 @@
         const sel = document.getElementById(selectId);
         const input = document.getElementById(customContainerId);
 
-        if (sel && input) {
+        let targetContainer = null;
+        if (customContainerId) {
+          const idSuffix = customContainerId.replace(/^trip-/, '');
+          targetContainer = document.getElementById(`container-${idSuffix}`) || document.getElementById(`container-${selectId.replace(/^trip-/, '')}-custom`);
+        }
+        if (!targetContainer && input) {
+          targetContainer = input.parentElement;
+        }
+
+        if (sel) {
           if (sel.value === 'custom') {
-            document.getElementById(`container-${selectId.replace('trip-', '')}-custom`).classList.remove('hidden');
-            input.focus();
+            if (targetContainer) targetContainer.classList.remove('hidden');
+            if (input) input.focus();
           } else {
-            document.getElementById(`container-${selectId.replace('trip-', '')}-custom`).classList.add('hidden');
+            if (targetContainer) targetContainer.classList.add('hidden');
           }
         }
       }
@@ -846,7 +898,7 @@
         div.innerHTML = `
           <div>
             <div class="flex justify-between items-center mb-1">
-              <label class="text-[11px] font-semibold text-emerald-400">Parada Intermediária ${this.stopCount}</label>
+              <label class="text-[11px] font-semibold text-emerald-400 stop-label">Parada Intermediária</label>
               <button type="button" onclick="window.app && window.app.removeTripStop('${stopId}')" class="text-xs text-red-400 font-bold">Remover</button>
             </div>
             <select id="${stopId}" onchange="window.app && window.app.onStopSelectChange('${stopId}')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 font-semibold">
@@ -854,12 +906,21 @@
             </select>
           </div>
           <div id="container_${stopId}_custom" class="hidden">
-            <input type="text" id="${stopId}_custom" placeholder="Endereço da Parada..." onchange="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+            <input type="text" id="${stopId}_custom" placeholder="Endereço da Parada..." onchange="window.app && window.app.calculateTripRouteDistance()" oninput="window.app && window.app.calculateTripRouteDistance()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
           </div>
         `;
 
         container.appendChild(div);
+        this.updateStopLabels();
         this.calculateTripRouteDistance();
+      }
+
+      updateStopLabels() {
+        const stopWrappers = document.querySelectorAll('#trip-stops-container [id^="wrapper_"]');
+        stopWrappers.forEach((wrap, idx) => {
+          const label = wrap.querySelector('.stop-label');
+          if (label) label.textContent = `Parada Intermediária ${idx + 1}`;
+        });
       }
 
       onStopSelectChange(stopId) {
@@ -879,6 +940,7 @@
       removeTripStop(stopId) {
         const wrapper = document.getElementById(`wrapper_${stopId}`);
         if (wrapper) wrapper.remove();
+        this.updateStopLabels();
         this.calculateTripRouteDistance();
       }
 
@@ -897,51 +959,70 @@
             const origSel = origEl.value;
             const destSel = destEl.value;
 
-            const waypointsDef = [];
-
-            if (origSel === 'custom') {
-              const addr = document.getElementById('trip-origin-custom')?.value.trim();
-              if (addr) waypointsDef.push({ type: 'custom', name: 'Origem Personalizada', address: addr });
-            } else {
-              const loc = this.data.presetLocations.find(l => l.id === origSel);
-              if (loc) waypointsDef.push({ type: 'preset', name: loc.name, loc });
+            // Preserve existing member choices per leg index before recalculating legs
+            const existingLegSelections = {};
+            if (this.currentLegsData) {
+              this.currentLegsData.forEach((leg, idx) => {
+                const checkboxes = document.querySelectorAll(`input[name="leg-members-${leg.index}"]:checked`);
+                if (checkboxes.length > 0) {
+                  existingLegSelections[idx] = Array.from(checkboxes).map(cb => cb.value);
+                }
+              });
             }
 
+            const waypointsDef = [];
+
+            // 1. Origem
+            if (origSel === 'custom') {
+              const addr = document.getElementById('trip-origin-custom')?.value.trim() || '';
+              waypointsDef.push({ role: 'origin', name: 'Origem Personalizada', address: addr });
+            } else {
+              const loc = this.data.presetLocations.find(l => l.id === origSel);
+              if (loc) waypointsDef.push({ role: 'origin', name: loc.name, loc, address: loc.address });
+            }
+
+            // 2. Paradas Intermediárias
             const stopSelects = document.querySelectorAll('#trip-stops-container select');
             stopSelects.forEach((sel, idx) => {
               if (sel.value === 'custom') {
-                const addr = document.getElementById(`${sel.id}_custom`)?.value.trim();
-                if (addr) waypointsDef.push({ type: 'custom', name: `Parada ${idx+1}`, address: addr });
+                const addr = document.getElementById(`${sel.id}_custom`)?.value.trim() || '';
+                waypointsDef.push({ role: 'stop', name: `Parada ${idx+1}`, address: addr });
               } else {
                 const loc = this.data.presetLocations.find(l => l.id === sel.value);
-                if (loc) waypointsDef.push({ type: 'preset', name: loc.name, loc });
+                if (loc) waypointsDef.push({ role: 'stop', name: loc.name, loc, address: loc.address });
               }
             });
 
+            // 3. Destino Final
             if (destSel === 'custom') {
-              const addr = document.getElementById('trip-dest-custom')?.value.trim();
-              if (addr) waypointsDef.push({ type: 'custom', name: 'Destino Personalizado', address: addr });
+              const addr = document.getElementById('trip-dest-custom')?.value.trim() || '';
+              waypointsDef.push({ role: 'destination', name: 'Destino Personalizado', address: addr });
             } else {
               const loc = this.data.presetLocations.find(l => l.id === destSel);
-              if (loc) waypointsDef.push({ type: 'preset', name: loc.name, loc });
+              if (loc) waypointsDef.push({ role: 'destination', name: loc.name, loc, address: loc.address });
             }
 
-            const originText = waypointsDef[0] ? (waypointsDef[0].loc ? waypointsDef[0].loc.address : waypointsDef[0].address) : '';
-            const destText = waypointsDef[waypointsDef.length - 1] ? (waypointsDef[waypointsDef.length - 1].loc ? waypointsDef[waypointsDef.length - 1].loc.address : waypointsDef[waypointsDef.length - 1].address) : '';
-            const stopsTexts = waypointsDef.slice(1, waypointsDef.length - 1).map(w => w.loc ? w.loc.address : w.address);
-
-            let gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originText)}&destination=${encodeURIComponent(destText)}`;
-            if (stopsTexts.length > 0) {
-              gmapsUrl += `&waypoints=${encodeURIComponent(stopsTexts.join('|'))}`;
+            // Build Google Maps URL for valid addresses
+            const validAddressList = waypointsDef.filter(w => w.address && w.address.trim().length > 0);
+            if (validAddressList.length >= 2) {
+              const originAddr = validAddressList[0].address;
+              const destAddr = validAddressList[validAddressList.length - 1].address;
+              const intermediateAddrs = validAddressList.slice(1, -1).map(w => w.address);
+              let gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originAddr)}&destination=${encodeURIComponent(destAddr)}`;
+              if (intermediateAddrs.length > 0) {
+                gmapsUrl += `&waypoints=${encodeURIComponent(intermediateAddrs.join('|'))}`;
+              }
+              const btnGmaps = document.getElementById('btn-gmaps-link');
+              if (btnGmaps) btnGmaps.href = gmapsUrl;
             }
-            const btnGmaps = document.getElementById('btn-gmaps-link');
-            if (btnGmaps) btnGmaps.href = gmapsUrl;
 
-            const coords = [];
+            // Resolve coordinates for each waypoint in waypointsDef
+            const resolvedWaypoints = [];
             for (const item of waypointsDef) {
-              if (item.type === 'preset' && item.loc.lat && item.loc.lon) {
-                coords.push([item.loc.lon, item.loc.lat]);
-              } else if (item.address) {
+              let coords = null;
+              if (item.loc && item.loc.lat && item.loc.lon) {
+                coords = [item.loc.lon, item.loc.lat];
+              } else if (item.address && item.address.trim().length > 0) {
                 try {
                   const query = item.address.includes('Ribeirão Preto') ? item.address : `${item.address}, Ribeirão Preto - SP`;
                   const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, {
@@ -949,45 +1030,83 @@
                   });
                   const geoData = await geoRes.json();
                   if (geoData && geoData[0]) {
-                    coords.push([parseFloat(geoData[0].lon), parseFloat(geoData[0].lat)]);
+                    coords = [parseFloat(geoData[0].lon), parseFloat(geoData[0].lat)];
                   }
                 } catch (e) {
                   console.warn('Geocoding error:', e);
                 }
               }
+              resolvedWaypoints.push({ ...item, coords });
             }
 
-            if (coords.length >= 2) {
-              const waypointsStr = coords.map(c => `${c[0]},${c[1]}`).join(';');
+            // Filter waypoints with valid coordinates for OSRM route calculation
+            const waypointsWithCoords = resolvedWaypoints.filter(w => w.coords !== null);
+
+            let osrmSuccess = false;
+
+            if (waypointsWithCoords.length >= 2) {
+              const waypointsStr = waypointsWithCoords.map(w => `${w.coords[0]},${w.coords[1]}`).join(';');
               const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${waypointsStr}?overview=false`;
               const osrmRes = await fetch(osrmUrl);
               const osrmData = await osrmRes.json();
 
               if (osrmData && osrmData.routes && osrmData.routes[0]) {
+                osrmSuccess = true;
                 const totalDistanceKm = osrmData.routes[0].distance / 1000;
                 const distEl = document.getElementById('trip-distance');
                 if (distEl) distEl.value = totalDistanceKm.toFixed(1);
 
-                // Build Leg Breakdown
                 const osrmLegs = osrmData.routes[0].legs || [];
                 this.currentLegsData = [];
 
                 for (let i = 0; i < osrmLegs.length; i++) {
-                  const fromName = waypointsDef[i] ? waypointsDef[i].name : `Ponto ${i+1}`;
-                  const toName = waypointsDef[i+1] ? waypointsDef[i+1].name : `Ponto ${i+2}`;
+                  const fromWp = waypointsWithCoords[i];
+                  const toWp = waypointsWithCoords[i+1];
                   const legDist = osrmLegs[i].distance / 1000;
                   this.currentLegsData.push({
                     index: i,
-                    fromName,
-                    toName,
-                    distanceKm: legDist
+                    fromName: fromWp ? fromWp.name : `Ponto ${i+1}`,
+                    toName: toWp ? toWp.name : `Ponto ${i+2}`,
+                    distanceKm: legDist,
+                    savedMembers: existingLegSelections[i]
                   });
                 }
-
-                this.renderLegsMembersUI();
-                this.updateTripPreview();
               }
             }
+
+            // Fallback if OSRM could not fetch route (e.g. offline, single point, geocode fail)
+            if (!osrmSuccess) {
+              const baseDist = parseFloat(document.getElementById('trip-distance')?.value) || 0;
+              this.currentLegsData = [];
+
+              if (waypointsDef.length >= 2) {
+                const numLegs = waypointsDef.length - 1;
+                const legDist = baseDist > 0 ? baseDist / numLegs : 0;
+                for (let i = 0; i < numLegs; i++) {
+                  this.currentLegsData.push({
+                    index: i,
+                    fromName: waypointsDef[i].name,
+                    toName: waypointsDef[i+1].name,
+                    distanceKm: legDist,
+                    savedMembers: existingLegSelections[i]
+                  });
+                }
+              } else {
+                const origName = waypointsDef[0] ? waypointsDef[0].name : 'Origem';
+                const destName = waypointsDef[1] ? waypointsDef[1].name : 'Destino';
+                this.currentLegsData.push({
+                  index: 0,
+                  fromName: origName,
+                  toName: destName,
+                  distanceKm: baseDist,
+                  savedMembers: existingLegSelections[0]
+                });
+              }
+            }
+
+            this.renderLegsMembersUI();
+            this.updateTripPreview();
+
           } catch (err) {
             console.warn('Erro no cálculo de rota OSRM:', err);
           } finally {
@@ -1012,20 +1131,26 @@
 
         this.currentLegsData.forEach(leg => {
           const legDist = leg.distanceKm * (isRoundTrip ? 2 : 1);
+          const legLiters = legDist / KM_PER_LITER;
           const div = document.createElement('div');
           div.className = 'bg-slate-950/80 p-3 rounded-xl border border-slate-800 space-y-2';
 
-          let checkboxesHtml = DEFAULT_MEMBERS.map(m => `
-            <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition text-xs">
-              <input type="checkbox" name="leg-members-${leg.index}" value="${m}" checked onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
-              <span class="text-xs font-bold text-slate-200">${m}</span>
-            </label>
-          `).join('');
+          const activeMembers = leg.savedMembers || DEFAULT_MEMBERS;
+
+          let checkboxesHtml = DEFAULT_MEMBERS.map(m => {
+            const isChecked = activeMembers.includes(m);
+            return `
+              <label class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer active:bg-slate-800 transition text-xs">
+                <input type="checkbox" name="leg-members-${leg.index}" value="${m}" ${isChecked ? 'checked' : ''} onchange="window.app && window.app.updateTripPreview()" class="w-4 h-4 text-emerald-500 bg-slate-950 border-slate-700 rounded focus:ring-emerald-500">
+                <span class="text-xs font-bold text-slate-200">${m}</span>
+              </label>
+            `;
+          }).join('');
 
           div.innerHTML = `
             <div class="flex justify-between items-center text-xs">
               <span class="font-bold text-slate-200">Trecho ${leg.index + 1}: ${leg.fromName} ➔ ${leg.toName}</span>
-              <span class="text-emerald-400 font-extrabold">${legDist.toFixed(1)} km</span>
+              <span class="text-emerald-400 font-extrabold">${legDist.toFixed(1)} km (${legLiters.toFixed(2)} L)</span>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
               ${checkboxesHtml}
@@ -1036,7 +1161,7 @@
         });
       }
 
-      // Calculate total attributed KM for each member based on leg occupants
+      // Calculate total attributed KM and Liters for each member based on leg occupants
       updateTripPreview() {
         const baseDistEl = document.getElementById('trip-distance');
         const roundTripEl = document.getElementById('trip-roundtrip');
@@ -1044,11 +1169,17 @@
         const isRoundTrip = roundTripEl ? roundTripEl.checked : false;
 
         const totalDist = baseDist * (isRoundTrip ? 2 : 1);
+        const totalLiters = totalDist / KM_PER_LITER;
+
         const memberKmMap = { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+
+        // Scale leg distances if user manually edited baseDist
+        const sumLegsDist = this.currentLegsData.reduce((acc, l) => acc + l.distanceKm, 0);
+        const scaleFactor = sumLegsDist > 0 ? baseDist / sumLegsDist : 1;
 
         if (this.currentLegsData.length > 0) {
           this.currentLegsData.forEach(leg => {
-            const legDist = leg.distanceKm * (isRoundTrip ? 2 : 1);
+            const legDist = (leg.distanceKm * scaleFactor) * (isRoundTrip ? 2 : 1);
             const checkboxes = document.querySelectorAll(`input[name="leg-members-${leg.index}"]:checked`);
             const members = Array.from(checkboxes).map(cb => cb.value);
 
@@ -1061,14 +1192,16 @@
           });
         }
 
-        const totalEl = document.getElementById('preview-total-dist');
+        const totalDistEl = document.getElementById('preview-total-dist');
+        const totalLitersEl = document.getElementById('preview-total-liters');
         const membersListEl = document.getElementById('preview-members-list');
 
-        if (totalEl) totalEl.textContent = `${totalDist.toFixed(1)} km`;
+        if (totalDistEl) totalDistEl.textContent = `${totalDist.toFixed(1)} km`;
+        if (totalLitersEl) totalLitersEl.textContent = `${totalLiters.toFixed(2)} L`;
 
         const summaryText = Object.entries(memberKmMap)
           .filter(([m, km]) => km > 0)
-          .map(([m, km]) => `${m}: ${km.toFixed(1)} km`)
+          .map(([m, km]) => `${m}: ${km.toFixed(1)} km (${(km / KM_PER_LITER).toFixed(2)} L)`)
           .join(' | ');
 
         if (membersListEl) {
@@ -1082,8 +1215,8 @@
         const rawDate = document.getElementById('trip-date').value;
         const origSel = document.getElementById('trip-origin').value;
         const destSel = document.getElementById('trip-destination').value;
-        const originName = origSel === 'custom' ? document.getElementById('trip-origin-custom').value : (this.data.presetLocations.find(l => l.id === origSel)?.name || origSel);
-        const destName = destSel === 'custom' ? document.getElementById('trip-dest-custom').value : (this.data.presetLocations.find(l => l.id === destSel)?.name || destSel);
+        const originName = origSel === 'custom' ? (document.getElementById('trip-origin-custom')?.value || 'Origem Personalizada') : (this.data.presetLocations.find(l => l.id === origSel)?.name || origSel);
+        const destName = destSel === 'custom' ? (document.getElementById('trip-dest-custom')?.value || 'Destino Personalizado') : (this.data.presetLocations.find(l => l.id === destSel)?.name || destSel);
 
         const baseDist = parseFloat(document.getElementById('trip-distance').value);
         const isRoundTrip = document.getElementById('trip-roundtrip').checked;
@@ -1093,14 +1226,19 @@
           return;
         }
 
-        // Calculate member KM breakdown per leg
+        // Scale leg distances if baseDist was manually edited
+        const sumLegsDist = this.currentLegsData.reduce((acc, l) => acc + l.distanceKm, 0);
+        const scaleFactor = sumLegsDist > 0 ? baseDist / sumLegsDist : 1;
+
         const memberKmMap = { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+        const memberLitersMap = { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
         const legsSummary = [];
         let allTripMembers = new Set();
 
         if (this.currentLegsData.length > 0) {
           this.currentLegsData.forEach(leg => {
-            const legDist = leg.distanceKm * (isRoundTrip ? 2 : 1);
+            const legDist = (leg.distanceKm * scaleFactor) * (isRoundTrip ? 2 : 1);
+            const legLit = legDist / KM_PER_LITER;
             const checkboxes = document.querySelectorAll(`input[name="leg-members-${leg.index}"]:checked`);
             const members = Array.from(checkboxes).map(cb => cb.value);
 
@@ -1108,8 +1246,10 @@
 
             if (members.length > 0) {
               const perPersonLegDist = legDist / members.length;
+              const perPersonLegLit = legLit / members.length;
               members.forEach(m => {
                 memberKmMap[m] = (memberKmMap[m] || 0) + perPersonLegDist;
+                memberLitersMap[m] = (memberLitersMap[m] || 0) + perPersonLegLit;
               });
             }
 
@@ -1118,6 +1258,7 @@
               fromName: leg.fromName,
               toName: leg.toName,
               distanceKm: legDist,
+              distanceLiters: legLit,
               members
             });
           });
@@ -1128,9 +1269,9 @@
           return;
         }
 
-        const formattedDateParts = rawDate.split('-');
-        const formattedDate = formattedDateParts.length === 3 ? `${formattedDateParts[2]}/${formattedDateParts[1]}/${formattedDateParts[0]}` : rawDate;
+        const formattedDate = this.formatDateString(rawDate);
         const totalDistance = baseDist * (isRoundTrip ? 2 : 1);
+        const totalLiters = totalDistance / KM_PER_LITER;
 
         const newTrip = {
           id: 'trip_' + Date.now(),
@@ -1142,7 +1283,9 @@
           baseDistance: baseDist,
           isRoundTrip,
           totalDistance,
+          totalLiters,
           memberKmMap,
+          memberLitersMap,
           legsSummary
         };
 
@@ -1150,47 +1293,49 @@
         this.data.trips.sort((a, b) => b.timestamp - a.timestamp);
 
         this.saveData();
-        this.showToast('Viagem registrada com sucesso!', 'success');
+        this.showToast(`Viagem registrada: ${totalDistance.toFixed(1)} km (${totalLiters.toFixed(2)} L)!`, 'success');
 
         document.getElementById('trip-roundtrip').checked = false;
         this.calculateTripRouteDistance();
       }
 
-      // Save Extra Refuel & Add Member Credit
+      formatDateString(rawDate) {
+        if (!rawDate) return '';
+        const parts = rawDate.split('-');
+        return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : rawDate;
+      }
+
+      // Save Extra Refuel & Add Member Credit in Liters
       saveExtraRefuel(e) {
         e.preventDefault();
         const member = document.getElementById('extra-refuel-member').value;
         const rawDate = document.getElementById('extra-refuel-date').value;
-        const amount = parseFloat(document.getElementById('extra-refuel-amount').value);
+        const liters = parseFloat(document.getElementById('extra-refuel-liters').value);
 
-        if (isNaN(amount) || amount <= 0) {
-          this.showToast('Informe um valor de abastecimento válido!', 'warning');
+        if (isNaN(liters) || liters <= 0) {
+          this.showToast('Informe uma quantidade de litros válida!', 'warning');
           return;
         }
 
-        if (!this.data.memberCredits) {
-          this.data.memberCredits = { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
-        }
+        this.data.memberCredits ||= { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+        this.data.memberCredits[member] = (this.data.memberCredits[member] || 0) + liters;
 
-        this.data.memberCredits[member] = (this.data.memberCredits[member] || 0) + amount;
-
-        const formattedDateParts = rawDate.split('-');
-        const formattedDate = formattedDateParts.length === 3 ? `${formattedDateParts[2]}/${formattedDateParts[1]}/${formattedDateParts[0]}` : rawDate;
+        const formattedDate = this.formatDateString(rawDate);
 
         const extraEntry = {
           id: 'extra_' + Date.now(),
           member,
           dateStr: formattedDate,
           timestamp: new Date(rawDate).getTime(),
-          amount
+          liters: liters
         };
 
-        if (!this.data.extraRefuels) this.data.extraRefuels = [];
+        this.data.extraRefuels ||= [];
         this.data.extraRefuels.unshift(extraEntry);
 
         this.saveData();
-        this.showToast(`Crédito de R$ ${amount.toFixed(2)} adicionado para ${member}!`, 'success');
-        document.getElementById('extra-refuel-amount').value = '';
+        this.showToast(`Crédito de ${liters.toFixed(2)} L adicionado para ${member}!`, 'success');
+        document.getElementById('extra-refuel-liters').value = '';
       }
 
       renderCreditsBalanceGrid() {
@@ -1198,7 +1343,7 @@
         if (!grid) return;
         grid.innerHTML = '';
 
-        const credits = this.data.memberCredits || { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+        const credits = this.data.memberCredits ||= { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
 
         DEFAULT_MEMBERS.forEach(member => {
           const val = credits[member] || 0;
@@ -1207,7 +1352,7 @@
           card.innerHTML = `
             <div class="text-[10px] text-slate-400 uppercase font-semibold">${member}</div>
             <div class="text-sm font-extrabold ${val > 0 ? 'text-emerald-400' : 'text-slate-500'} mt-0.5">
-              R$ ${val.toFixed(2)}
+              ${val.toFixed(2)} L
             </div>
             <div class="text-[9px] text-slate-500">${val > 0 ? 'Crédito Ativo' : 'Sem Crédito'}</div>
           `;
@@ -1220,39 +1365,111 @@
         return this.data.trips.filter(t => t.timestamp >= lastClosed);
       }
 
+      // Synchronize Fuel Price / Total Cost Inputs
+      onFuelPriceChange() {
+        const priceInput = document.getElementById('fuel-price-per-liter');
+        const costInput = document.getElementById('manual-refuel-cost');
+        const price = parseFloat(priceInput?.value) || 0;
+        const periodTrips = this.getActivePeriodTrips();
+        const periodTotalKm = periodTrips.reduce((acc, t) => acc + (t.totalDistance || 0), 0);
+        const periodTotalLiters = periodTotalKm / KM_PER_LITER;
+
+        if (price > 0 && periodTotalLiters > 0 && costInput) {
+          costInput.value = (periodTotalLiters * price).toFixed(2);
+        }
+        this.renderReport();
+      }
+
+      onTotalCostChange() {
+        const priceInput = document.getElementById('fuel-price-per-liter');
+        const costInput = document.getElementById('manual-refuel-cost');
+        const totalCost = parseFloat(costInput?.value) || 0;
+        const periodTrips = this.getActivePeriodTrips();
+        const periodTotalKm = periodTrips.reduce((acc, t) => acc + (t.totalDistance || 0), 0);
+        const periodTotalLiters = periodTotalKm / KM_PER_LITER;
+
+        if (totalCost > 0 && periodTotalLiters > 0 && priceInput) {
+          priceInput.value = (totalCost / periodTotalLiters).toFixed(2);
+        }
+        this.renderReport();
+      }
+
+      // Calculate member KM, Liters, and share cost breakdown for active period
+      calculatePeriodMemberStats(periodTrips, manualCost, pricePerLiter, deductCredits = false) {
+        const periodTotalKm = periodTrips.reduce((acc, t) => acc + (t.totalDistance || 0), 0);
+        const periodTotalLiters = periodTotalKm / KM_PER_LITER;
+
+        const effectivePricePerL = (pricePerLiter > 0) ? pricePerLiter : (periodTotalLiters > 0 && manualCost > 0 ? manualCost / periodTotalLiters : 0);
+
+        const credits = this.data.memberCredits ||= { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+        const memberStats = {};
+
+        DEFAULT_MEMBERS.forEach(member => {
+          let tripCount = 0;
+          const km = periodTrips.reduce((acc, t) => {
+            const memberKm = t.memberKmMap ? (t.memberKmMap[member] || 0) : (t.members?.includes(member) ? (t.kmPerMember || t.totalDistance) : 0);
+            if (memberKm > 0) {
+              tripCount++;
+              return acc + memberKm;
+            }
+            return acc;
+          }, 0);
+
+          const liters = km / KM_PER_LITER;
+          const usagePct = periodTotalLiters > 0 ? (liters / periodTotalLiters) * 100 : 0;
+          
+          const currentCreditLiters = credits[member] || 0;
+          const creditLitersDeduction = Math.min(currentCreditLiters, liters);
+
+          if (deductCredits) {
+            credits[member] -= creditLitersDeduction;
+          }
+
+          const litersToPay = liters - creditLitersDeduction;
+          const rawShareCost = liters * effectivePricePerL;
+          const creditCostDeduction = creditLitersDeduction * effectivePricePerL;
+          const finalPay = litersToPay * effectivePricePerL;
+
+          memberStats[member] = {
+            tripCount,
+            km,
+            liters,
+            usagePct,
+            currentCreditLiters,
+            creditLitersDeduction,
+            litersToPay,
+            rawShareCost,
+            creditCostDeduction,
+            remainingCreditLiters: credits[member],
+            finalPay
+          };
+        });
+
+        return { periodTotalKm, periodTotalLiters, effectivePricePerL, memberStats };
+      }
+
       renderReport() {
         const periodTrips = this.getActivePeriodTrips();
-        const periodTotalKm = periodTrips.reduce((acc, t) => acc + t.totalDistance, 0);
-        
         const manualCostInput = document.getElementById('manual-refuel-cost');
+        const priceInput = document.getElementById('fuel-price-per-liter');
+
         const manualCost = parseFloat(manualCostInput ? manualCostInput.value : 0) || 0;
+        const pricePerLiter = parseFloat(priceInput ? priceInput.value : 0) || 0;
+
+        const { periodTotalKm, periodTotalLiters, effectivePricePerL, memberStats } = this.calculatePeriodMemberStats(periodTrips, manualCost, pricePerLiter, false);
 
         const periodKmEl = document.getElementById('live-period-total-km');
+        const periodLitersEl = document.getElementById('live-period-total-liters');
+
         if (periodKmEl) periodKmEl.textContent = `${periodTotalKm.toFixed(1)} km`;
+        if (periodLitersEl) periodLitersEl.textContent = `${periodTotalLiters.toFixed(2)} L`;
 
         const gridContainer = document.getElementById('report-members-grid');
         if (!gridContainer) return;
         gridContainer.innerHTML = '';
 
-        const credits = this.data.memberCredits || { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
-
         DEFAULT_MEMBERS.forEach(member => {
-          let tripCount = 0;
-          const memberKm = periodTrips.reduce((acc, t) => {
-            const memberKmInTrip = t.memberKmMap ? (t.memberKmMap[member] || 0) : (t.members.includes(member) ? t.kmPerMember : 0);
-            if (memberKmInTrip > 0) {
-              tripCount++;
-              return acc + memberKmInTrip;
-            }
-            return acc;
-          }, 0);
-
-          const usagePct = periodTotalKm > 0 ? (memberKm / periodTotalKm) * 100 : 0;
-          const rawShareCost = manualCost * (usagePct / 100);
-          const currentCredit = credits[member] || 0;
-          const creditDeduction = Math.min(currentCredit, rawShareCost);
-          const finalPay = rawShareCost - creditDeduction;
-
+          const stats = memberStats[member];
           const card = document.createElement('div');
           card.className = 'glass-card rounded-3xl p-4 sm:p-6 shadow-xl relative overflow-hidden border border-slate-800';
 
@@ -1264,37 +1481,45 @@
                 </div>
                 <div>
                   <h4 class="text-sm font-bold text-white">${member}</h4>
-                  <div class="text-[11px] text-slate-400">${tripCount} corrida${tripCount !== 1 ? 's' : ''} • ${memberKm.toFixed(1)} km</div>
+                  <div class="text-[11px] text-slate-400">${stats.tripCount} corrida${stats.tripCount !== 1 ? 's' : ''} • ${stats.km.toFixed(1)} km (${stats.liters.toFixed(2)} L)</div>
                 </div>
               </div>
-              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${usagePct > 0 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500'}">
-                ${usagePct.toFixed(1)}%
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${stats.usagePct > 0 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500'}">
+                ${stats.usagePct.toFixed(1)}%
               </span>
             </div>
 
             <div class="space-y-1 mb-3">
               <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
-                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-500" style="width: ${Math.min(usagePct, 100)}%"></div>
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-500" style="width: ${Math.min(stats.usagePct, 100)}%"></div>
               </div>
             </div>
 
-            <div class="space-y-1.5 bg-slate-900/90 p-3 rounded-2xl border border-slate-800 text-xs">
-              <div class="flex justify-between text-slate-400">
-                <span>Custo Bruto:</span>
-                <strong class="text-slate-200">R$ ${rawShareCost.toFixed(2)}</strong>
+            <div class="space-y-2 bg-slate-900/90 p-3 rounded-2xl border border-slate-800 text-xs">
+              <div class="flex justify-between text-slate-300">
+                <span>Consumo em Litros:</span>
+                <strong class="text-white font-bold">${stats.liters.toFixed(2)} L</strong>
               </div>
-              ${currentCredit > 0 ? `
+              ${stats.currentCreditLiters > 0 ? `
               <div class="flex justify-between text-emerald-400">
-                <span>Crédito Abatido:</span>
-                <strong class="font-bold">- R$ ${creditDeduction.toFixed(2)}</strong>
+                <span>Crédito em Litros Abatido:</span>
+                <strong class="font-bold">- ${stats.creditLitersDeduction.toFixed(2)} L</strong>
               </div>
               ` : ''}
-              <div class="flex justify-between items-center border-t border-slate-800 pt-1.5">
-                <span class="font-bold text-slate-200">A Pagar:</span>
-                <strong class="text-base font-extrabold ${finalPay > 0 ? 'text-emerald-400' : 'text-slate-500'}">
-                  R$ ${finalPay.toFixed(2)}
+              <div class="flex justify-between items-center border-t border-slate-800/80 pt-1.5">
+                <span class="font-bold text-slate-200">Litros a Pagar:</span>
+                <strong class="text-sm font-extrabold ${stats.litersToPay > 0 ? 'text-emerald-400' : 'text-slate-500'}">
+                  ${stats.litersToPay.toFixed(2)} L
                 </strong>
               </div>
+              ${effectivePricePerL > 0 ? `
+              <div class="flex justify-between items-center border-t border-slate-800/80 pt-1.5 text-[11px] text-cyan-400">
+                <span>Valor Financeiro (R$):</span>
+                <strong class="text-sm font-extrabold ${stats.finalPay > 0 ? 'text-cyan-400' : 'text-slate-500'}">
+                  R$ ${stats.finalPay.toFixed(2)}
+                </strong>
+              </div>
+              ` : ''}
             </div>
           `;
 
@@ -1302,10 +1527,9 @@
         });
       }
 
-      // Emit Report & Deduct Member Credits
+      // Emit Report & Deduct Member Credits in Liters
       emitNewReport() {
         const periodTrips = this.getActivePeriodTrips();
-        const periodTotalKm = periodTrips.reduce((acc, t) => acc + t.totalDistance, 0);
 
         if (periodTrips.length === 0) {
           this.showToast('Nenhuma viagem registrada no período atual para emitir relatório.', 'warning');
@@ -1313,46 +1537,16 @@
         }
 
         const manualCostInput = document.getElementById('manual-refuel-cost');
+        const priceInput = document.getElementById('fuel-price-per-liter');
+
         const manualCost = parseFloat(manualCostInput ? manualCostInput.value : 0) || 0;
+        const pricePerLiter = parseFloat(priceInput ? priceInput.value : 0) || 0;
 
         const now = new Date();
         const reportNum = (this.data.issuedReports.length + 1).toString().padStart(3, '0');
         const reportDateStr = now.toLocaleDateString('pt-BR');
 
-        if (!this.data.memberCredits) {
-          this.data.memberCredits = { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
-        }
-
-        const memberStats = {};
-        DEFAULT_MEMBERS.forEach(member => {
-          let tripCount = 0;
-          const km = periodTrips.reduce((acc, t) => {
-            const memberKmInTrip = t.memberKmMap ? (t.memberKmMap[member] || 0) : (t.members.includes(member) ? t.kmPerMember : 0);
-            if (memberKmInTrip > 0) {
-              tripCount++;
-              return acc + memberKmInTrip;
-            }
-            return acc;
-          }, 0);
-
-          const usagePct = periodTotalKm > 0 ? (km / periodTotalKm) * 100 : 0;
-          const rawShareCost = manualCost * (usagePct / 100);
-
-          const availableCredit = this.data.memberCredits[member] || 0;
-          const creditDeduction = Math.min(availableCredit, rawShareCost);
-          this.data.memberCredits[member] -= creditDeduction;
-          const finalPay = rawShareCost - creditDeduction;
-
-          memberStats[member] = {
-            tripCount,
-            km,
-            usagePct,
-            rawShareCost,
-            creditDeduction,
-            remainingCredit: this.data.memberCredits[member],
-            finalPay
-          };
-        });
+        const { periodTotalKm, periodTotalLiters, effectivePricePerL, memberStats } = this.calculatePeriodMemberStats(periodTrips, manualCost, pricePerLiter, true);
 
         const firstTripDate = periodTrips[periodTrips.length - 1]?.dateStr || reportDateStr;
         const periodRange = `${firstTripDate} até ${reportDateStr}`;
@@ -1364,8 +1558,10 @@
           timestamp: now.getTime(),
           periodRange,
           totalKm: periodTotalKm,
+          totalLiters: periodTotalLiters,
+          effectivePricePerL,
           totalTrips: periodTrips.length,
-          totalCost: manualCost,
+          totalCost: manualCost > 0 ? manualCost : (periodTotalLiters * effectivePricePerL),
           memberStats
         };
 
@@ -1374,8 +1570,9 @@
         this.saveData();
 
         if (manualCostInput) manualCostInput.value = '';
+        if (priceInput) priceInput.value = '';
 
-        this.showToast(`Relatório Nº #${reportNum} emitido! Créditos abatidos.`, 'success');
+        this.showToast(`Relatório Nº #${reportNum} emitido! Créditos em Litros abatidos.`, 'success');
         this.openReportModal(reportObject);
       }
 
@@ -1397,6 +1594,9 @@
           const card = document.createElement('div');
           card.className = 'bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between flex-wrap gap-2 hover:border-slate-700 transition';
 
+          const totalLit = rep.totalLiters || (rep.totalKm / KM_PER_LITER);
+          const costStr = rep.totalCost > 0 ? ` • Custo: R$ ${rep.totalCost.toFixed(2)}` : '';
+
           card.innerHTML = `
             <div class="flex items-center gap-2.5">
               <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xs border border-emerald-500/20">
@@ -1404,7 +1604,7 @@
               </div>
               <div>
                 <h4 class="text-xs font-bold text-white">Relatório Nº #${rep.number}</h4>
-                <div class="text-[11px] text-slate-400">${rep.dateStr} • ${rep.totalKm.toFixed(1)} km • Custo: R$ ${rep.totalCost.toFixed(2)}</div>
+                <div class="text-[11px] text-slate-400">${rep.dateStr} • ${rep.totalKm.toFixed(1)} km (${totalLit.toFixed(2)} L)${costStr}</div>
               </div>
             </div>
 
@@ -1440,26 +1640,36 @@
         document.getElementById('print-report-date').textContent = rep.dateStr;
         document.getElementById('print-report-period').textContent = rep.periodRange;
         document.getElementById('print-report-km').textContent = `${rep.totalKm.toFixed(1)} km`;
+        
+        const totalLit = rep.totalLiters || (rep.totalKm / KM_PER_LITER);
+        document.getElementById('print-report-liters').textContent = `${totalLit.toFixed(2)} L`;
         document.getElementById('print-report-trips').textContent = `${rep.totalTrips}`;
-        document.getElementById('print-report-cost').textContent = `R$ ${rep.totalCost.toFixed(2)}`;
+        document.getElementById('print-report-cost').textContent = rep.totalCost > 0 ? `R$ ${rep.totalCost.toFixed(2)}` : 'A Ratear em L';
 
         const tableBody = document.getElementById('print-report-table-body');
         if (tableBody) {
           tableBody.innerHTML = '';
 
           DEFAULT_MEMBERS.forEach(member => {
-            const stats = rep.memberStats[member] || { tripCount: 0, km: 0, usagePct: 0, rawShareCost: 0, creditDeduction: 0, finalPay: 0 };
+            const stats = rep.memberStats[member] || { tripCount: 0, km: 0, liters: 0, usagePct: 0, creditLitersDeduction: 0, litersToPay: 0, finalPay: 0 };
+            const mKm = stats.km || 0;
+            const mLit = stats.liters !== undefined ? stats.liters : (mKm / KM_PER_LITER);
+            const mPayLit = stats.litersToPay !== undefined ? stats.litersToPay : mLit;
+            const mCreditDed = stats.creditLitersDeduction !== undefined ? stats.creditLitersDeduction : (stats.creditDeduction || 0);
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
               <td class="p-2.5 font-bold text-white">${member}</td>
               <td class="p-2.5 text-center text-slate-300">${stats.tripCount}</td>
-              <td class="p-2.5 text-right font-semibold text-emerald-400">${stats.km.toFixed(1)} km</td>
+              <td class="p-2.5 text-right font-semibold text-slate-300">${mKm.toFixed(1)} km</td>
+              <td class="p-2.5 text-right font-bold text-emerald-400">${mLit.toFixed(2)} L</td>
               <td class="p-2.5 text-right font-bold text-slate-200">${stats.usagePct.toFixed(1)}%</td>
-              <td class="p-2.5 text-right text-slate-300">R$ ${stats.rawShareCost.toFixed(2)}</td>
-              <td class="p-2.5 text-right text-emerald-400 font-semibold">- R$ ${(stats.creditDeduction || 0).toFixed(2)}</td>
-              <td class="p-2.5 text-right font-extrabold ${stats.finalPay > 0 ? 'text-emerald-400' : 'text-slate-500'}">
-                R$ ${stats.finalPay.toFixed(2)}
+              <td class="p-2.5 text-right text-emerald-400 font-semibold">- ${mCreditDed.toFixed(2)} L</td>
+              <td class="p-2.5 text-right font-extrabold ${mPayLit > 0 ? 'text-emerald-400' : 'text-slate-500'}">
+                ${mPayLit.toFixed(2)} L
+              </td>
+              <td class="p-2.5 text-right font-bold text-cyan-400">
+                ${(stats.finalPay && stats.finalPay > 0) ? `R$ ${stats.finalPay.toFixed(2)}` : '-'}
               </td>
             `;
             tableBody.appendChild(tr);
@@ -1484,7 +1694,17 @@
           this.data.trips.forEach(t => {
             const tr = document.createElement('tr');
             tr.className = 'hover:bg-slate-900/40 transition';
-            const membersList = t.members ? t.members.join(', ') : 'Vários';
+            const totalLit = t.totalLiters || (t.totalDistance / KM_PER_LITER);
+
+            let rateioDetails = '';
+            if (t.memberKmMap) {
+              rateioDetails = Object.entries(t.memberKmMap)
+                .filter(([m, km]) => km > 0)
+                .map(([m, km]) => `${m}: ${km.toFixed(1)} km (${(km / KM_PER_LITER).toFixed(2)} L)`)
+                .join(', ');
+            } else {
+              rateioDetails = `${(t.members || []).join(', ')}`;
+            }
 
             tr.innerHTML = `
               <td class="p-3 font-medium text-slate-200 whitespace-nowrap">${t.dateStr}</td>
@@ -1497,8 +1717,12 @@
               <td class="p-3 text-center whitespace-nowrap">
                 ${t.isRoundTrip ? '<span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px] font-semibold">Ida e Volta</span>' : '<span class="px-2 py-0.5 bg-slate-800 text-slate-400 rounded text-[10px]">Só Ida</span>'}
               </td>
-              <td class="p-3 text-right font-bold text-emerald-400 whitespace-nowrap">${t.totalDistance.toFixed(1)} km</td>
-              <td class="p-3 text-right text-cyan-400 font-semibold whitespace-nowrap">Variado por trecho</td>
+              <td class="p-3 text-right font-bold text-emerald-400 whitespace-nowrap">
+                ${t.totalDistance.toFixed(1)} km <span class="text-xs text-slate-400">(${totalLit.toFixed(2)} L)</span>
+              </td>
+              <td class="p-3 text-right text-xs text-slate-300 whitespace-nowrap" title="${rateioDetails}">
+                ${rateioDetails.length > 35 ? rateioDetails.slice(0, 35) + '...' : rateioDetails}
+              </td>
               <td class="p-3 text-center whitespace-nowrap">
                 <button type="button" onclick="window.app && window.app.deleteTrip('${t.id}')" class="text-red-400 hover:text-red-300 p-1 transition" title="Excluir Viagem">
                   <i class="fa-solid fa-trash-can"></i>
@@ -1667,6 +1891,7 @@
       confirmReset() {
         if (confirm('Tem certeza que deseja apagar TODOS os registros?')) {
           localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(OLD_STORAGE_KEY);
           this.data = {
             members: DEFAULT_MEMBERS,
             presetLocations: [...DEFAULT_PRESET_LOCATIONS],
@@ -1688,7 +1913,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `autoshare_ribeirao_${new Date().toISOString().slice(0, 10)}.json`;
+        a.download = `autoshare_7kml_ribeirao_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
         this.showToast('Backup JSON baixado!', 'success');

@@ -1,6 +1,6 @@
-# 🚗 Controle de Veículo Compartilhado (AutoShare)
+# 🚗 Controle de Veículo Compartilhado (AutoShare - 7 km/L)
 
-Aplicação web single-page (SPA) responsiva, intuitiva e moderna para gestão de uso, cálculo de distâncias divididas por corrida e apuração financeira transparente entre integrantes fixos (Cíntia, Arnaldo, Henrique e Eric).
+Aplicação web single-page (SPA) responsiva, intuitiva e moderna para gestão de uso, cálculo de consumo por **Litros (L)** com constante fixa de **7,0 km/L**, controle de créditos individuais em Litros e apuração financeira transparente entre integrantes (Cinthia, Arnaldo, Henri, Hector e Heric).
 
 🌐 **Acesse a Aplicação Online (GitHub Pages)**:
 👉 **[https://henri-rodrigues.github.io/controle-veiculo-compartilhado/](https://henri-rodrigues.github.io/controle-veiculo-compartilhado/)**
@@ -9,10 +9,12 @@ Aplicação web single-page (SPA) responsiva, intuitiva e moderna para gestão d
 
 ## ⚡ Funcionalidades
 
-- **📍 Locais Pré-definidos & Distâncias Base**: Cálculo automático de distância entre a "Casa" (0 km) e destinos de trabalho ou locais customizados.
-- **🚗 Registro de Corridas**: Seleção múltipla de motoristas/passageiros com cálculo imediato do rateio em KM por pessoa e suporte a percurso de Ida e Volta.
-- **⛽ Registro de Abastecimento**: Entrada de odômetro, valor total do posto e contribuição individual com validação visual em tempo real.
-- **📊 Relatório & Fechamento de Período**: Apuração proporcional ao uso do carro (% de KM no período) e balanço financeiro transparente (**A RECEBER** / **A PAGAR**).
+- **⛽ Consumo Real por Litros (7 km/L)**: Cada quilômetro percorrido é automaticamente convertido para Litros consumidos (`Litros = KM / 7`). O KM percorrido continua visível e registrado.
+- **📍 Locais Pré-definidos & Rota Real OSRM**: Cálculo automático de rota com suporte a múltiplas paradas intermediárias e link direto para navegação no Google Maps.
+- **👥 Divisão Justa por Trecho**: Seleção de ocupantes em cada perna do trajeto com cálculo proporcional imediato de KM e Litros atribuídos.
+- **⛽ Abastecimento Extra & Saldo de Créditos em Litros (L)**: Quando um integrante abastece o carro com recursos próprios, os litros entram como crédito acumulado para abatimento automático no fechamento.
+- **📊 Relatório & Fechamento de Período**: Apuração proporcional ao consumo do carro (% de uso e Litros a pagar) com conversão automática para valor em R$ conforme o preço do combustível ou valor total do posto.
+- **🖨️ Relatório Oficial Imprimível (A4 / PDF)**: Modal pronto para impressão e salvamento em PDF com tabela completa de auditoria.
 - **🔥 Firebase Cloud Database & LocalStorage**: Sincronização em tempo real na nuvem via Firebase Firestore com suporte offline completo via LocalStorage.
 - **📦 Backup & Restauração**: Exportação e importação de dados em JSON.
 
@@ -20,10 +22,11 @@ Aplicação web single-page (SPA) responsiva, intuitiva e moderna para gestão d
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **HTML5 & Vanilla JavaScript**: Sem frameworks pesados, execução instantânea no navegador.
-- **Tailwind CSS (CDN)**: Design moderno com estética automotiva.
+- **HTML5 & Vanilla JavaScript**: Sem dependências pesadas, carregamento instantâneo.
+- **Tailwind CSS (CDN)**: Design moderno escuro e responsivo (Desktop & Mobile).
 - **FontAwesome 6**: Ícones vetoriais.
-- **Firebase Firestore**: Armazenamento em nuvem em tempo real (opcional).
+- **OSRM API & OpenStreetMap**: Roteirização e cálculo de distâncias reais.
+- **Firebase Firestore**: Armazenamento e sincronização em nuvem em tempo real.
 
 ---
 
@@ -32,4 +35,4 @@ Aplicação web single-page (SPA) responsiva, intuitiva e moderna para gestão d
 1. Acesse o [Firebase Console](https://console.firebase.google.com) e crie um projeto gratuito.
 2. Adicione um **Web App** para copiar o objeto de configuração (`apiKey`, `projectId`, etc.).
 3. Vá em **Firestore Database** -> **Criar banco de dados** e inicie em **Modo de teste**.
-4. Na aplicação web, clique no botão **Firebase Cloud** no cabeçalho e cole o JSON com suas chaves!
+4. Na aplicação web, clique no botão **Firebase Cloud** (ícone de fogo) no cabeçalho e cole o JSON com suas chaves!
