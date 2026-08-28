@@ -183,7 +183,7 @@
               <div>
                 <div class="text-xs font-bold text-white flex items-center gap-1.5">
                   <span>Rota Pré-definida</span>
-                  <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold uppercase">Atalho</span>
+                  <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold uppercase">Modelos</span>
                 </div>
                 <div class="text-[11px] text-slate-400">Carregue paradas e ocupantes instantaneamente</div>
               </div>
@@ -523,8 +523,10 @@
         </div>
       </div>
 
-      <div class="pt-3 border-t border-slate-800 flex justify-between items-center">
-        <span class="text-[11px] text-slate-400">Dica: Monte um trajeto no formulário e clique em "Salvar este Trajeto".</span>
+      <div class="pt-3 border-t border-slate-800 flex justify-between items-center flex-wrap gap-2">
+        <button type="button" onclick="window.app && window.app.clearAllPresetRoutes()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-950/40 text-red-400 border border-red-800/40 hover:bg-red-900/50 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-trash-can"></i> Limpar Todas as Rotas
+        </button>
         <button type="button" onclick="window.app && window.app.closeRoutesModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">
           Fechar
         </button>
@@ -739,48 +741,7 @@
       }
     ];
 
-    const DEFAULT_PRESET_ROUTES = [
-      {
-        id: 'route_casa_cinthia_faculdade',
-        name: 'Casa ➔ Trab. Cinthia ➔ Facul. Henri/Hector',
-        originId: 'loc_casa',
-        originCustom: '',
-        stops: [{ locationId: 'loc_trabalho_cinthia', customAddress: '' }],
-        destId: 'loc_faculdade_henri_hector',
-        destCustom: '',
-        isRoundTrip: false,
-        legMembers: [
-          ['Cinthia', 'Henri', 'Hector'],
-          ['Henri', 'Hector']
-        ]
-      },
-      {
-        id: 'route_casa_trabalho_triplo',
-        name: 'Casa ➔ Trabalho Henri, Hector e Heric',
-        originId: 'loc_casa',
-        originCustom: '',
-        stops: [],
-        destId: 'loc_trabalho_henri_hector_heric',
-        destCustom: '',
-        isRoundTrip: false,
-        legMembers: [
-          ['Henri', 'Hector', 'Heric']
-        ]
-      },
-      {
-        id: 'route_casa_trabalho_arnaldo',
-        name: 'Casa ➔ Trabalho Arnaldo',
-        originId: 'loc_casa',
-        originCustom: '',
-        stops: [],
-        destId: 'loc_trabalho_arnaldo',
-        destCustom: '',
-        isRoundTrip: false,
-        legMembers: [
-          ['Arnaldo']
-        ]
-      }
-    ];
+    const DEFAULT_PRESET_ROUTES = [];
 
     const DEFAULT_FIREBASE_CONFIG = {
       apiKey: "AIzaSyAfKxKLS4OimcwU2dMguYafPHb3l65_ymc",
@@ -799,7 +760,7 @@
         this.data = this.loadData();
         this.stopCount = 0;
         this.calcDebounceTimer = null;
-        this.currentLegsData = []; // Store calculated legs distances
+        this.currentLegsData = [];
         this.init();
       }
 
@@ -823,7 +784,7 @@
             const copy = { ...t };
             if (copy.legsSummary) {
               copy.legsSummaryJson = JSON.stringify(copy.legsSummary);
-              delete copy.legsSummary; // Evita erro de array aninhado no Firestore
+              delete copy.legsSummary;
             }
             return copy;
           });
@@ -869,7 +830,8 @@
           };
         });
 
-        const presetRoutes = (cloudData.presetRoutes || []).map(r => {
+        const rawPresetRoutes = Array.isArray(cloudData.presetRoutes) ? cloudData.presetRoutes : [];
+        const presetRoutes = rawPresetRoutes.map(r => {
           let stops = [];
           let legMembers = [];
           if (r.stopsJson) {
@@ -892,7 +854,7 @@
         return {
           members: DEFAULT_MEMBERS,
           presetLocations: cloudData.presetLocations || [...DEFAULT_PRESET_LOCATIONS],
-          presetRoutes: presetRoutes.length > 0 ? presetRoutes : [...DEFAULT_PRESET_ROUTES],
+          presetRoutes: presetRoutes,
           trips: trips,
           lastClosedTimestamp: cloudData.lastClosedTimestamp || 0,
           issuedReports: cloudData.issuedReports || [],
@@ -931,24 +893,12 @@
                   this.renderReport();
                   this.renderReportsLog();
                   this.renderHistory();
+                  this.renderPresetRoutesList();
                 }
               }
             } else {
-              // Checa main_data_v9 para migração segura
-              this.db.collection('autoshare').doc('main_data_v9').get().then(oldDoc => {
-                if (oldDoc.exists) {
-                  const oldData = oldDoc.data();
-                  const parsedOld = this.parseFromFirestore(oldData);
-                  if (parsedOld) {
-                    this.data = parsedOld;
-                  }
-                }
-                const payload = this.prepareForFirestore(this.data);
-                this.db.collection('autoshare').doc('main_data_v10').set(payload).catch(console.error);
-              }).catch(err => {
-                const payload = this.prepareForFirestore(this.data);
-                this.db.collection('autoshare').doc('main_data_v10').set(payload).catch(console.error);
-              });
+              const payload = this.prepareForFirestore(this.data);
+              this.db.collection('autoshare').doc('main_data_v10').set(payload).catch(console.error);
             }
           }, (err) => {
             console.warn('Fallback offline Firestore:', err);
@@ -972,7 +922,7 @@
             return {
               members: DEFAULT_MEMBERS,
               presetLocations: parsed.presetLocations || [...DEFAULT_PRESET_LOCATIONS],
-              presetRoutes: parsed.presetRoutes || [...DEFAULT_PRESET_ROUTES],
+              presetRoutes: Array.isArray(parsed.presetRoutes) ? parsed.presetRoutes : [],
               trips: parsed.trips || [],
               lastClosedTimestamp: parsed.lastClosedTimestamp || 0,
               issuedReports: parsed.issuedReports || [],
@@ -986,7 +936,7 @@
         return {
           members: DEFAULT_MEMBERS,
           presetLocations: [...DEFAULT_PRESET_LOCATIONS],
-          presetRoutes: [...DEFAULT_PRESET_ROUTES],
+          presetRoutes: [],
           trips: [],
           lastClosedTimestamp: 0,
           issuedReports: [],
@@ -1070,7 +1020,7 @@
         if (!sel) return;
 
         sel.innerHTML = '<option value="">⚡ Carregar Rota Modelo...</option>';
-        const routes = this.data.presetRoutes || DEFAULT_PRESET_ROUTES;
+        const routes = this.data.presetRoutes || [];
 
         routes.forEach(r => {
           const opt = document.createElement('option');
@@ -1179,10 +1129,9 @@
         this.calculateTripRouteDistance();
       }
 
-      // Load a Preset Route into the Form
       onSelectPresetRoute(routeId) {
         if (!routeId) return;
-        const route = (this.data.presetRoutes || DEFAULT_PRESET_ROUTES).find(r => r.id === routeId);
+        const route = (this.data.presetRoutes || []).find(r => r.id === routeId);
         if (!route) return;
 
         // 1. Set Origin
@@ -1229,7 +1178,6 @@
         this.showToast(`Rota "${route.name}" carregada!`, 'success');
       }
 
-      // Save the current form configuration as a new preset route
       saveCurrentAsPresetRoute() {
         const origSel = document.getElementById('trip-origin')?.value || 'loc_casa';
         const origCustom = document.getElementById('trip-origin-custom')?.value.trim() || '';
@@ -1283,7 +1231,7 @@
           legMembers
         };
 
-        this.data.presetRoutes ||= [...DEFAULT_PRESET_ROUTES];
+        this.data.presetRoutes = this.data.presetRoutes || [];
         this.data.presetRoutes.push(newRoute);
         this.saveData();
 
@@ -1309,10 +1257,10 @@
         if (!container) return;
         container.innerHTML = '';
 
-        const routes = this.data.presetRoutes || DEFAULT_PRESET_ROUTES;
+        const routes = this.data.presetRoutes || [];
 
         if (routes.length === 0) {
-          container.innerHTML = `<div class="text-xs text-slate-400 p-4 text-center">Nenhum modelo de rota cadastrado.</div>`;
+          container.innerHTML = `<div class="text-xs text-slate-400 p-6 text-center bg-slate-900/50 rounded-2xl border border-slate-800">Nenhum modelo de rota cadastrado no momento.<br><span class="text-emerald-400 font-semibold mt-1 inline-block">Monte um trajeto no formulário e clique em "Salvar este Trajeto como Modelo"</span></div>`;
           return;
         }
 
@@ -1363,11 +1311,20 @@
 
       removePresetRoute(index) {
         if (confirm('Deseja excluir este modelo de rota pré-definida?')) {
-          this.data.presetRoutes ||= [...DEFAULT_PRESET_ROUTES];
+          this.data.presetRoutes = this.data.presetRoutes || [];
           this.data.presetRoutes.splice(index, 1);
           this.saveData();
           this.renderPresetRoutesList();
           this.showToast('Modelo de rota removido.', 'info');
+        }
+      }
+
+      clearAllPresetRoutes() {
+        if (confirm('Tem certeza que deseja apagar TODOS os modelos de rota pré-definidos?')) {
+          this.data.presetRoutes = [];
+          this.saveData();
+          this.renderPresetRoutesList();
+          this.showToast('Todas as rotas pré-definidas foram removidas.', 'info');
         }
       }
 
@@ -2338,13 +2295,13 @@
       }
 
       confirmReset() {
-        if (confirm('Tem certeza que deseja apagar TODOS os registros?')) {
+        if (confirm('Tem certeza que deseja apagar TODOS os registros e zerar o banco para produção?')) {
           localStorage.removeItem(STORAGE_KEY);
           localStorage.removeItem(OLD_STORAGE_KEY);
           this.data = {
             members: DEFAULT_MEMBERS,
             presetLocations: [...DEFAULT_PRESET_LOCATIONS],
-            presetRoutes: [...DEFAULT_PRESET_ROUTES],
+            presetRoutes: [],
             trips: [],
             lastClosedTimestamp: 0,
             issuedReports: [],
@@ -2354,7 +2311,8 @@
           this.saveData();
           this.populateLocationSelects();
           this.populatePresetRoutesSelect();
-          this.showToast('Todos os dados foram resetados.', 'info');
+          this.renderPresetRoutesList();
+          this.showToast('Todos os dados e rotas foram resetados para Produção!', 'info');
         }
       }
 
