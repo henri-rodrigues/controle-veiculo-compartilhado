@@ -815,6 +815,92 @@
         this.renderHistory();
       }
 
+      prepareForFirestore(data) {
+        const clean = JSON.parse(JSON.stringify(data));
+
+        if (clean.trips && Array.isArray(clean.trips)) {
+          clean.trips = clean.trips.map(t => {
+            const copy = { ...t };
+            if (copy.legsSummary) {
+              copy.legsSummaryJson = JSON.stringify(copy.legsSummary);
+              delete copy.legsSummary; // Evita erro de array aninhado no Firestore
+            }
+            return copy;
+          });
+        }
+
+        if (clean.presetRoutes && Array.isArray(clean.presetRoutes)) {
+          clean.presetRoutes = clean.presetRoutes.map(r => ({
+            id: r.id || ('route_' + Date.now()),
+            name: r.name || 'Rota',
+            originId: r.originId || 'loc_casa',
+            originCustom: r.originCustom || '',
+            destId: r.destId || 'loc_trabalho_cinthia',
+            destCustom: r.destCustom || '',
+            isRoundTrip: !!r.isRoundTrip,
+            stopsJson: r.stops ? JSON.stringify(r.stops) : '[]',
+            legMembersJson: r.legMembers ? JSON.stringify(r.legMembers) : '[]'
+          }));
+        }
+
+        return clean;
+      }
+
+      parseFromFirestore(cloudData) {
+        if (!cloudData) return null;
+
+        const trips = (cloudData.trips || []).map(t => {
+          let legsSummary = [];
+          if (t.legsSummaryJson) {
+            try { legsSummary = JSON.parse(t.legsSummaryJson); } catch (e) {}
+          } else if (Array.isArray(t.legsSummary)) {
+            legsSummary = t.legsSummary;
+          }
+
+          const totalDistance = Number(t.totalDistance) || 0;
+          const totalLiters = Number(t.totalLiters) || (totalDistance / KM_PER_LITER);
+
+          return {
+            ...t,
+            totalDistance,
+            totalLiters,
+            members: Array.isArray(t.members) ? t.members : (typeof t.members === 'string' ? t.members.split(', ').filter(Boolean) : []),
+            legsSummary
+          };
+        });
+
+        const presetRoutes = (cloudData.presetRoutes || []).map(r => {
+          let stops = [];
+          let legMembers = [];
+          if (r.stopsJson) {
+            try { stops = JSON.parse(r.stopsJson); } catch (e) {}
+          } else if (Array.isArray(r.stops)) {
+            stops = r.stops;
+          }
+          if (r.legMembersJson) {
+            try { legMembers = JSON.parse(r.legMembersJson); } catch (e) {}
+          } else if (Array.isArray(r.legMembers)) {
+            legMembers = r.legMembers;
+          }
+          return {
+            ...r,
+            stops,
+            legMembers
+          };
+        });
+
+        return {
+          members: DEFAULT_MEMBERS,
+          presetLocations: cloudData.presetLocations || [...DEFAULT_PRESET_LOCATIONS],
+          presetRoutes: presetRoutes.length > 0 ? presetRoutes : [...DEFAULT_PRESET_ROUTES],
+          trips: trips,
+          lastClosedTimestamp: cloudData.lastClosedTimestamp || 0,
+          issuedReports: cloudData.issuedReports || [],
+          memberCredits: cloudData.memberCredits || { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 },
+          extraRefuels: cloudData.extraRefuels || []
+        };
+      }
+
       initFirebase() {
         const rawConfig = localStorage.getItem(FIREBASE_KEY);
         const config = rawConfig ? JSON.parse(rawConfig) : DEFAULT_FIREBASE_CONFIG;
@@ -835,47 +921,40 @@
             if (doc.exists) {
               const cloudData = doc.data();
               if (cloudData) {
-                this.data = {
-                  members: DEFAULT_MEMBERS,
-                  presetLocations: cloudData.presetLocations || [...DEFAULT_PRESET_LOCATIONS],
-                  presetRoutes: cloudData.presetRoutes || [...DEFAULT_PRESET_ROUTES],
-                  trips: cloudData.trips || [],
-                  lastClosedTimestamp: cloudData.lastClosedTimestamp || 0,
-                  issuedReports: cloudData.issuedReports || [],
-                  memberCredits: cloudData.memberCredits || { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 },
-                  extraRefuels: cloudData.extraRefuels || []
-                };
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
-                this.populateLocationSelects();
-                this.populatePresetRoutesSelect();
-                this.renderCreditsBalanceGrid();
-                this.renderReport();
-                this.renderReportsLog();
-                this.renderHistory();
+                const parsed = this.parseFromFirestore(cloudData);
+                if (parsed) {
+                  this.data = parsed;
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+                  this.populateLocationSelects();
+                  this.populatePresetRoutesSelect();
+                  this.renderCreditsBalanceGrid();
+                  this.renderReport();
+                  this.renderReportsLog();
+                  this.renderHistory();
+                }
               }
             } else {
-              // Try migrating from main_data_v9 if exists
+              // Checa main_data_v9 para migração segura
               this.db.collection('autoshare').doc('main_data_v9').get().then(oldDoc => {
                 if (oldDoc.exists) {
                   const oldData = oldDoc.data();
-                  this.data = {
-                    members: DEFAULT_MEMBERS,
-                    presetLocations: oldData.presetLocations || [...DEFAULT_PRESET_LOCATIONS],
-                    presetRoutes: oldData.presetRoutes || [...DEFAULT_PRESET_ROUTES],
-                    trips: oldData.trips || [],
-                    lastClosedTimestamp: oldData.lastClosedTimestamp || 0,
-                    issuedReports: oldData.issuedReports || [],
-                    memberCredits: oldData.memberCredits || { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 },
-                    extraRefuels: oldData.extraRefuels || []
-                  };
+                  const parsedOld = this.parseFromFirestore(oldData);
+                  if (parsedOld) {
+                    this.data = parsedOld;
+                  }
                 }
-                this.db.collection('autoshare').doc('main_data_v10').set(this.data);
-              }).catch(() => {
-                this.db.collection('autoshare').doc('main_data_v10').set(this.data);
+                const payload = this.prepareForFirestore(this.data);
+                this.db.collection('autoshare').doc('main_data_v10').set(payload).catch(console.error);
+              }).catch(err => {
+                const payload = this.prepareForFirestore(this.data);
+                this.db.collection('autoshare').doc('main_data_v10').set(payload).catch(console.error);
               });
             }
           }, (err) => {
-            console.warn('Fallback offline:', err);
+            console.warn('Fallback offline Firestore:', err);
+            if (statusBtn) {
+              statusBtn.className = 'p-2 text-xs bg-amber-950/60 text-amber-400 border border-amber-800/40 rounded-xl';
+            }
           });
         } catch (e) {
           console.error('Erro Firebase:', e);
@@ -919,8 +998,22 @@
       saveData() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
         if (this.firebaseEnabled && this.db) {
-          this.db.collection('autoshare').doc('main_data_v10').set(this.data)
-            .catch(err => console.error('Erro ao enviar dados pro Firebase:', err));
+          try {
+            const payload = this.prepareForFirestore(this.data);
+            this.db.collection('autoshare').doc('main_data_v10').set(payload)
+              .then(() => {
+                console.log('Firebase sincronizado!');
+                const statusBtn = document.getElementById('btn-firebase-status');
+                if (statusBtn) statusBtn.className = 'p-2 text-xs bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 rounded-xl';
+              })
+              .catch(err => {
+                console.error('Erro ao enviar dados pro Firebase:', err);
+                const statusBtn = document.getElementById('btn-firebase-status');
+                if (statusBtn) statusBtn.className = 'p-2 text-xs bg-amber-950/60 text-amber-400 border border-amber-800/40 rounded-xl';
+              });
+          } catch (e) {
+            console.error('Erro de serialização Firebase:', e);
+          }
         }
         this.populatePresetRoutesSelect();
         this.renderCreditsBalanceGrid();
@@ -1160,11 +1253,15 @@
 
         // Collect leg occupants
         const legMembers = [];
-        this.currentLegsData.forEach(leg => {
-          const checkboxes = document.querySelectorAll(`input[name="leg-members-${leg.index}"]:checked`);
-          const members = Array.from(checkboxes).map(cb => cb.value);
-          legMembers.push(members);
-        });
+        if (this.currentLegsData && this.currentLegsData.length > 0) {
+          this.currentLegsData.forEach(leg => {
+            const checkboxes = document.querySelectorAll(`input[name="leg-members-${leg.index}"]:checked`);
+            const members = Array.from(checkboxes).map(cb => cb.value);
+            legMembers.push(members.length > 0 ? members : DEFAULT_MEMBERS);
+          });
+        } else {
+          legMembers.push(DEFAULT_MEMBERS);
+        }
 
         // Get friendly names for suggested route name
         const origName = origSel === 'custom' ? (origCustom || 'Origem') : (this.data.presetLocations.find(l => l.id === origSel)?.name || origSel);
@@ -1402,7 +1499,7 @@
                     fromName: fromWp ? fromWp.name : `Ponto ${i+1}`,
                     toName: toWp ? toWp.name : `Ponto ${i+2}`,
                     distanceKm: legDist,
-                    savedMembers: existingLegSelections[i]
+                    savedMembers: existingLegSelections[i] || DEFAULT_MEMBERS
                   });
                 }
               }
@@ -1422,7 +1519,7 @@
                     fromName: waypointsDef[i].name,
                     toName: waypointsDef[i+1].name,
                     distanceKm: legDist,
-                    savedMembers: existingLegSelections[i]
+                    savedMembers: existingLegSelections[i] || DEFAULT_MEMBERS
                   });
                 }
               } else {
@@ -1433,7 +1530,7 @@
                   fromName: origName,
                   toName: destName,
                   distanceKm: baseDist,
-                  savedMembers: existingLegSelections[0]
+                  savedMembers: existingLegSelections[0] || DEFAULT_MEMBERS
                 });
               }
             }
@@ -1469,7 +1566,7 @@
           const div = document.createElement('div');
           div.className = 'bg-slate-950/80 p-3 rounded-xl border border-slate-800 space-y-2';
 
-          const activeMembers = leg.savedMembers || DEFAULT_MEMBERS;
+          const activeMembers = (leg.savedMembers && leg.savedMembers.length > 0) ? leg.savedMembers : DEFAULT_MEMBERS;
 
           let checkboxesHtml = DEFAULT_MEMBERS.map(m => {
             const isChecked = activeMembers.includes(m);
@@ -1515,7 +1612,11 @@
           this.currentLegsData.forEach(leg => {
             const legDist = (leg.distanceKm * scaleFactor) * (isRoundTrip ? 2 : 1);
             const checkboxes = document.querySelectorAll(`input[name="leg-members-${leg.index}"]:checked`);
-            const members = Array.from(checkboxes).map(cb => cb.value);
+            let members = Array.from(checkboxes).map(cb => cb.value);
+
+            if (members.length === 0 && leg.savedMembers && leg.savedMembers.length > 0) {
+              members = leg.savedMembers;
+            }
 
             if (members.length > 0) {
               const perPersonLegDist = legDist / members.length;
@@ -1546,18 +1647,29 @@
       saveTrip(e) {
         e.preventDefault();
 
-        const rawDate = document.getElementById('trip-date').value;
-        const origSel = document.getElementById('trip-origin').value;
-        const destSel = document.getElementById('trip-destination').value;
+        const rawDate = document.getElementById('trip-date')?.value || new Date().toISOString().slice(0, 10);
+        const origSel = document.getElementById('trip-origin')?.value || 'loc_casa';
+        const destSel = document.getElementById('trip-destination')?.value || 'loc_trabalho_cinthia';
         const originName = origSel === 'custom' ? (document.getElementById('trip-origin-custom')?.value || 'Origem Personalizada') : (this.data.presetLocations.find(l => l.id === origSel)?.name || origSel);
         const destName = destSel === 'custom' ? (document.getElementById('trip-dest-custom')?.value || 'Destino Personalizado') : (this.data.presetLocations.find(l => l.id === destSel)?.name || destSel);
 
-        const baseDist = parseFloat(document.getElementById('trip-distance').value);
-        const isRoundTrip = document.getElementById('trip-roundtrip').checked;
+        const baseDist = parseFloat(document.getElementById('trip-distance')?.value);
+        const isRoundTrip = document.getElementById('trip-roundtrip')?.checked || false;
 
         if (isNaN(baseDist) || baseDist <= 0) {
           this.showToast('Informe uma distância válida!', 'warning');
           return;
+        }
+
+        // If currentLegsData is not initialized, create a default single leg
+        if (!this.currentLegsData || this.currentLegsData.length === 0) {
+          this.currentLegsData = [{
+            index: 0,
+            fromName: originName,
+            toName: destName,
+            distanceKm: baseDist,
+            savedMembers: DEFAULT_MEMBERS
+          }];
         }
 
         // Scale leg distances if baseDist was manually edited
@@ -1569,38 +1681,41 @@
         const legsSummary = [];
         let allTripMembers = new Set();
 
-        if (this.currentLegsData.length > 0) {
-          this.currentLegsData.forEach(leg => {
-            const legDist = (leg.distanceKm * scaleFactor) * (isRoundTrip ? 2 : 1);
-            const legLit = legDist / KM_PER_LITER;
-            const checkboxes = document.querySelectorAll(`input[name="leg-members-${leg.index}"]:checked`);
-            const members = Array.from(checkboxes).map(cb => cb.value);
+        this.currentLegsData.forEach(leg => {
+          const legDist = (leg.distanceKm * scaleFactor) * (isRoundTrip ? 2 : 1);
+          const legLit = legDist / KM_PER_LITER;
+          const checkboxes = document.querySelectorAll(`input[name="leg-members-${leg.index}"]:checked`);
+          let members = Array.from(checkboxes).map(cb => cb.value);
 
-            members.forEach(m => allTripMembers.add(m));
+          if (members.length === 0 && leg.savedMembers && leg.savedMembers.length > 0) {
+            members = leg.savedMembers;
+          } else if (members.length === 0) {
+            members = DEFAULT_MEMBERS;
+          }
 
-            if (members.length > 0) {
-              const perPersonLegDist = legDist / members.length;
-              const perPersonLegLit = legLit / members.length;
-              members.forEach(m => {
-                memberKmMap[m] = (memberKmMap[m] || 0) + perPersonLegDist;
-                memberLitersMap[m] = (memberLitersMap[m] || 0) + perPersonLegLit;
-              });
-            }
+          members.forEach(m => allTripMembers.add(m));
 
-            legsSummary.push({
-              legIndex: leg.index,
-              fromName: leg.fromName,
-              toName: leg.toName,
-              distanceKm: legDist,
-              distanceLiters: legLit,
-              members
+          if (members.length > 0) {
+            const perPersonLegDist = legDist / members.length;
+            const perPersonLegLit = legLit / members.length;
+            members.forEach(m => {
+              memberKmMap[m] = (memberKmMap[m] || 0) + perPersonLegDist;
+              memberLitersMap[m] = (memberLitersMap[m] || 0) + perPersonLegLit;
             });
+          }
+
+          legsSummary.push({
+            legIndex: leg.index,
+            fromName: leg.fromName,
+            toName: leg.toName,
+            distanceKm: legDist,
+            distanceLiters: legLit,
+            members
           });
-        }
+        });
 
         if (allTripMembers.size === 0) {
-          this.showToast('Selecione pelo menos um ocupante para os trechos da viagem!', 'warning');
-          return;
+          DEFAULT_MEMBERS.forEach(m => allTripMembers.add(m));
         }
 
         const formattedDate = this.formatDateString(rawDate);
@@ -1623,14 +1738,13 @@
           legsSummary
         };
 
-        this.data.trips.push(newTrip);
-        this.data.trips.sort((a, b) => b.timestamp - a.timestamp);
-
+        this.data.trips.unshift(newTrip);
         this.saveData();
         this.showToast(`Viagem registrada: ${totalDistance.toFixed(1)} km (${totalLiters.toFixed(2)} L)!`, 'success');
 
         document.getElementById('trip-roundtrip').checked = false;
-        document.getElementById('select-preset-route').value = '';
+        const selectPreset = document.getElementById('select-preset-route');
+        if (selectPreset) selectPreset.value = '';
         this.calculateTripRouteDistance();
       }
 
