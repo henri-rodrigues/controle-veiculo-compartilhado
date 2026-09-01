@@ -1138,6 +1138,7 @@
         }
 
         this.updateStopLabels();
+        this.calculateTripRouteDistance();
         return stopId;
       }
 
@@ -1369,6 +1370,61 @@
         }
       }
 
+      async geocodeAddress(address) {
+        if (!address || !address.trim()) return null;
+        const rawAddr = address.trim();
+
+        this.geoCache = this.geoCache || {};
+        if (this.geoCache[rawAddr]) {
+          return this.geoCache[rawAddr];
+        }
+
+        const isRp = /Ribeir[aã]o\s+Preto/i.test(rawAddr);
+        const citySuffix = isRp ? '' : ', Ribeirão Preto';
+
+        // Strategy 1: Photon (Komoot OSM) with Ribeirão Preto center bias (-21.1775, -47.8103)
+        try {
+          const q = encodeURIComponent(`${rawAddr}${citySuffix}`);
+          const url = `https://photon.komoot.io/api/?lat=-21.1775&lon=-47.8103&limit=1&q=${q}`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.features && data.features.length > 0) {
+              const coords = data.features[0].geometry.coordinates; // [lon, lat]
+              this.geoCache[rawAddr] = coords;
+              return coords;
+            }
+          }
+        } catch (e) {
+          console.warn('Photon geocoding error:', e);
+        }
+
+        // Strategy 2: Clean street name for Photon / Nominatim
+        const streetOnly = rawAddr.replace(/,\s*\d+.*$/, '').replace(/-\s*\d+.*$/, '').replace(/\s+\d+.*$/, '').trim();
+        const queries = [streetOnly, rawAddr];
+
+        for (const qStr of queries) {
+          if (!qStr) continue;
+          try {
+            const q = encodeURIComponent(`${qStr}${isRp ? '' : ', Ribeirão Preto, SP, Brasil'}`);
+            const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${q}`;
+            const res = await fetch(url);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.length > 0 && data[0].lat && data[0].lon) {
+                const coords = [parseFloat(data[0].lon), parseFloat(data[0].lat)];
+                this.geoCache[rawAddr] = coords;
+                return coords;
+              }
+            }
+          } catch (e) {
+            console.warn('Nominatim fallback geocoding error:', e);
+          }
+        }
+
+        return null;
+      }
+
       async calculateTripRouteDistance(overrideLegMembers = null) {
         clearTimeout(this.calcDebounceTimer);
         this.calcDebounceTimer = setTimeout(async () => {
@@ -1404,7 +1460,7 @@
             // 1. Origem
             if (origSel === 'custom') {
               const addr = document.getElementById('trip-origin-custom')?.value.trim() || '';
-              waypointsDef.push({ role: 'origin', name: 'Origem Personalizada', address: addr });
+              waypointsDef.push({ role: 'origin', name: addr || 'Origem Personalizada', address: addr });
             } else {
               const loc = this.data.presetLocations.find(l => l.id === origSel);
               if (loc) waypointsDef.push({ role: 'origin', name: loc.name, loc, address: loc.address });
@@ -1415,7 +1471,7 @@
             stopSelects.forEach((sel, idx) => {
               if (sel.value === 'custom') {
                 const addr = document.getElementById(`${sel.id}_custom`)?.value.trim() || '';
-                waypointsDef.push({ role: 'stop', name: `Parada ${idx+1}`, address: addr });
+                waypointsDef.push({ role: 'stop', name: addr || `Parada ${idx+1}`, address: addr });
               } else {
                 const loc = this.data.presetLocations.find(l => l.id === sel.value);
                 if (loc) waypointsDef.push({ role: 'stop', name: loc.name, loc, address: loc.address });
@@ -1425,7 +1481,7 @@
             // 3. Destino Final
             if (destSel === 'custom') {
               const addr = document.getElementById('trip-dest-custom')?.value.trim() || '';
-              waypointsDef.push({ role: 'destination', name: 'Destino Personalizado', address: addr });
+              waypointsDef.push({ role: 'destination', name: addr || 'Destino Personalizado', address: addr });
             } else {
               const loc = this.data.presetLocations.find(l => l.id === destSel);
               if (loc) waypointsDef.push({ role: 'destination', name: loc.name, loc, address: loc.address });
@@ -1452,18 +1508,7 @@
               if (item.loc && item.loc.lat && item.loc.lon) {
                 coords = [item.loc.lon, item.loc.lat];
               } else if (item.address && item.address.trim().length > 0) {
-                try {
-                  const query = item.address.includes('Ribeirão Preto') ? item.address : `${item.address}, Ribeirão Preto - SP`;
-                  const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, {
-                    headers: { 'User-Agent': 'AutoShareApp/2.0' }
-                  });
-                  const geoData = await geoRes.json();
-                  if (geoData && geoData[0]) {
-                    coords = [parseFloat(geoData[0].lon), parseFloat(geoData[0].lat)];
-                  }
-                } catch (e) {
-                  console.warn('Geocoding error:', e);
-                }
+                coords = await this.geocodeAddress(item.address);
               }
               resolvedWaypoints.push({ ...item, coords });
             }
@@ -1473,11 +1518,28 @@
 
             let osrmSuccess = false;
 
-            if (waypointsWithCoords.length >= 2) {
+            if (waypointsWithCoords.length >= 2 && waypointsWithCoords.length === waypointsDef.length) {
               const waypointsStr = waypointsWithCoords.map(w => `${w.coords[0]},${w.coords[1]}`).join(';');
-              const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${waypointsStr}?overview=false`;
-              const osrmRes = await fetch(osrmUrl);
-              const osrmData = await osrmRes.json();
+              const osrmUrls = [
+                `https://router.project-osrm.org/route/v1/driving/${waypointsStr}?overview=false`,
+                `https://routing.openstreetmap.de/routed-car/route/v1/driving/${waypointsStr}?overview=false`
+              ];
+
+              let osrmData = null;
+              for (const url of osrmUrls) {
+                try {
+                  const osrmRes = await fetch(url);
+                  if (osrmRes.ok) {
+                    const data = await osrmRes.json();
+                    if (data && data.routes && data.routes[0]) {
+                      osrmData = data;
+                      break;
+                    }
+                  }
+                } catch (e) {
+                  console.warn('OSRM error for url:', url, e);
+                }
+              }
 
               if (osrmData && osrmData.routes && osrmData.routes[0]) {
                 osrmSuccess = true;
@@ -1489,8 +1551,8 @@
                 this.currentLegsData = [];
 
                 for (let i = 0; i < osrmLegs.length; i++) {
-                  const fromWp = waypointsWithCoords[i];
-                  const toWp = waypointsWithCoords[i+1];
+                  const fromWp = waypointsWithCoords[i] || waypointsDef[i];
+                  const toWp = waypointsWithCoords[i+1] || waypointsDef[i+1];
                   const legDist = osrmLegs[i].distance / 1000;
                   this.currentLegsData.push({
                     index: i,
@@ -1514,8 +1576,8 @@
                 for (let i = 0; i < numLegs; i++) {
                   this.currentLegsData.push({
                     index: i,
-                    fromName: waypointsDef[i].name,
-                    toName: waypointsDef[i+1].name,
+                    fromName: waypointsDef[i] ? waypointsDef[i].name : `Ponto ${i+1}`,
+                    toName: waypointsDef[i+1] ? waypointsDef[i+1].name : `Ponto ${i+2}`,
                     distanceKm: legDist,
                     savedMembers: existingLegSelections[i] || DEFAULT_MEMBERS
                   });
@@ -2448,18 +2510,10 @@
         }
 
         let lat = null, lon = null;
-        try {
-          const query = address.includes('Ribeirão Preto') ? address : `${address}, Ribeirão Preto - SP`;
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, {
-            headers: { 'User-Agent': 'AutoShareApp/2.0' }
-          });
-          const data = await res.json();
-          if (data && data[0]) {
-            lat = parseFloat(data[0].lat);
-            lon = parseFloat(data[0].lon);
-          }
-        } catch (err) {
-          console.warn('Geocode add location:', err);
+        const coords = await this.geocodeAddress(address);
+        if (coords) {
+          lon = coords[0];
+          lat = coords[1];
         }
 
         const newLoc = {
