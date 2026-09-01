@@ -377,6 +377,22 @@
           <!-- Rendered dynamically -->
         </div>
       </div>
+
+      <!-- Log / Histórico de Abastecimentos Extras Adicionados -->
+      <div class="glass-card rounded-3xl p-4 sm:p-5 shadow-xl border border-slate-800 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+          <div>
+            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-list-check text-cyan-400"></i> Histórico de Créditos Adicionados
+            </h3>
+            <p class="text-[11px] text-slate-400 mt-0.5">Registro de cada abastecimento extra realizado com data e litros.</p>
+          </div>
+          <span id="extra-refuels-count-badge" class="text-[11px] font-semibold text-slate-400 bg-slate-900 px-2.5 py-1 rounded-xl border border-slate-800">0 registros</span>
+        </div>
+        <div id="extra-refuels-log-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
     </section>
 
     <!-- TAB 3: RELATÓRIOS E FECHAMENTO -->
@@ -599,6 +615,7 @@
                 <th class="p-2.5 text-right">Litros (L)</th>
                 <th class="p-2.5 text-right">% Uso</th>
                 <th class="p-2.5 text-right">Crédito Usado (L)</th>
+                <th class="p-2.5 text-right">Saldo Restante (L)</th>
                 <th class="p-2.5 text-right">Litros a Pagar (L)</th>
                 <th class="p-2.5 text-right">A Pagar (R$)</th>
               </tr>
@@ -631,6 +648,68 @@
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL: RESUMO INDIVIDUAL DE CORRIDAS DO PARTICIPANTE -->
+  <div id="modal-member-trips" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden no-print">
+    <div class="glass-card max-w-3xl w-full rounded-3xl p-5 sm:p-7 shadow-2xl space-y-4 border border-slate-700 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-3">
+          <div id="member-trips-avatar" class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 font-extrabold flex items-center justify-center text-lg border border-emerald-500/30">
+            C
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span id="member-trips-name">Cinthia</span>
+              <span id="member-trips-pct" class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">0% de uso</span>
+            </h3>
+            <p class="text-[11px] text-slate-400">Resumo de viagens e rateio no período: <span id="member-trips-period" class="text-slate-200 font-semibold">--</span></p>
+          </div>
+        </div>
+        <button type="button" onclick="window.app && window.app.closeMemberTripsModal()" class="text-slate-400 hover:text-white text-lg p-1">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Resumo de Métricas Individuais -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+          <div class="text-[10px] text-slate-400 uppercase font-semibold">Corridas no Período</div>
+          <div id="member-trips-count" class="text-sm font-bold text-slate-200 mt-0.5">0</div>
+        </div>
+        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+          <div class="text-[10px] text-slate-400 uppercase font-semibold">KM Atribuído</div>
+          <div id="member-trips-km" class="text-sm font-bold text-slate-200 mt-0.5">0.0 km</div>
+        </div>
+        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+          <div class="text-[10px] text-slate-400 uppercase font-semibold">Consumo (7 km/L)</div>
+          <div id="member-trips-liters" class="text-sm font-bold text-emerald-400 mt-0.5">0.00 L</div>
+        </div>
+        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+          <div class="text-[10px] text-slate-400 uppercase font-semibold">Saldo Restante</div>
+          <div id="member-trips-credit" class="text-sm font-bold text-cyan-400 mt-0.5">0.00 L</div>
+        </div>
+      </div>
+
+      <!-- Lista das Viagens Individuais com Trechos e Ocupantes -->
+      <div class="space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+            <i class="fa-solid fa-car-side text-emerald-400"></i> Viagens em que Participou
+          </h4>
+          <span id="member-trips-list-count" class="text-[10px] text-slate-400">0 viagens</span>
+        </div>
+        <div id="member-trips-list-container" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-800 flex justify-end">
+        <button type="button" onclick="window.app && window.app.closeMemberTripsModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 transition">
+          Fechar
+        </button>
+      </div>
     </div>
   </div>
 
@@ -795,6 +874,7 @@
         this.populatePresetRoutesSelect();
         this.calculateTripRouteDistance();
         this.renderCreditsBalanceGrid();
+        this.renderExtraRefuelsLog();
         this.renderReport();
         this.renderReportsLog();
         this.renderHistory();
@@ -914,6 +994,7 @@
                   this.populateLocationSelects();
                   this.populatePresetRoutesSelect();
                   this.renderCreditsBalanceGrid();
+                  this.renderExtraRefuelsLog();
                   this.renderReport();
                   this.renderReportsLog();
                   this.renderHistory();
@@ -991,6 +1072,7 @@
         }
         this.populatePresetRoutesSelect();
         this.renderCreditsBalanceGrid();
+        this.renderExtraRefuelsLog();
         this.renderReport();
         this.renderReportsLog();
         this.renderHistory();
@@ -1845,6 +1927,7 @@
         this.data.extraRefuels.unshift(extraEntry);
 
         this.saveData();
+        this.renderExtraRefuelsLog();
         this.showToast(`Crédito de ${liters.toFixed(2)} L adicionado para ${member}!`, 'success');
         document.getElementById('extra-refuel-liters').value = '';
       }
@@ -1869,6 +1952,65 @@
           `;
           grid.appendChild(card);
         });
+      }
+
+      renderExtraRefuelsLog() {
+        const container = document.getElementById('extra-refuels-log-list');
+        const countBadge = document.getElementById('extra-refuels-count-badge');
+        if (!container) return;
+
+        const refuels = this.data.extraRefuels || [];
+        if (countBadge) countBadge.textContent = `${refuels.length} registro${refuels.length !== 1 ? 's' : ''}`;
+
+        container.innerHTML = '';
+
+        if (refuels.length === 0) {
+          container.innerHTML = `<div class="text-center p-6 text-slate-500 text-xs bg-slate-900/50 rounded-2xl border border-slate-800">Nenhum abastecimento extra registrado até o momento.</div>`;
+          return;
+        }
+
+        refuels.forEach(entry => {
+          const card = document.createElement('div');
+          card.className = 'bg-slate-900 border border-slate-800 p-3 rounded-2xl flex items-center justify-between flex-wrap gap-2 hover:border-slate-700 transition';
+
+          card.innerHTML = `
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold text-xs border border-cyan-500/20">
+                <i class="fa-solid fa-gas-pump"></i>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-white flex items-center gap-2">
+                  <span>${entry.member}</span>
+                  <span class="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full font-extrabold">+ ${entry.liters.toFixed(2)} L</span>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Data: <strong class="text-slate-300">${entry.dateStr}</strong></div>
+              </div>
+            </div>
+
+            <button type="button" onclick="window.app && window.app.deleteExtraRefuel('${entry.id}')" class="p-2 text-red-400 hover:text-red-300 bg-red-950/30 hover:bg-red-900/40 border border-red-900/40 rounded-xl text-xs transition" title="Excluir e estornar crédito">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          `;
+
+          container.appendChild(card);
+        });
+      }
+
+      deleteExtraRefuel(id) {
+        const entry = (this.data.extraRefuels || []).find(e => e.id === id);
+        if (!entry) return;
+
+        if (confirm(`Deseja excluir o abastecimento de ${entry.liters.toFixed(2)} L de ${entry.member} e estornar esse crédito?`)) {
+          this.data.memberCredits ||= { Cinthia: 0, Arnaldo: 0, Henri: 0, Hector: 0, Heric: 0 };
+          this.data.memberCredits[entry.member] = Math.max(0, (this.data.memberCredits[entry.member] || 0) - entry.liters);
+
+          this.data.extraRefuels = this.data.extraRefuels.filter(e => e.id !== id);
+          this.saveData();
+          this.renderCreditsBalanceGrid();
+          this.renderExtraRefuelsLog();
+          this.renderReport();
+          this.showToast(`Crédito de ${entry.liters.toFixed(2)} L estornado para ${entry.member}.`, 'info');
+        }
       }
 
       // Filter trips by Start Date and End Date
@@ -1951,12 +2093,13 @@
           
           const currentCreditLiters = credits[member] || 0;
           const creditLitersDeduction = Math.min(currentCreditLiters, liters);
+          const remainingCreditLiters = Math.max(0, currentCreditLiters - creditLitersDeduction);
 
           if (deductCredits) {
             credits[member] -= creditLitersDeduction;
           }
 
-          const litersToPay = liters - creditLitersDeduction;
+          const litersToPay = Math.max(0, liters - creditLitersDeduction);
           const rawShareCost = liters * effectivePricePerL;
           const creditCostDeduction = creditLitersDeduction * effectivePricePerL;
           const finalPay = litersToPay * effectivePricePerL;
@@ -1968,10 +2111,10 @@
             usagePct,
             currentCreditLiters,
             creditLitersDeduction,
+            remainingCreditLiters,
             litersToPay,
             rawShareCost,
             creditCostDeduction,
-            remainingCreditLiters: credits[member],
             finalPay
           };
         });
@@ -2002,16 +2145,17 @@
         DEFAULT_MEMBERS.forEach(member => {
           const stats = memberStats[member];
           const card = document.createElement('div');
-          card.className = 'glass-card rounded-3xl p-4 sm:p-6 shadow-xl relative overflow-hidden border border-slate-800';
+          card.className = 'glass-card rounded-3xl p-4 sm:p-6 shadow-xl relative overflow-hidden border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900/90 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer group';
+          card.onclick = () => window.app && window.app.openMemberTripsModal(member);
 
           card.innerHTML = `
             <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
               <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-2xl bg-slate-800 flex items-center justify-center font-bold text-emerald-400 border border-slate-700">
+                <div class="w-9 h-9 rounded-2xl bg-slate-800 group-hover:bg-emerald-500/20 flex items-center justify-center font-bold text-emerald-400 border border-slate-700 transition">
                   ${member.charAt(0)}
                 </div>
                 <div>
-                  <h4 class="text-sm font-bold text-white">${member}</h4>
+                  <h4 class="text-sm font-bold text-white group-hover:text-emerald-300 transition">${member}</h4>
                   <div class="text-[11px] text-slate-400">${stats.tripCount} corrida${stats.tripCount !== 1 ? 's' : ''} • ${stats.km.toFixed(1)} km (${stats.liters.toFixed(2)} L)</div>
                 </div>
               </div>
@@ -2033,10 +2177,23 @@
               </div>
               ${stats.currentCreditLiters > 0 ? `
               <div class="flex justify-between text-emerald-400">
-                <span>Crédito em Litros Abatido:</span>
+                <span>Crédito Acumulado:</span>
+                <strong class="font-bold">${stats.currentCreditLiters.toFixed(2)} L</strong>
+              </div>
+              <div class="flex justify-between text-amber-400">
+                <span>Crédito Abatido:</span>
                 <strong class="font-bold">- ${stats.creditLitersDeduction.toFixed(2)} L</strong>
               </div>
-              ` : ''}
+              <div class="flex justify-between text-cyan-300 font-bold border-t border-slate-800/60 pt-1">
+                <span>Saldo Restante de Crédito:</span>
+                <strong class="font-bold">${stats.remainingCreditLiters.toFixed(2)} L</strong>
+              </div>
+              ` : `
+              <div class="flex justify-between text-slate-500 text-[11px]">
+                <span>Saldo de Crédito:</span>
+                <span>0.00 L</span>
+              </div>
+              `}
               <div class="flex justify-between items-center border-t border-slate-800/80 pt-1.5">
                 <span class="font-bold text-slate-200">Litros a Pagar:</span>
                 <strong class="text-sm font-extrabold ${stats.litersToPay > 0 ? 'text-emerald-400' : 'text-slate-500'}">
@@ -2052,10 +2209,134 @@
               </div>
               ` : ''}
             </div>
+            <div class="pt-2.5 text-[11px] text-emerald-400 group-hover:text-emerald-300 font-bold flex items-center justify-between border-t border-slate-800/80 mt-2">
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-magnifying-glass text-[10px]"></i> Ver extrato de corridas</span>
+              <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </div>
           `;
 
           gridContainer.appendChild(card);
         });
+      }
+
+      openMemberTripsModal(member) {
+        const periodTrips = this.getFilteredReportTrips();
+        const startInput = document.getElementById('report-start-date')?.value;
+        const endInput = document.getElementById('report-end-date')?.value;
+        const manualCostInput = document.getElementById('manual-refuel-cost');
+        const priceInput = document.getElementById('fuel-price-per-liter');
+
+        const manualCost = parseFloat(manualCostInput ? manualCostInput.value : 0) || 0;
+        const pricePerLiter = parseFloat(priceInput ? priceInput.value : 0) || 0;
+
+        const { memberStats } = this.calculatePeriodMemberStats(periodTrips, manualCost, pricePerLiter, false);
+        const stats = memberStats[member] || { tripCount: 0, km: 0, liters: 0, usagePct: 0, currentCreditLiters: 0, creditLitersDeduction: 0, remainingCreditLiters: 0, litersToPay: 0, finalPay: 0 };
+
+        const formattedStart = startInput ? this.formatDateString(startInput) : 'Início';
+        const formattedEnd = endInput ? this.formatDateString(endInput) : 'Hoje';
+        const periodRange = `${formattedStart} até ${formattedEnd}`;
+
+        const avatarEl = document.getElementById('member-trips-avatar');
+        const nameEl = document.getElementById('member-trips-name');
+        const pctEl = document.getElementById('member-trips-pct');
+        const periodEl = document.getElementById('member-trips-period');
+        const countEl = document.getElementById('member-trips-count');
+        const kmEl = document.getElementById('member-trips-km');
+        const litersEl = document.getElementById('member-trips-liters');
+        const creditEl = document.getElementById('member-trips-credit');
+
+        if (avatarEl) avatarEl.textContent = member.charAt(0);
+        if (nameEl) nameEl.textContent = member;
+        if (pctEl) pctEl.textContent = `${stats.usagePct.toFixed(1)}% do consumo total`;
+        if (periodEl) periodEl.textContent = periodRange;
+        if (countEl) countEl.textContent = stats.tripCount;
+        if (kmEl) kmEl.textContent = `${stats.km.toFixed(1)} km`;
+        if (litersEl) litersEl.textContent = `${stats.liters.toFixed(2)} L`;
+        if (creditEl) creditEl.textContent = `${stats.remainingCreditLiters.toFixed(2)} L`;
+
+        const container = document.getElementById('member-trips-list-container');
+        const countBadge = document.getElementById('member-trips-list-count');
+        if (container) {
+          container.innerHTML = '';
+
+          // Filter trips where member participated
+          const memberTrips = periodTrips.filter(t => {
+            if (t.memberKmMap && t.memberKmMap[member] > 0) return true;
+            if (t.legsSummary && t.legsSummary.some(l => l.members && l.members.includes(member))) return true;
+            if (t.members && t.members.includes(member)) return true;
+            return false;
+          });
+
+          if (countBadge) countBadge.textContent = `${memberTrips.length} corrida${memberTrips.length !== 1 ? 's' : ''}`;
+
+          if (memberTrips.length === 0) {
+            container.innerHTML = `<div class="text-xs text-slate-400 p-6 text-center bg-slate-900/60 rounded-2xl border border-slate-800">Nenhuma viagem registrada com a participação de <strong>${member}</strong> neste período.</div>`;
+          } else {
+            memberTrips.forEach((t, idx) => {
+              const card = document.createElement('div');
+              card.className = 'bg-slate-900 p-3.5 rounded-2xl border border-slate-800 space-y-2 text-xs';
+
+              const mKm = t.memberKmMap ? (t.memberKmMap[member] || 0) : (t.kmPerMember || 0);
+              const mLit = t.memberLitersMap ? (t.memberLitersMap[member] || 0) : (mKm / KM_PER_LITER);
+
+              const legs = (t.legsSummary && t.legsSummary.length > 0) ? t.legsSummary : [
+                { legIndex: 0, fromName: t.origin, toName: t.destination, distanceKm: t.totalDistance, distanceLiters: t.totalLiters || (t.totalDistance / KM_PER_LITER), members: t.members || [] }
+              ];
+
+              let legsHtml = legs.map((leg, lIdx) => {
+                const isPresent = leg.members && leg.members.includes(member);
+                const otherMembers = (leg.members || []).filter(m => m !== member);
+
+                return `
+                  <div class="p-2 rounded-xl border ${isPresent ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-slate-950/60 border-slate-800/60 opacity-60'} space-y-1">
+                    <div class="flex justify-between items-center text-slate-200 font-semibold">
+                      <span class="flex items-center gap-1.5">
+                        <span class="${isPresent ? 'text-emerald-400' : 'text-slate-500'} font-bold">Trecho ${lIdx + 1}:</span>
+                        <span>${leg.fromName} ➔ ${leg.toName}</span>
+                      </span>
+                      <span class="${isPresent ? 'text-emerald-400 font-bold' : 'text-slate-500'}">${leg.distanceKm.toFixed(1)} km (${leg.distanceLiters.toFixed(2)} L)</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400 flex items-center justify-between flex-wrap gap-1">
+                      <div>
+                        ${isPresent ? `<span class="text-emerald-400 font-bold">✓ No carro: ${member}</span>` : `<span class="text-slate-500">✗ Não estava neste trecho</span>`}
+                        ${otherMembers.length > 0 ? `<span class="text-slate-400"> (junto com ${otherMembers.join(', ')})</span>` : ''}
+                      </div>
+                      ${isPresent ? `<span class="text-[10px] bg-emerald-500/10 text-emerald-300 px-1.5 py-0.5 rounded font-semibold">Sua cota: ${(leg.distanceKm / (leg.members?.length || 1)).toFixed(1)} km</span>` : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('');
+
+              card.innerHTML = `
+                <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-400 font-bold flex items-center justify-center text-[10px]">#${idx + 1}</span>
+                    <strong class="text-white">${t.dateStr}</strong>
+                    <span class="text-slate-400">• ${t.origin} ➔ ${t.destination}</span>
+                    ${t.isRoundTrip ? '<span class="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px] font-bold">Ida e Volta</span>' : ''}
+                  </div>
+                  <div class="text-right">
+                    <div class="text-emerald-400 font-extrabold text-xs">Sua parte: ${mKm.toFixed(1)} km (${mLit.toFixed(2)} L)</div>
+                    <div class="text-[10px] text-slate-500">Total da corrida: ${t.totalDistance.toFixed(1)} km</div>
+                  </div>
+                </div>
+                <div class="space-y-1.5 pt-1">
+                  ${legsHtml}
+                </div>
+              `;
+
+              container.appendChild(card);
+            });
+          }
+        }
+
+        const modal = document.getElementById('modal-member-trips');
+        if (modal) modal.classList.remove('hidden');
+      }
+
+      closeMemberTripsModal() {
+        const modal = document.getElementById('modal-member-trips');
+        if (modal) modal.classList.add('hidden');
       }
 
       // Emit Detailed Report for PDF / Print
@@ -2189,6 +2470,7 @@
             const mLit = stats.liters !== undefined ? stats.liters : (mKm / KM_PER_LITER);
             const mPayLit = stats.litersToPay !== undefined ? stats.litersToPay : mLit;
             const mCreditDed = stats.creditLitersDeduction !== undefined ? stats.creditLitersDeduction : (stats.creditDeduction || 0);
+            const mCreditRemaining = stats.remainingCreditLiters !== undefined ? stats.remainingCreditLiters : (stats.currentCreditLiters ? Math.max(0, stats.currentCreditLiters - mCreditDed) : 0);
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -2198,6 +2480,9 @@
               <td class="p-2.5 text-right font-bold text-emerald-400">${mLit.toFixed(2)} L</td>
               <td class="p-2.5 text-right font-bold text-slate-200">${stats.usagePct.toFixed(1)}%</td>
               <td class="p-2.5 text-right text-emerald-400 font-semibold">- ${mCreditDed.toFixed(2)} L</td>
+              <td class="p-2.5 text-right font-bold ${mCreditRemaining > 0 ? 'text-cyan-400' : 'text-slate-500'}">
+                ${mCreditRemaining.toFixed(2)} L
+              </td>
               <td class="p-2.5 text-right font-extrabold ${mPayLit > 0 ? 'text-emerald-400' : 'text-slate-500'}">
                 ${mPayLit.toFixed(2)} L
               </td>
