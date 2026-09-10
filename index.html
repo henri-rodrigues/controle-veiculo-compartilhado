@@ -315,7 +315,18 @@
         </div>
 
         <form id="form-trip" onsubmit="window.app && window.app.saveTrip(event)" class="space-y-4">
-          
+
+          <!-- BANNER DE EDIÇÃO (aparece só ao editar uma viagem existente) -->
+          <div id="trip-edit-banner" class="hidden p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2 text-xs">
+              <i class="fa-solid fa-pen-to-square text-emerald-400"></i>
+              <span class="text-slate-200 font-semibold">Editando a viagem de <span id="trip-edit-date" class="text-emerald-400">--</span></span>
+            </div>
+            <button type="button" onclick="window.app && window.app.cancelTripEdit()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white flex-shrink-0">
+              Cancelar
+            </button>
+          </div>
+
           <!-- SELETOR DE ROTAS PRÉ-DEFINIDAS (ATALHO RÁPIDO) -->
           <div class="p-3 bg-slate-900/90 rounded-2xl border border-slate-800 flex items-center gap-2">
             <select id="select-preset-route" onchange="window.app && window.app.onSelectPresetRoute(this.value)" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 font-semibold">
@@ -457,7 +468,7 @@
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
+          <button type="submit" id="btn-trip-submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-floppy-disk"></i> Salvar Viagem
           </button>
 
@@ -1094,6 +1105,7 @@
         this.calcDebounceTimer = null;
         this.currentLegsData = [];
         this.currentReportMemberFilter = 'ALL';
+        this.editingTripId = null;
         this.init();
       }
 
@@ -2212,8 +2224,7 @@
         const totalDistance = baseDist * (isRoundTrip ? 2 : 1);
         const totalLiters = totalDistance / KM_PER_LITER;
 
-        const newTrip = {
-          id: 'trip_' + Date.now(),
+        const tripData = {
           timestamp: new Date(rawDate + 'T12:00:00').getTime(),
           dateStr: formattedDate,
           rawDate: rawDate,
@@ -2229,6 +2240,26 @@
           legsSummary
         };
 
+        // --- Modo edição: atualiza a viagem existente no lugar (não adiciona/remove) ---
+        if (this.editingTripId) {
+          const idx = this.data.trips.findIndex(t => t.id === this.editingTripId);
+          if (idx === -1) {
+            this.exitTripEditMode(true);
+            this.showToast('A viagem não foi encontrada. Nada foi alterado.', 'warning');
+            return;
+          }
+          this.data.trips[idx] = { ...this.data.trips[idx], ...tripData };
+          this.data.trips = this.sortTripsNewestFirst(this.data.trips);
+          this.saveData();
+          this.showToast(`Viagem atualizada: ${totalDistance.toFixed(1)} km (${totalLiters.toFixed(2)} L)!`, 'success');
+          this.exitTripEditMode(true);
+          this.switchTab('history');
+          return;
+        }
+
+        // --- Modo normal: registra uma nova viagem ---
+        const newTrip = { id: 'trip_' + Date.now(), ...tripData };
+
         this.data.trips.unshift(newTrip);
         this.saveData();
         this.showToast(`Viagem registrada: ${totalDistance.toFixed(1)} km (${totalLiters.toFixed(2)} L)!`, 'success');
@@ -2237,6 +2268,123 @@
         const selectPreset = document.getElementById('select-preset-route');
         if (selectPreset) selectPreset.value = '';
         this.calculateTripRouteDistance();
+      }
+
+      // Resolve o nome de um ponto para um id de local pré-definido, ou 'custom'
+      resolveLocationRef(name) {
+        const loc = (this.data.presetLocations || []).find(l => l.name === name);
+        return loc ? { id: loc.id, custom: '' } : { id: 'custom', custom: name || '' };
+      }
+
+      // Abre uma viagem já registrada no formulário para edição
+      editTrip(id) {
+        const trip = (this.data.trips || []).find(t => t.id === id);
+        if (!trip) {
+          this.showToast('Viagem não encontrada.', 'warning');
+          return;
+        }
+
+        this.editingTripId = id;
+
+        const legs = (trip.legsSummary && trip.legsSummary.length > 0)
+          ? trip.legsSummary
+          : [{ fromName: trip.origin, toName: trip.destination, members: trip.members || DEFAULT_MEMBERS }];
+
+        const originName = legs[0].fromName || trip.origin;
+        const destName = legs[legs.length - 1].toName || trip.destination;
+        const stopNames = legs.slice(0, -1).map(l => l.toName);
+        const legMembers = legs.map(l => (l.members && l.members.length ? l.members : DEFAULT_MEMBERS));
+
+        // Data
+        const dateEl = document.getElementById('trip-date');
+        if (dateEl) dateEl.value = trip.rawDate || dateEl.value;
+
+        // Origem
+        const o = this.resolveLocationRef(originName);
+        const origSel = document.getElementById('trip-origin');
+        if (origSel) {
+          origSel.value = o.id;
+          this.onLocationSelectChange('trip-origin', 'trip-origin-custom');
+          if (o.id === 'custom') {
+            const ci = document.getElementById('trip-origin-custom');
+            if (ci) ci.value = o.custom;
+          }
+        }
+
+        // Paradas intermediárias
+        const stopsContainer = document.getElementById('trip-stops-container');
+        if (stopsContainer) stopsContainer.innerHTML = '';
+        this.stopCount = 0;
+        stopNames.forEach(nm => {
+          const r = this.resolveLocationRef(nm);
+          this.addTripStop(r.id, r.custom);
+        });
+
+        // Destino
+        const d = this.resolveLocationRef(destName);
+        const destSel = document.getElementById('trip-destination');
+        if (destSel) {
+          destSel.value = d.id;
+          this.onLocationSelectChange('trip-destination', 'trip-dest-custom');
+          if (d.id === 'custom') {
+            const ci = document.getElementById('trip-dest-custom');
+            if (ci) ci.value = d.custom;
+          }
+        }
+
+        // Ida e volta
+        const rt = document.getElementById('trip-roundtrip');
+        if (rt) rt.checked = !!trip.isRoundTrip;
+
+        // Recalcula a rota preservando os ocupantes de cada trecho
+        this.calculateTripRouteDistance(legMembers);
+
+        // UI de edição
+        const banner = document.getElementById('trip-edit-banner');
+        const bannerDate = document.getElementById('trip-edit-date');
+        if (banner) banner.classList.remove('hidden');
+        if (bannerDate) bannerDate.textContent = trip.dateStr || '';
+        const btn = document.getElementById('btn-trip-submit');
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Salvar alterações';
+        const presetSel = document.getElementById('select-preset-route');
+        if (presetSel) presetSel.value = '';
+
+        this.switchTab('trips');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.showToast('Editando viagem — ajuste os campos e salve as alterações.', 'info');
+      }
+
+      cancelTripEdit() {
+        this.exitTripEditMode(true);
+        this.showToast('Edição cancelada.', 'info');
+      }
+
+      // Sai do modo edição e (opcionalmente) devolve o formulário ao estado padrão
+      exitTripEditMode(resetForm = true) {
+        this.editingTripId = null;
+        const banner = document.getElementById('trip-edit-banner');
+        if (banner) banner.classList.add('hidden');
+        const btn = document.getElementById('btn-trip-submit');
+        if (btn) btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Viagem';
+
+        if (resetForm) {
+          const stopsContainer = document.getElementById('trip-stops-container');
+          if (stopsContainer) stopsContainer.innerHTML = '';
+          this.stopCount = 0;
+          const rt = document.getElementById('trip-roundtrip');
+          if (rt) rt.checked = false;
+          ['trip-origin-custom', 'trip-dest-custom'].forEach(cid => {
+            const el = document.getElementById(cid);
+            if (el) el.value = '';
+          });
+          const origSel = document.getElementById('trip-origin');
+          const destSel = document.getElementById('trip-destination');
+          if (origSel) { origSel.selectedIndex = 0; this.onLocationSelectChange('trip-origin', 'trip-origin-custom'); }
+          if (destSel) { destSel.selectedIndex = Math.min(1, destSel.options.length - 1); this.onLocationSelectChange('trip-destination', 'trip-dest-custom'); }
+          const dEl = document.getElementById('trip-date');
+          if (dEl) dEl.value = new Date().toISOString().slice(0, 10);
+          this.calculateTripRouteDistance();
+        }
       }
 
       formatDateString(rawDate) {
@@ -3389,12 +3537,15 @@
                 </div>
               </div>
 
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-2 sm:gap-3">
                 <div class="text-right">
                   <div class="text-sm font-extrabold text-emerald-400">${t.totalDistance.toFixed(1)} km</div>
                   <div class="text-[11px] text-slate-400 font-bold">${totalLit.toFixed(2)} Litros</div>
                 </div>
-                <button type="button" onclick="window.app && window.app.deleteTrip('${t.id}')" class="p-2 text-red-400 hover:text-red-300 rounded-xl bg-red-950/30 hover:bg-red-900/40 border border-red-900/40 text-xs transition" title="Excluir Viagem">
+                <button type="button" onclick="window.app && window.app.editTrip('${t.id}')" class="p-2 text-emerald-400 hover:text-emerald-300 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs transition" title="Editar Viagem" aria-label="Editar viagem">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button type="button" onclick="window.app && window.app.deleteTrip('${t.id}')" class="p-2 text-red-400 hover:text-red-300 rounded-xl bg-red-950/30 hover:bg-red-900/40 border border-red-900/40 text-xs transition" title="Excluir Viagem" aria-label="Excluir viagem">
                   <i class="fa-solid fa-trash-can"></i>
                 </button>
               </div>
