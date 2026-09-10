@@ -31,15 +31,49 @@
             sans: ['"Plus Jakarta Sans"', 'sans-serif'],
           },
           colors: {
+            // Neutros — cinza chumbo / grafite (dark menos vibrante)
+            slate: {
+              50:  '#F4F4F6',
+              100: '#E1E1E6',  // texto principal
+              200: '#D0D0D6',
+              300: '#B6B6BF',
+              400: '#A8A8B3',  // texto secundário
+              500: '#7C7C86',
+              600: '#4F4F58',
+              700: '#33333A',  // bordas de card
+              800: '#1F1F24',  // cards
+              850: '#1A1A1E',  // superfície
+              900: '#171719',  // header, inputs, wells
+              950: '#121214',  // fundo principal
+            },
+            // Primário — índigo suave desaturado
+            emerald: {
+              50:  '#EEEFFE',
+              100: '#E1E2FD',
+              200: '#C7C9FB',
+              300: '#A6A9F6',
+              400: '#8C8FF2',  // texto / ícone de destaque sobre escuro
+              500: '#6366F1',  // ação principal
+              600: '#5457DA',  // hover
+              700: '#4547B4',
+              800: '#383A8C',
+              900: '#2C2E6C',
+              950: '#1C1D45',
+            },
+            // Secundário — verde folha suave (consumo, litros, sucesso)
+            leaf: {
+              300: '#86EFAC',
+              400: '#6EE7A0',
+              500: '#4ADE80',
+              600: '#3FBF6E',
+            },
             brand: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              dark: '#0f172a',
-              card: '#1e293b',
+              400: '#8C8FF2',
+              500: '#6366F1',
+              600: '#5457DA',
+              700: '#4547B4',
+              dark: '#171719',
+              card: '#1F1F24',
             }
           }
         }
@@ -55,18 +89,19 @@
       font-size: 16px !important;
     }
     body { -webkit-tap-highlight-color: transparent; }
+    input[type="checkbox"], input[type="radio"] { accent-color: #6366F1; }
 
     /* ---- Scrollbar ---- */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #475569; }
-    * { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+    ::-webkit-scrollbar-thumb { background: #33333A; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #44444D; }
+    * { scrollbar-width: thin; scrollbar-color: #33333A transparent; }
 
     /* ---- Foco visível (acessibilidade) ---- */
     a:focus-visible, button:focus-visible, [role="button"]:focus-visible,
     input:focus-visible, select:focus-visible, textarea:focus-visible {
-      outline: 2px solid #34d399;
+      outline: 2px solid #8C8FF2;
       outline-offset: 2px;
       border-radius: 12px;
     }
@@ -78,19 +113,19 @@
     }
 
     .glass-card {
-      background: rgba(30, 41, 59, 0.82);
+      background: rgba(26, 26, 30, 0.88);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
     .nav-tab { cursor: pointer; user-select: none; }
     .nav-tab.active {
-      background-color: #10b981 !important;
-      color: #04120c !important;
-      box-shadow: 0 6px 18px -4px rgba(16, 185, 129, 0.45) !important;
+      background-color: #6366F1 !important;
+      color: #ffffff !important;
+      box-shadow: 0 6px 18px -4px rgba(99, 102, 241, 0.45) !important;
     }
     .bottom-nav-item { cursor: pointer; }
-    .bottom-nav-item.active { color: #34d399 !important; }
+    .bottom-nav-item.active { color: #8C8FF2 !important; }
     .bottom-nav-item.active i { transform: translateY(-1px); }
 
     /* ---- Mapa da rota (Leaflet, tema escuro) ---- */
@@ -98,34 +133,34 @@
       height: 260px;
       width: 100%;
       border-radius: 1rem;
-      background: #0b1220;
+      background: #161618;
       z-index: 0;
     }
-    .leaflet-container { font: inherit; background: #0b1220; }
+    .leaflet-container { font: inherit; background: #161618; }
     /* Escurece os tiles claros do OpenStreetMap (mantém a rota e os pinos intactos) */
     .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9) saturate(0.75); }
     .leaflet-control-attribution {
-      background: rgba(15, 23, 42, 0.75) !important;
-      color: #64748b !important;
+      background: rgba(18, 18, 20, 0.8) !important;
+      color: #7C7C86 !important;
       font-size: 9px !important;
     }
-    .leaflet-control-attribution a { color: #94a3b8 !important; }
+    .leaflet-control-attribution a { color: #A8A8B3 !important; }
     .leaflet-bar a {
-      background: #1e293b !important;
-      color: #e2e8f0 !important;
-      border-color: #334155 !important;
+      background: #1F1F24 !important;
+      color: #E1E1E6 !important;
+      border-color: #33333A !important;
     }
-    .leaflet-bar a:hover { background: #334155 !important; }
+    .leaflet-bar a:hover { background: #33333A !important; }
     .route-pin {
       display: flex; align-items: center; justify-content: center;
       width: 26px; height: 26px; border-radius: 9999px;
-      font-size: 11px; font-weight: 800; color: #04120c;
-      background: #34d399; border: 2px solid #0b1220;
+      font-size: 11px; font-weight: 800; color: #0b1a10;
+      background: #4ADE80; border: 2px solid #161618;
       box-shadow: 0 2px 8px rgba(0,0,0,.5);
     }
-    .route-pin.is-start { background: #34d399; }
-    .route-pin.is-end   { background: #f59e0b; }
-    .route-pin.is-stop  { background: #94a3b8; }
+    .route-pin.is-start { background: #4ADE80; }
+    .route-pin.is-end   { background: #8C8FF2; color: #14153a; }
+    .route-pin.is-stop  { background: #A8A8B3; }
 
     /* ---- Preferência de movimento reduzido ---- */
     @media (prefers-reduced-motion: reduce) {
@@ -152,13 +187,59 @@
         box-shadow: none !important;
         color: #000000 !important;
       }
-      .text-white, .text-slate-200, .text-slate-300, .text-slate-400 {
-        color: #000000 !important;
+      [class*="text-white"], [class*="text-slate-1"], [class*="text-slate-2"],
+      [class*="text-slate-3"], [class*="text-slate-4"], [class*="text-slate-5"] {
+        color: #171719 !important;
       }
-      .bg-slate-900, .bg-slate-950, .bg-slate-800 {
-        background-color: #f8fafc !important;
-        border-color: #cbd5e1 !important;
-        color: #0f172a !important;
+      /* Realces (índigo/verde) → tons escuros legíveis no papel */
+      [class*="text-emerald-"] { color: #3730a3 !important; }
+      [class*="text-leaf-"]    { color: #166534 !important; }
+      [class*="text-amber-"]   { color: #92400e !important; }
+      [class*="text-red-"]     { color: #b91c1c !important; }
+      /* Superfícies escuras → claras no papel */
+      [class*="bg-slate-8"], [class*="bg-slate-9"],
+      [class*="bg-emerald-"], [class*="bg-leaf-"], [class*="bg-amber-"], [class*="bg-red-"] {
+        background-color: #f5f6f8 !important;
+        border-color: #d5dae1 !important;
+      }
+
+      /* ---- Impressão do relatório: fluir por todas as páginas ---- */
+      /* Enquanto o relatório está sendo impresso, esconde o resto da app */
+      body.printing-report > header,
+      body.printing-report > main,
+      body.printing-report > .fixed:not(#modal-view-report),
+      body.printing-report > div:not(#modal-view-report):not(#toast-container) {
+        display: none !important;
+      }
+      #modal-view-report {
+        position: static !important;
+        display: block !important;
+        inset: auto !important;
+        padding: 0 !important;
+        background: none !important;
+        backdrop-filter: none !important;
+        overflow: visible !important;
+      }
+      #modal-view-report > div {
+        max-width: none !important;
+        max-height: none !important;
+        width: 100% !important;
+        overflow: visible !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+      /* Nenhum contêiner do relatório pode recortar/rolar: todas as viagens saem no PDF */
+      #printable-report-area,
+      #printable-report-area * {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      #print-report-trips-list > div,
+      #print-report-extra-refuels-list > div,
+      #print-report-table-body tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
       }
     }
   </style>
@@ -366,13 +447,13 @@
               <div class="text-sm mt-1">
                 <span id="preview-total-dist" class="text-slate-300 font-semibold">0.0 km</span>
                 <span class="text-slate-600">·</span>
-                <strong id="preview-total-liters" class="text-emerald-400 font-extrabold">0.00 L</strong>
+                <strong id="preview-total-liters" class="text-leaf-400 font-extrabold">0.00 L</strong>
               </div>
             </div>
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-sm rounded-2xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
+          <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-floppy-disk"></i> Salvar Viagem
           </button>
 
@@ -417,7 +498,7 @@
             </div>
           </div>
 
-          <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs rounded-xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
+          <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-plus-circle text-sm"></i> Registrar Abastecimento Extra & Adicionar Crédito (L)
           </button>
         </form>
@@ -472,7 +553,7 @@
             </div>
             <div class="bg-slate-900 px-3 py-2 rounded-xl border border-slate-800 text-right text-xs">
               <span class="text-slate-400 text-[10px] uppercase font-semibold">Total Litros</span>
-              <div id="live-period-total-liters" class="text-base font-extrabold text-emerald-400">0,00 L</div>
+              <div id="live-period-total-liters" class="text-base font-extrabold text-leaf-400">0,00 L</div>
             </div>
           </div>
         </div>
@@ -533,7 +614,7 @@
           </div>
 
           <div>
-            <button type="button" onclick="window.app && window.app.emitNewReport()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-1.5 text-xs">
+            <button type="button" onclick="window.app && window.app.emitNewReport()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-1.5 text-xs">
               <i class="fa-solid fa-file-pdf text-sm"></i> Gerar Relatório em PDF / Imprimir
             </button>
           </div>
@@ -716,7 +797,7 @@
           </div>
           <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
             <div class="text-[10px] text-slate-400 uppercase font-semibold">Total Litros</div>
-            <div id="print-report-liters" class="text-sm font-bold text-emerald-400 mt-0.5">0.00 L</div>
+            <div id="print-report-liters" class="text-sm font-bold text-leaf-500 mt-0.5">0.00 L</div>
           </div>
           <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
             <div class="text-[10px] text-slate-400 uppercase font-semibold">Custo Total</div>
@@ -761,17 +842,21 @@
             </span>
             <span id="print-report-extra-refuels-count" class="text-[10px] text-emerald-300 font-semibold bg-emerald-950/60 px-2 py-0.5 rounded-lg border border-emerald-800/60">0 abastecimentos</span>
           </h3>
-          <div id="print-report-extra-refuels-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+          <div id="print-report-extra-refuels-list" class="space-y-2">
             <!-- Rendered dynamically -->
           </div>
         </div>
 
         <!-- Extrato Detalhado de Todas as Viagens do Período com Paradas e Ocupantes -->
         <div class="space-y-3 pt-2">
-          <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
-            <i class="fa-solid fa-route text-amber-400"></i> Extrato Detalhado de Viagens, Rotas & Paradas
+          <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+            <span class="flex items-center gap-1.5">
+              <i class="fa-solid fa-route text-emerald-400"></i> Todas as Viagens do Período
+            </span>
+            <span id="print-report-trips-count" class="text-[10px] font-semibold text-slate-400 normal-case">0 viagens</span>
           </h3>
-          <div id="print-report-trips-list" class="space-y-2 max-h-80 overflow-y-auto pr-1">
+          <p class="text-[10px] text-slate-400 -mt-1">Em ordem da mais recente para a mais antiga.</p>
+          <div id="print-report-trips-list" class="space-y-2">
             <!-- Rendered dynamically -->
           </div>
         </div>
@@ -783,7 +868,7 @@
         <button type="button" onclick="window.app && window.app.closeReportModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
           Fechar
         </button>
-        <button type="button" onclick="window.print()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition flex items-center gap-2">
+        <button type="button" onclick="window.app && window.app.printReport()" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center gap-2">
           <i class="fa-solid fa-print"></i> Imprimir / Salvar em PDF
         </button>
       </div>
@@ -824,7 +909,7 @@
         </div>
         <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
           <div class="text-[10px] text-slate-400 uppercase font-semibold">Consumo (7 km/L)</div>
-          <div id="member-trips-liters" class="text-sm font-bold text-emerald-400 mt-0.5">0.00 L</div>
+          <div id="member-trips-liters" class="text-sm font-bold text-leaf-400 mt-0.5">0.00 L</div>
         </div>
         <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
           <div class="text-[10px] text-slate-400 uppercase font-semibold">Saldo Restante</div>
@@ -1885,13 +1970,13 @@
         // Linha da rota
         if (geom && geom.length > 1) {
           const latlngs = geom.map(c => [c[1], c[0]]);
-          L.polyline(latlngs, { color: '#34d399', weight: 5, opacity: 0.95, lineJoin: 'round' })
+          L.polyline(latlngs, { color: '#4ADE80', weight: 5, opacity: 0.95, lineJoin: 'round' })
             .addTo(this._mapRouteLayer);
           latlngs.forEach(p => bounds.push(p));
           if (statusEl) statusEl.textContent = 'Rota real • traçado por ruas';
         } else if (wps.length > 1) {
           const latlngs = wps.map(w => [w.coords[1], w.coords[0]]);
-          L.polyline(latlngs, { color: '#94a3b8', weight: 3, opacity: 0.8, dashArray: '6 6' })
+          L.polyline(latlngs, { color: '#A8A8B3', weight: 3, opacity: 0.8, dashArray: '6 6' })
             .addTo(this._mapRouteLayer);
           latlngs.forEach(p => bounds.push(p));
           if (statusEl) statusEl.textContent = 'Rota aproximada (linha reta)';
@@ -1958,7 +2043,7 @@
           div.innerHTML = `
             <div class="flex justify-between items-center text-xs">
               <span class="font-bold text-slate-200">Trecho ${leg.index + 1}: ${leg.fromName} ➔ ${leg.toName}</span>
-              <span class="text-emerald-400 font-extrabold">${legDist.toFixed(1)} km (${legLiters.toFixed(2)} L)</span>
+              <span class="text-leaf-400 font-extrabold">${legDist.toFixed(1)} km (${legLiters.toFixed(2)} L)</span>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
               ${checkboxesHtml}
@@ -2486,7 +2571,7 @@
 
           const allBtn = document.createElement('button');
           allBtn.type = 'button';
-          allBtn.className = `px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${currentFilter === 'ALL' ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20' : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'}`;
+          allBtn.className = `px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 ${currentFilter === 'ALL' ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'}`;
           allBtn.innerHTML = `<i class="fa-solid fa-users"></i> Todos (${periodTrips.length})`;
           allBtn.onclick = () => this.filterReportTripsByMember('ALL');
           pillsContainer.appendChild(allBtn);
@@ -2501,8 +2586,8 @@
 
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = `px-3 py-1.5 rounded-xl font-semibold transition flex items-center gap-1.5 ${currentFilter === member ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800'}`;
-            btn.innerHTML = `<span>${member}</span> <span class="text-[10px] px-1.5 py-0.2 rounded-full ${currentFilter === member ? 'bg-slate-950/30 text-slate-950' : 'bg-slate-800 text-slate-400'}">${mCount}</span>`;
+            btn.className = `px-3 py-1.5 rounded-xl font-semibold transition flex items-center gap-1.5 ${currentFilter === member ? 'bg-emerald-500 text-white font-bold shadow-md shadow-emerald-500/20' : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800'}`;
+            btn.innerHTML = `<span>${member}</span> <span class="text-[10px] px-1.5 py-0.2 rounded-full ${currentFilter === member ? 'bg-slate-950/30 text-white' : 'bg-slate-800 text-slate-400'}">${mCount}</span>`;
             btn.onclick = () => this.filterReportTripsByMember(member);
             pillsContainer.appendChild(btn);
           });
@@ -2860,8 +2945,20 @@
       }
 
       // Emit Detailed Report for PDF / Print
+      // Valor de ordenação de uma viagem (mais recente primeiro)
+      getTripSortValue(t) {
+        if (t && typeof t.timestamp === 'number' && t.timestamp > 0) return t.timestamp;
+        const iso = this.getTripIsoDate(t);
+        return iso ? new Date(iso + 'T12:00:00').getTime() : 0;
+      }
+
+      // Ordena viagens da data mais nova para a mais antiga
+      sortTripsNewestFirst(trips) {
+        return (trips || []).slice().sort((a, b) => this.getTripSortValue(b) - this.getTripSortValue(a));
+      }
+
       emitNewReport() {
-        const periodTrips = this.getFilteredReportTrips();
+        const periodTrips = this.sortTripsNewestFirst(this.getFilteredReportTrips());
 
         if (periodTrips.length === 0) {
           this.showToast('Nenhuma viagem encontrada no intervalo de datas selecionado.', 'warning');
@@ -3000,7 +3097,7 @@
               <td class="p-2.5 font-bold text-white">${member}</td>
               <td class="p-2.5 text-center text-slate-300">${stats.tripCount}</td>
               <td class="p-2.5 text-right font-semibold text-slate-300">${mKm.toFixed(1)} km</td>
-              <td class="p-2.5 text-right font-bold text-emerald-400">${mLit.toFixed(2)} L</td>
+              <td class="p-2.5 text-right font-bold text-leaf-400">${mLit.toFixed(2)} L</td>
               <td class="p-2.5 text-right font-bold text-slate-200">${stats.usagePct.toFixed(1)}%</td>
               <td class="p-2.5 text-right text-emerald-400 font-semibold">- ${mCreditDed.toFixed(2)} L</td>
               <td class="p-2.5 text-right font-bold ${mCreditRemaining > 0 ? 'text-emerald-400' : 'text-slate-500'}">
@@ -3054,7 +3151,13 @@
         const tripsContainer = document.getElementById('print-report-trips-list');
         if (tripsContainer) {
           tripsContainer.innerHTML = '';
-          const tripsToRender = rep.trips || [];
+          // Todas as viagens do período, em sequência da mais nova para a mais antiga
+          const tripsToRender = this.sortTripsNewestFirst(rep.trips || []);
+
+          const tripsHeadCount = document.getElementById('print-report-trips-count');
+          if (tripsHeadCount) {
+            tripsHeadCount.textContent = `${tripsToRender.length} ${tripsToRender.length !== 1 ? 'viagens' : 'viagem'} no período`;
+          }
 
           if (tripsToRender.length === 0) {
             tripsContainer.innerHTML = `<div class="text-xs text-slate-400 p-3 text-center">Nenhuma viagem detalhada disponível para este relatório.</div>`;
@@ -3134,6 +3237,20 @@
 
       closeReportModal() {
         document.getElementById('modal-view-report').classList.add('hidden');
+      }
+
+      // Imprime só o relatório (esconde o resto da app durante a impressão)
+      printReport() {
+        const modal = document.getElementById('modal-view-report');
+        if (!modal || modal.classList.contains('hidden')) return;
+        document.body.classList.add('printing-report');
+        const cleanup = () => {
+          document.body.classList.remove('printing-report');
+          window.removeEventListener('afterprint', cleanup);
+        };
+        window.addEventListener('afterprint', cleanup);
+        setTimeout(cleanup, 60000); // rede de segurança
+        window.print();
       }
 
       // Render History with Full Route, Stops Stepper & Passenger Entry/Exit Flow
@@ -3469,7 +3586,7 @@
         const toast = document.createElement('div');
         const styles = {
           info:    { bg: 'bg-slate-900/95 border-slate-700 text-slate-100',      icon: 'fa-circle-info text-slate-400' },
-          success: { bg: 'bg-slate-900/95 border-emerald-600/50 text-emerald-100', icon: 'fa-circle-check text-emerald-400' },
+          success: { bg: 'bg-slate-900/95 border-leaf-500/50 text-leaf-300', icon: 'fa-circle-check text-leaf-400' },
           warning: { bg: 'bg-slate-900/95 border-amber-600/50 text-amber-100',    icon: 'fa-triangle-exclamation text-amber-400' },
           error:   { bg: 'bg-slate-900/95 border-red-600/50 text-red-100',        icon: 'fa-circle-xmark text-red-400' }
         };

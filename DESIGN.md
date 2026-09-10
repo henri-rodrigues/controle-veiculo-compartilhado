@@ -2,19 +2,21 @@
 name: AutoShare
 description: Controle de veículo compartilhado e rateio de combustível por litros (7 km/L). App utilitário, dark, mobile-first, pt-BR.
 colors:
-  primary: "#10b981"        # emerald-500 — cor de ação / marca
-  primary-hover: "#059669"  # emerald-600
-  primary-soft: "#34d399"   # emerald-400 — texto/ícone sobre escuro
-  accent: "#2dd4bf"         # teal-400 — só no gradiente do logo
-  bg: "#020617"             # slate-950 — fundo da página
-  surface: "#0f172a"        # slate-900 — header, inputs, tracks
-  surface-raised: "#1e293b" # slate-800 — cards (base do .glass-card)
-  border: "#1e293b"         # slate-800 — bordas de input
-  border-strong: "#334155"  # slate-700 — bordas de card
-  on-bg: "#f1f5f9"          # slate-100 — corpo
+  primary: "#6366F1"        # índigo suave (emerald-500 remapeado) — cor de ação / marca
+  primary-hover: "#5457DA"  # emerald-600
+  primary-soft: "#8C8FF2"   # emerald-400 — texto/ícone sobre escuro
+  secondary: "#4ADE80"      # leaf-500 — verde folha: litros / consumo / sucesso
+  secondary-soft: "#6EE7A0" # leaf-400
+  bg: "#121214"             # slate-950 — fundo principal (cinza chumbo)
+  surface: "#171719"        # slate-900 — header, inputs, wells
+  surface-raised: "#1F1F24" # slate-800 — cards (base do .glass-card ≈ #1A1A1E)
+  border: "#1F1F24"         # slate-800 — bordas de input
+  border-strong: "#33333A"  # slate-700 — bordas de card
+  on-bg: "#E1E1E6"          # slate-100 — corpo (off-white suave)
   on-bg-strong: "#ffffff"   # títulos
-  on-bg-muted: "#94a3b8"    # slate-400 — labels e texto secundário
-  error: "#f59e0b"          # amber-500 — usado para status offline/erro
+  on-bg-muted: "#A8A8B3"    # slate-400 — labels e texto secundário
+  error: "#f59e0b"          # amber-500 — status offline/erro
+  danger: "#f87171"         # red-400 — ações destrutivas
   print-bg: "#ffffff"
   print-fg: "#000000"
 typography:
@@ -80,17 +82,20 @@ direta** — não é marketing, é uma planilha viva. O usuário abre no celular
 em segundos e, no fim do mês, gera um PDF de prestação de contas. Clareza numérica e confiança
 importam mais do que sofisticação estética.
 
-## Colors
+> **Como o tema é aplicado:** o app não usa cores próprias espalhadas — ele **remapeia a escala do Tailwind**
+> no `tailwind.config` inline (`slate` → neutros chumbo/grafite, `emerald` → índigo, `leaf` → verde).
+> Então `bg-slate-950`, `text-emerald-400` etc. continuam no código, mas rendem os valores abaixo.
+> Mexeu em cor? Mexa no `tailwind.config` **e** aqui.
 
-- **Primary `#10b981` (emerald-500):** única cor de ação. Botões primários, aba ativa, saldos positivos, foco de input.
-- **Primary-soft `#34d399` (emerald-400):** texto e ícones de destaque sobre fundo escuro (melhor contraste que o 500 para texto).
-- **Accent `#2dd4bf` (teal-400):** aparece só no gradiente do ícone do logo (`from-emerald-600 to-teal-400`). Não usar em mais nada.
-- **Fundos:** `#020617` (página) → `#0f172a` (header, inputs) → `#1e293b` (cards). Sempre nessa ordem de profundidade.
-- **Texto:** `#f1f5f9` corpo, `#ffffff` títulos, `#94a3b8` labels/secundário. **Não usar slate-500/600 para texto informativo** (falha AA).
-- **Error/Offline `#f59e0b` (amber-500):** status do Firebase quando cai para offline, mensagens de erro.
-- **Print:** fundo `#ffffff`, texto `#000000` — imposto pelo `@media print` para o PDF do relatório.
+- **Primary `#6366F1` (índigo suave, = `emerald-500`):** única cor de **ação e navegação**. Botões primários, aba ativa, foco de input, links, ícones de seção.
+- **Primary-soft `#8C8FF2` (= `emerald-400`):** texto/ícone de destaque sobre fundo escuro (melhor contraste que o 500).
+- **Secondary `#4ADE80` (verde folha, = `leaf-500`):** **litros / consumo / sucesso**. Números grandes de litros, traçado da rota no mapa, pino de origem, toast de sucesso. **Não usar para botão nem navegação.**
+- **Fundos:** `#121214` (página) → `#171719` (header, inputs) → `#1A1A1E`/`#1F1F24` (cards). Sempre nessa ordem de profundidade.
+- **Texto:** `#E1E1E6` corpo, `#ffffff` títulos, `#A8A8B3` labels/secundário. **Não usar slate-500/600 para texto informativo** (contraste no limite).
+- **Error/Offline `#f59e0b` (amber-500):** status do Firebase offline, avisos. **Danger `#f87171` (red-400):** ações que apagam dados.
+- **Print:** fundo `#ffffff`, texto `#000000`; realces viram tons escuros legíveis (índigo `#3730a3`, verde `#166534`) — imposto pelo `@media print`.
 
-Tema **exclusivamente escuro**. Não há alternância claro/escuro. A única exceção é a impressão.
+Tema **exclusivamente escuro** (menos vibrante, cinza chumbo). Não há alternância claro/escuro. A única exceção é a impressão do relatório.
 
 ## Typography
 
@@ -128,25 +133,25 @@ Não empilhar múltiplos níveis de sombra. Não usar sombra preta pesada.
 
 ## Components
 
-- **Card:** `.glass-card rounded-3xl p-5 border border-slate-700`.
-- **Input:** fundo `slate-900`, borda `slate-800`, `rounded-xl`, `px-3 py-3`, texto branco, `focus:border-emerald-500`, sempre com `<label>` associado.
-- **Botão primário:** `bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-xl px-4 py-3 transition`.
+- **Card:** `.glass-card rounded-3xl p-5 border border-slate-700` (fundo ≈ `rgba(26,26,30,.88)` + blur).
+- **Input:** fundo `slate-900`, borda `slate-800`, `rounded-xl`, `px-3 py-3`, `text-white`, `focus:border-emerald-500`, sempre com `<label>` associado.
+- **Botão primário:** `bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl px-4 py-3 transition` (índigo com texto branco).
 - **Botão secundário / neutro:** `bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800`.
-- **Botão destrutivo:** texto/borda em amber ou red-400; **sempre com `confirm()`** antes de agir (excluir viagem, excluir rota, estornar crédito, zerar banco).
-- **Aba / nav item:** inativo `text-slate-400`; ativo `emerald-500` + sombra (classe `.active`).
-- **Badge de litros/valor:** `bg-emerald-500/20 text-emerald-300 rounded-full px-2 py-0.5 font-extrabold`.
+- **Botão destrutivo:** texto/borda em amber ou red-400; **sempre com `confirm()`** antes de agir.
+- **Aba / nav item:** inativo `text-slate-400`; ativo índigo + sombra (classe `.active`).
+- **Badge de litros/valor:** `bg-leaf-500/15 text-leaf-300 rounded-full px-2 py-0.5 font-extrabold`.
 - **Ícone só-decorativo:** FontAwesome `fa-solid`. **Ícone-como-botão:** precisa de `aria-label`.
 - **Toast:** feedback obrigatório após salvar/excluir e após qualquer chamada de rede (OSRM, Photon, Firebase).
 - **Modal:** `max-w-3xl max-h-[90vh] overflow-y-auto`, backdrop `bg-slate-950/80 backdrop-blur-sm`, `.no-print`, fecha no `Esc` e no clique fora.
 
 ## Do's and Don'ts
 
-- **Do** usar emerald como a única cor de ação; um destaque por tela.
+- **Do** usar índigo (`emerald-*` remapeado) como a única cor de ação; verde (`leaf-*`) só para litros/consumo/sucesso.
 - **Do** manter tudo em pt-BR.
 - **Do** dar estado de loading + erro visível para OSRM/Photon/Firebase.
 - **Do** adicionar regras `@media print` para qualquer conteúdo que entre no relatório PDF.
 - **Do** espelhar as classes da seção vizinha ao editar.
-- **Don't** introduzir roxo/violeta, azul ou uma segunda fonte.
+- **Don't** introduzir uma terceira cor de destaque (só índigo + verde), ciano/teal, ou uma segunda fonte.
 - **Don't** usar `h-screen`, `text-slate-500` para texto, ou `w-[calc(...)]` para colunas.
 - **Don't** criar campo de formulário com `font-size` < 16px.
 - **Don't** adicionar biblioteca via npm — tudo é CDN; declare o `<script>`/`<link>` e o motivo.
