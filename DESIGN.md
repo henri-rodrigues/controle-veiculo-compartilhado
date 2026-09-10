@@ -135,6 +135,7 @@ Não empilhar múltiplos níveis de sombra. Não usar sombra preta pesada.
 
 - **Card:** `.glass-card rounded-3xl p-5 border border-slate-700` (fundo ≈ `rgba(26,26,30,.88)` + blur).
 - **Input:** fundo `slate-900`, borda `slate-800`, `rounded-xl`, `px-3 py-3`, `text-white`, `focus:border-emerald-500`, sempre com `<label>` associado.
+- **Campo calculado (output):** valor derivado pelo sistema (ex.: distância da rota) usa `readonly tabindex="-1"`, fundo `slate-950` (mais fundo), número em `text-leaf-400`, ícone à esquerda e legenda "calculada automaticamente". O usuário nunca digita.
 - **Botão primário:** `bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl px-4 py-3 transition` (índigo com texto branco).
 - **Botão secundário / neutro:** `bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800`.
 - **Botão destrutivo:** texto/borda em amber ou red-400; **sempre com `confirm()`** antes de agir.

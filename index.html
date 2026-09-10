@@ -412,13 +412,17 @@
             <div>
               <div class="flex items-center justify-between mb-1">
                 <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                  Distância Total (km)
+                  Distância da Rota (km)
                 </label>
                 <span id="route-calc-spinner" class="hidden text-[11px] text-emerald-400 font-semibold animate-pulse">
                   <i class="fa-solid fa-spin fa-spinner"></i> Calculando...
                 </span>
               </div>
-              <input type="number" id="trip-distance" step="0.1" min="0.1" required oninput="window.app && window.app.updateTripPreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-3 text-sm font-bold text-white focus:outline-none focus:border-emerald-500">
+              <div class="relative">
+                <i class="fa-solid fa-route absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm pointer-events-none"></i>
+                <input type="number" id="trip-distance" step="0.1" min="0.1" required readonly tabindex="-1" aria-readonly="true" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-3 text-sm font-bold text-leaf-400 cursor-default focus:outline-none">
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Calculada automaticamente pelo trajeto — não editável.</p>
             </div>
 
             <!-- Toggle Ida e Volta -->
@@ -1733,6 +1737,19 @@
         return null;
       }
 
+      // Distância em linha reta entre dois pontos [lon, lat] em km
+      haversineKm(a, b) {
+        if (!Array.isArray(a) || !Array.isArray(b)) return 0;
+        const R = 6371;
+        const toRad = d => d * Math.PI / 180;
+        const dLat = toRad(b[1] - a[1]);
+        const dLon = toRad(b[0] - a[0]);
+        const lat1 = toRad(a[1]);
+        const lat2 = toRad(b[1]);
+        const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+        return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+      }
+
       async calculateTripRouteDistance(overrideLegMembers = null) {
         clearTimeout(this.calcDebounceTimer);
         this.calcDebounceTimer = setTimeout(async () => {
@@ -1883,15 +1900,21 @@
               }
             }
 
-            // Fallback if OSRM could not fetch route (e.g. offline, single point, geocode fail)
+            // Fallback: OSRM indisponível. Estima pela distância em linha reta (Haversine
+            // x1.3 para aproximar ruas) usando as coordenadas dos pontos. O campo continua
+            // sendo preenchido pelo sistema — nunca digitado pelo usuário.
             if (!osrmSuccess) {
-              const baseDist = parseFloat(document.getElementById('trip-distance')?.value) || 0;
+              const distEl = document.getElementById('trip-distance');
               this.currentLegsData = [];
 
-              if (waypointsDef.length >= 2) {
-                const numLegs = waypointsDef.length - 1;
-                const legDist = baseDist > 0 ? baseDist / numLegs : 0;
-                for (let i = 0; i < numLegs; i++) {
+              const coordsList = resolvedWaypoints.map(w => w.coords);
+              const haveAllCoords = coordsList.length >= 2 && coordsList.every(c => Array.isArray(c));
+
+              if (haveAllCoords) {
+                let totalEst = 0;
+                for (let i = 0; i < coordsList.length - 1; i++) {
+                  const legDist = this.haversineKm(coordsList[i], coordsList[i + 1]) * 1.3;
+                  totalEst += legDist;
                   this.currentLegsData.push({
                     index: i,
                     fromName: waypointsDef[i] ? waypointsDef[i].name : `Ponto ${i+1}`,
@@ -1900,16 +1923,21 @@
                     savedMembers: existingLegSelections[i] || DEFAULT_MEMBERS
                   });
                 }
+                if (distEl) distEl.value = totalEst.toFixed(1);
               } else {
-                const origName = waypointsDef[0] ? waypointsDef[0].name : 'Origem';
-                const destName = waypointsDef[1] ? waypointsDef[1].name : 'Destino';
-                this.currentLegsData.push({
-                  index: 0,
-                  fromName: origName,
-                  toName: destName,
-                  distanceKm: baseDist,
-                  savedMembers: existingLegSelections[0] || DEFAULT_MEMBERS
-                });
+                // Sem coordenadas suficientes: não há como estimar — limpa o campo
+                if (distEl) distEl.value = '';
+                if (waypointsDef.length >= 2) {
+                  for (let i = 0; i < waypointsDef.length - 1; i++) {
+                    this.currentLegsData.push({
+                      index: i,
+                      fromName: waypointsDef[i] ? waypointsDef[i].name : `Ponto ${i+1}`,
+                      toName: waypointsDef[i+1] ? waypointsDef[i+1].name : `Ponto ${i+2}`,
+                      distanceKm: 0,
+                      savedMembers: existingLegSelections[i] || DEFAULT_MEMBERS
+                    });
+                  }
+                }
               }
             }
 
@@ -2119,7 +2147,7 @@
         const isRoundTrip = document.getElementById('trip-roundtrip')?.checked || false;
 
         if (isNaN(baseDist) || baseDist <= 0) {
-          this.showToast('Informe uma distância válida!', 'warning');
+          this.showToast('Não foi possível calcular a distância. Confira a origem, as paradas e o destino.', 'warning');
           return;
         }
 
